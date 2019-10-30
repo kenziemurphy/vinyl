@@ -1,6 +1,4 @@
-
-  "audio_features": [
-    {
+    [{
       "danceability": 0.754,
       "energy": 0.449,
       "key": 7,
@@ -40,7 +38,6 @@
       "duration_ms": 263400,
       "time_signature": 3
     },
-    null,
     {
       "danceability": 0.587,
       "energy": 0.535,
