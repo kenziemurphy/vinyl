@@ -36,10 +36,12 @@ for x in range(0, int(1 + len(ids)/50)):
 			audio_features[i]["artist"] = metadata[i]["artists"][0]["name"]
 			# TODO: copy more stuff?
 
+	# append the latest 100 tracks onto the results array
 	results.append(audio_features[i])
 
 	# keep track of how many tracks we have finished processing
 	print(end)
 
+# write all the processed tracks to a json file
 with open('billboard.json', 'w') as outfile:
     json.dump(results, outfile)
