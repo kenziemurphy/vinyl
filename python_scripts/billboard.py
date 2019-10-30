@@ -38,13 +38,13 @@ for x in range(0, int(1 + len(ids)/100)):
 	# create a %2C separated string of ids we need to look up (seems like this is what the Spotify API try it tool does)
 	songs = '%2C'.join(ids[start:end])
 
-	# TODO: request
+	# TODO: request metadata and audio features for the 100 tracks, merge it and append to the results array
 	#connection.request("GET", "/v1/audio-features?ids=" + songs, headers=headers)
 
 	print(start)
 	print(end)
 	#print(songs)
 
-
-
 print(result)
+
+# TODO: write the results variable to a CSV file
