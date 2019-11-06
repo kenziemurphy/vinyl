@@ -10,7 +10,7 @@ ids = ["6DCZcSspjsKoFjzjrWoCdn","0tgVpDi06FyKpA1z0VMD4v","7iDa6hUg2VgEL1o1HjmfBn
 results = []
 
 # build authorization header (this token expires so you may need to request a new token from the Spotify API website before running this script)
-token = "BQDwtQ_SOMWpV4LzQPoOqAhRxtsnBgR2cf4AGZK6sf7WMBUmg3emMmKb_YhZgtezG91p9X5Jdznmh70ISn7u_uLVwENY2YJc1cORv0EayQFvWUQrZ-UQ5k_gTFQQada_kbSBfxM5SKrG8uqhzGYBf8bXCAndal8Hhxkdr7gsc4PZ9JT8u7y1"
+token = "BQDGletcG26rxmsvdPH_Kyt90NZbqtRc80scnAGdGktm4ZtWiNiDlvBNADjvIyneqGWXiHvbAJabW-WaxkdTFqaz7ve2uiGn2Izd3W7lJVO9iwBQwnXTzM-yxpxRPZCDf13gBu5itXRT8SIVzKBzsb8XnYx6c6vurhbbOzWBXPfst7nPoT5s"
 headers = { 'Authorization' : 'Bearer ' + token}
 # create connection
 connection = http.client.HTTPSConnection("api.spotify.com")
@@ -34,6 +34,10 @@ for x in range(0, int(1 + len(ids)/50)):
 		if(metadata[i] is not None):
 			audio_features[i]["name"] = metadata[i]["name"]
 			audio_features[i]["artist"] = metadata[i]["artists"][0]["name"]
+			audio_features[i]["artist_uri"] = metadata[i]["artists"][0]["uri"]
+			audio_features[i]["album_name"] = metadata[i]["album"]["name"]
+			audio_features[i]["album_uri"] = metadata[i]["album"]["uri"]
+			#audio_features[i]["release_date"] = metadata[i]["release_date"]
 			# TODO: copy more stuff?
 
 	# append the latest 100 tracks onto the results array
