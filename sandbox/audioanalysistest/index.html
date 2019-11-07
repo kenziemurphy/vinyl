@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="vis"><svg width="800" height="600"></svg></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
+    <script>
+        var xScale, yScale;
+        var randomColors = d3.scaleOrdinal(d3.schemeAccent);
+        var audioAnalysis
+        var pitchesAcc = []
+        var pitchesAccDefault = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        // d3.json('/audioanalysis_spotify.json').then(function (data) {
+
+        d3.json('/jigsaw.json').then(function (data) {
+            console.log(data);
+
+            audioAnalysis = data;
+
+            var svg = d3.select('.vis svg');
+
+            svg.style("height", window.innerHeight);
+            svg.style("width", window.innerWidth * 1);
+
+            var h = parseInt(svg.style("height"), 10);
+            var w = parseInt(svg.style("width"), 10);
+
+            xScale = d3.scaleLinear()
+                .domain([0, data.track.duration])
+                .range([0, w]);
+
+            yScale = d3.scaleLog()
+                .domain(d3.extent(data.segments, d => d.loudness_start))
+                .range([0, h / 2]);
+
+            noteScale = d3.scaleLog()
+                .domain([0, data.segments[0].pitches.length])
+                .range([0, h]);
+
+            var bars = svg.selectAll('rect.loudness')
+                .data(data.segments)
+                .enter()
+                .append('rect')
+                .attr('class', 'loudness')
+                .attr('x', (d, i) => xScale(d.start))
+                .attr('y', d => (h / 2 - yScale(d.loudness_start)) / 2)
+                .attr('height', d => yScale(d.loudness_start))
+                .attr('width', d => xScale(d.duration))
+                .attr('fill', '#111111');
+
+            var sections = svg.selectAll('rect.section')
+                .data(data.sections)
+                .enter()
+                .append('rect')
+                .attr('class', 'section')
+                .attr('x', (d, i) => xScale(d.start))
+                // .attr('y', d => (h - yScale(d.loudness_start)) / 2)
+                .attr('height', h / 2)
+                .attr('width', d => xScale(d.duration))
+                .attr('opacity', 0.5)
+                .attr('fill', (d, i) => randomColors(i));
+
+            
+            var segments = svg.selectAll('g.segment')
+                .data(data.segments)
+                .enter()
+                .append('g')
+                .attr('class', 'segment')
+                .attr('transform', (d, i) => `translate(${xScale(d.start)}, ${h / 2}) scale(${xScale(d.duration)}, 1)`);
+            
+            var colorScale = d3.scaleSequential(d3.interpolateInferno)
+                .domain([0, 1])
+
+            var nPitches = data.segments[0].pitches.length;
+            var pitches = segments.selectAll('rect.pitch')
+                .data(d => d.pitches)
+                .enter()
+                .append('rect')
+                .attr('class', 'pitch')
+                .attr('height', h / 2 / nPitches)
+                .attr('y', (d, i) => (nPitches - i - 1) * h / 2 / nPitches)
+                .attr('width', 1)
+                // .attr('opacity', 0.2)
+                .attr('fill', d => colorScale(d))
+                // .attr('stroke', '#ffffff')
+                // .attr("stroke-width", 2)
+
+            // var beats = svg.selectAll('line.beats')
+            //     .data(data.beats)
+            //     .enter()
+            //     .append('line')
+            //     .attr('class', 'beats')
+            //     .attr('x1', d => xScale(d.start))
+            //     .attr('x2', d => xScale(d.start))
+            //     .attr('y1', 0)
+            //     .attr('y2', h)
+            //     .attr('stroke-width', 1)
+            //     .attr('stroke', '#ff0000')
+            //     .attr('opacity', 0.4)
+
+            // var bars = svg.selectAll('line.bars')
+            //     .data(data.bars)
+            //     .enter()
+            //     .append('line')
+            //     .attr('class', 'bars')
+            //     .attr('x1', d => xScale(d.start))
+            //     .attr('x2', d => xScale(d.start))
+            //     .attr('y1', 0)
+            //     .attr('y2', h)
+            //     .attr('stroke-width', 3)
+            //     .attr('stroke', '#ffffff')
+
+            var currentSection = 0
+            pitchesAcc.push({
+                start: data.sections[0].start,
+                pitches: pitchesAccDefault.slice(0)
+            });
+            for (var i in data.segments) {
+                // console.log(i, data.segments.length, currentSection, data.sections.length, data.segments[i].start, data.sections[currentSection + 1].start)
+                if (data.sections.length - 1 > currentSection &&
+                    data.segments[i].start > data.sections[currentSection + 1].start) {
+                    pitchesAcc.push({
+                        start: data.sections[currentSection + 1].start,
+                        pitches: pitchesAccDefault.slice(0)
+                    });
+                    currentSection++;
+                }
+
+                for (var j in data.segments[i].pitches) {
+                    pitchesAcc[currentSection].pitches[j] += data.segments[i].pitches[j] * data.segments[i].duration * 2;
+                }
+            }
+
+            console.log(pitchesAcc);
+
+            var pianoColor = d3.scaleOrdinal() // D3 Version 4
+                .domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+                .range(["#eeeeee", "#666666", "#eeeeee", "#666666", "#eeeeee", "#eeeeee", "#666666", "#eeeeee", "#666666", "#eeeeee", "#666666", "#eeeeee"]);
+
+            // var pitchAccG = svg.selectAll('g.pitchacc')
+            //     .data(pitchesAcc)
+            //     .enter()
+            //     .append('g')
+            //     .attr('class', 'pitchacc')
+            //     .attr('transform', (d, i) => `translate(${xScale(d.start)}, 0)`);
+
+            // var pitchAcc = pitchAccG.selectAll('rect.pitchacc')
+            //     .data(d => d.pitches)
+            //     .enter()
+            //     .append('rect')
+            //     .attr('class', 'pitchacc')
+            //     .attr('x', (d, i) => i * 5)
+            //     .attr('y', d => h/2 - d * 5)
+            //     .attr('height', d => d * 5)
+            //     .attr('width', 5)
+            //     .attr('opacity', 1)
+            //     .attr('fill', (d, i) => pianoColor(i))
+            //     .attr('stroke', '#000000');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #222222;
+            overflow: hidden;
+        }
+
+        .pulse:hover {
+            animation: pulse;
+            animation-iteration-count: infinite;
+        }
+
+        .song .song-label {
+            opacity: 0;
+            text-anchor: middle;
+            z-index: 100;
+        }
+
+        .song:hover .song-label {
+            opacity: 1;
+        }
+
+        .label {
+            text-anchor: middle;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            1% {
+                transform: scale(1.2);
+            }
+            80% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="vis"><svg width="800" height="600"></svg></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
+    <script>
+        var radialAxisAttr = 'tempo';
+        var radiusAttr = 'popularity';
+
+        function angleDistanceToXy (angle, distance) {
+            return [
+                Math.cos(angle) * distance,
+                Math.sin(angle) * distance
+            ]
+        }
+
+        var xScale, yScale;
+        var randomColors = d3.scaleOrdinal(d3.schemeAccent);
+        var audioAnalysis
+        var pitchesAcc = []
+        var pitchesAccDefault = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
+        // d3.json('/audioanalysis_spotify.json').then(function (data) {
+
+        Promise.all([
+            d3.json('../../data/Spotify.json'),
+            d3.json('../../data/Spotify_trackinfo.json'),
+        ]).then(function (files) {
+            console.log(files)
+
+            files = files[0].concat(files[1].tracks);
+            var data = d3.nest()
+                .key(d => d.uri)
+                .entries(files);
+            data = data.map(function (d) {
+                console.log(d)
+                return {...d.values[0], ...d.values[1]};
+            })
+            console.log(data);
+
+            audioAnalysis = data;
+
+            var svg = d3.select('.vis svg');
+
+            svg.style("height", window.innerHeight);
+            svg.style("width", window.innerWidth);
+
+            var h = parseInt(svg.style("height"), 10);
+            var w = parseInt(svg.style("width"), 10);
+
+            var nSections = 24;
+            var angleTilt = Math.PI * 2 / nSections / 2;
+            var angleScale = d3.scaleLinear()
+                .domain([0, 24])
+                .range([angleTilt, Math.PI * 2 + angleTilt]);
+
+            var distanceScale = d3.scaleLinear()
+                .domain(d3.extent(data, d => d[radialAxisAttr]))
+                .range([h/6, h / 2 - 50]);
+
+            var radiusScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([2.5, 20]);
+
+            var radialGridInterval = d3.range(
+                d3.min(data, d => d[radialAxisAttr]), 
+                d3.max(data, d => d[radialAxisAttr]), 
+                20);
+
+            var angularGridInterval = d3.range(0, 24, 1);
+
+            var radialGrid = svg.selectAll('circle.grid')
+                .data(radialGridInterval)
+                .enter()
+                .append('circle')
+                .attr('class', 'grid')
+                .attr('cx', d => w / 2)
+                .attr('cy', d => h / 2)
+                .attr('r', d => distanceScale(d))
+                .attr('fill', '')
+                .attr('fill-opacity', '0')
+                .attr('stroke', '#444444')
+
+            var maxTempo = d3.max(data, d => d[radialAxisAttr])
+            var minTempo = d3.min(data, d => d[radialAxisAttr])
+            var angleGrid = svg.selectAll('line.grid')
+                .data(angularGridInterval)
+                .enter()
+                .append('line')
+                .attr('class', 'grid')
+                .attr('x1', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(minTempo))[0])
+                .attr('y1', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(minTempo))[1])
+                .attr('x2', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo))[0])
+                .attr('y2', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo))[1])
+                .attr('fill', '')
+                .attr('fill-opacity', '0')
+                .attr('stroke', '#333333')
+
+            var songG = svg.selectAll('g.song')
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('class', 'song')
+                .attr('transform', function (d) {
+                    let coord = angleDistanceToXy(angleScale(d.key + (d.mode ? 0 : 12)), distanceScale(d[radialAxisAttr]));
+                    let x = w / 2 + coord[0];
+                    let y = h / 2 + coord[1];
+                    return `translate(${x}, ${y})`
+                });
+
+            var dots = songG
+                .append('circle')
+                .attr('class', 'pulse')
+                .attr('cx', 0)
+                .attr('cy', 0)
+                .attr('r', d => radiusScale(d[radiusAttr]))
+                .attr('stroke', d => d.mode ? '#00ffff' : '#ffff00')
+                .attr('stroke-width', 5)
+                .attr('fill-opacity', '0.4')
+                .style('animation-duration', d => `${60 / d.tempo}s`);
+
+            var songLabels = songG
+                .append('text')
+                .text(d => `${d.artists ? d.artists.map(a => a.name) : 'Unknown'} - ${d.name}`)
+                .attr('class', 'song-label')
+                .attr('x', 0)
+                .attr('y', -30)
+                .attr('fill', d => '#ffffff')
+                
+            var scaleKeyMode = d3.scaleOrdinal()
+                .domain(d3.range(0, 24, 1))
+                .range([
+                    'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm',
+                    'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
+                    ])
+
+            var keyLabel = svg.selectAll('text.key.label')
+                .data(d3.range(0, 24, 1))
+                .enter()
+                .append('text')
+                .attr('class', 'key label')
+                .text(d => scaleKeyMode(d))
+                .attr('x', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo) + 20)[0])
+                .attr('y', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo) + 20)[1])
+                .attr('fill', '#ffffff')
+
+            var tempoLabel = svg.selectAll('text.tempo.label')
+                .data(radialGridInterval)
+                .enter()
+                .append('text')
+                .attr('class', 'tempo label')
+                .text(d => Math.round(d))
+                .attr('x', d => w / 2)
+                .attr('y', d => h / 2 - distanceScale(d))
+                .attr('fill', '#ffffff')
+        });
+    </script>
+</body>
+</html>
