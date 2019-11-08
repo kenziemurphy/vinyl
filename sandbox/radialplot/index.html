@@ -180,7 +180,6 @@
             // d3.json('../../data/Spotify_trackinfo.json'),
             // d3.json('slotmachine.json'),
             // d3.json('slotmachine_trackinfo.json'),
-
             d3.json('radiohead.json'),
             d3.json('radiohead_trackinfo.json'),
         ]).then(function (loadedData) {
@@ -274,16 +273,16 @@
                 .attr('y', d => angleDistanceToXy(SCALE_ANGLE(d), MAX_RADIAL_DIST + 20)[1])
                 .attr('fill', '#ffffff')
 
-            var radialLabel = gridG.selectAll('text.tempo.label')
+            var radialLabelTop = gridG.selectAll('text.tempo.label.top')
                 .data(radialGridInterval)
                 .enter()
                 .append('text')
-                .attr('class', 'tempo label')
+                .attr('class', 'tempo label top')
                 .text(d => round(d, 1))
                 .attr('y', d => -SCALE_RADIAL(d))
                 .attr('fill', '#ffffff')
 
-            var radialTextLabelInner = gridG.append('text')
+            var radialTextLabelInnerTop = gridG.append('text')
                 .attr('class', 'tempo label')
                 .text(RADIAL_MAPPING.toUpperCase())
                 .attr('y', -MIN_RADIAL_DIST + 30)
@@ -291,10 +290,35 @@
                 .style('opacity', 0.7)
                 .attr('fill', '#ffffff')
 
-            var radialTextLabelOuter = gridG.append('text')
+            var radialTextLabelOuterTop = gridG.append('text')
                 .attr('class', 'tempo label')
                 .text(RADIAL_MAPPING.toUpperCase())
                 .attr('y', -MAX_RADIAL_DIST - 30)
+                .attr('font-weight', 'bold')
+                .style('opacity', 0.7)
+                .attr('fill', '#ffffff')
+
+            var radialLabelBottom = gridG.selectAll('text.tempo.label.bottom')
+                .data(radialGridInterval)
+                .enter()
+                .append('text')
+                .attr('class', 'tempo label bottom')
+                .text(d => round(d, 1))
+                .attr('y', d => SCALE_RADIAL(d))
+                .attr('fill', '#ffffff')
+
+            var radialTextLabelInnerBottom = gridG.append('text')
+                .attr('class', 'tempo label')
+                .text(RADIAL_MAPPING.toUpperCase())
+                .attr('y', MIN_RADIAL_DIST - 30)
+                .attr('font-weight', 'bold')
+                .style('opacity', 0.7)
+                .attr('fill', '#ffffff')
+
+            var radialTextLabelOuterBottom = gridG.append('text')
+                .attr('class', 'tempo label')
+                .text(RADIAL_MAPPING.toUpperCase())
+                .attr('y', MAX_RADIAL_DIST + 30)
                 .attr('font-weight', 'bold')
                 .style('opacity', 0.7)
                 .attr('fill', '#ffffff')
@@ -362,6 +386,22 @@
                     return `translate(${x}, ${y})`
                 });
 
+
+            var defs = songG.append('svg:defs');
+            
+            defs.append('svg:pattern')
+                .attr('id', d => `image${d.id}`)
+                .attr("width", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .attr("height", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .attr("x", d => -SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .attr("y", d => -SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .attr("patternUnits", "userSpaceOnUse")
+                .append("svg:image")
+                .attr("xlink:href", d => d.album.images[2].url)
+                // .attr("xlink:href", 'https://upload.wikimedia.org/wikipedia/en/8/8b/Radiohead.bends.albumart.jpg')
+                .attr("width", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .attr("height", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]));
+
             var dots = songG
                 .append('circle')
                 .attr('class', 'dot pulse')
@@ -370,10 +410,15 @@
                 .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
                 .style('animation-duration', d => `${60 / d.tempo}s`)
                 .style('stroke-opacity', 1)
-                .style('stroke-width', 2)
-                .style('fill-opacity', 0.3)
+                .style('stroke-width', 2.5)
+                .style('fill-opacity', 1)
+                .style('fill', '#fff')
+                .style('fill', d => `url(#image${d.id})`)
                 // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].name))
                 // .style('fill', d => SCALE_DOT_COLOR(d.artists[0].name));
+
+            
+
 
             var songLabels = songG
                 .append('text')
