@@ -8,13 +8,22 @@
     <style>
         body {
             margin: 0;
-            background-color: #222222;
+            background-color: #141517;
             overflow: hidden;
+            font-family: Helvetica, sans-serif
         }
 
         .pulse:hover {
             animation: pulse;
             animation-iteration-count: infinite;
+        }
+
+        .song .dot {
+            stroke: #fff;
+            fill: #fff;
+            stroke-width: 5;
+            stroke-opacity: 0.6;
+            fill-opacity: 0;
         }
 
         .song .song-label {
@@ -27,8 +36,37 @@
             opacity: 1;
         }
 
+        text {
+            font-size: 10pt;
+        }
+
         .label {
             text-anchor: middle;
+            alignment-baseline: central;
+            opacity: 0.3;
+        }
+
+        .label-align-bottom {
+            text-anchor: middle;
+            alignment-baseline: bottom;
+        }
+
+        .label-align-top {
+            text-anchor: middle;
+            alignment-baseline: top;
+        }
+
+        .grid-line {
+            fill-opacity: 0;
+            stroke-opacity: 0.2;
+            stroke: #ffffff;
+        }
+
+        .grid-line-clear {
+            fill-opacity: 0;
+            stroke-opacity: 1;
+            stroke-width: 3;
+            stroke: #ffffff;
         }
 
         @keyframes pulse {
@@ -51,121 +89,291 @@
     <div class="vis"><svg width="800" height="600"></svg></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
     <script>
-        var radialAxisAttr = 'tempo';
-        var radiusAttr = 'popularity';
+        // config
+        const RADIAL_MAPPING = 'tempo';
+        const DOT_RADIUS_MAPPING = 'popularity';
 
-        function angleDistanceToXy (angle, distance) {
-            return [
-                Math.cos(angle) * distance,
-                Math.sin(angle) * distance
-            ]
+        const NUM_RADIAL_GRID_LINES = 5;
+        const ALL_KEYS = [
+            'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
+            'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
+        ];
+        const NUM_KEYS = ALL_KEYS.length;
+
+        // const ALL_KEYS = [
+        //     'Cm', 'C', 'C♯m/D♭m', 'C♯/D♭', 'Dm', 'D', 'D♯m/E♭m', 'Dm/E♭', 'Em', 'E', 'Fm', 'F', 'F♯m/G♭m', 'F♯/G♭', 'Gm', 'G', 'G♯m/A♭m', 'G♯/A♭', 'Am', 'A', 'A♯m/B♭m', 'A♯/B♭', 'Bm', 'B'
+        // ];
+  
+        // computed consts
+        const ANGLE_TILT = Math.PI * 2 / NUM_KEYS / 2;    // can't draw the "0" upright, we want the major/minor line to be completely horizontal
+        const ALL_KEYS_RANGE = d3.range(0, NUM_KEYS, 1);
+        const SCALE_ANGLE = d3.scaleOrdinal()
+            .domain(ALL_KEYS)
+            .range(d3.range(
+                ANGLE_TILT, 
+                Math.PI * 2 + ANGLE_TILT,
+                Math.PI * 2 / ALL_KEYS.length
+            ));
+
+        // screen-dependent computed consts, will update when screen size is changed for responsive vis
+        var W, H;
+        var MIN_RADIAL_DIST;
+        var MAX_RADIAL_DIST;
+
+        function recomputeScreenConsts() {
+            H = parseInt(svg.style("height"), 10);
+            W = parseInt(svg.style("width"), 10);
+            
+            MIN_RADIAL_DIST = Math.min(W, H) / 6;
+            MAX_RADIAL_DIST = Math.min(W, H) / 2 - 70;
         }
 
-        var xScale, yScale;
-        var randomColors = d3.scaleOrdinal(d3.schemeAccent);
-        var audioAnalysis
-        var pitchesAcc = []
-        var pitchesAccDefault = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        // data-dependent computed consts, will update when data is loaded
+        var SCALE_RADIAL = x => x;
+        var SCALE_DOT_RADIUS = x => x;
+        var SCALE_DOT_COLOR = x => x;
+
+        function recomputeDataConsts () {
+            SCALE_RADIAL = d3.scaleLinear()
+                .domain(d3.extent(data, d => d[RADIAL_MAPPING]))
+                // .domain([0, 1])
+                .range([MIN_RADIAL_DIST, MAX_RADIAL_DIST]);
+
+            console.log(d3.extent(data, d => d[DOT_RADIUS_MAPPING]));
+            SCALE_DOT_RADIUS = d3.scalePow()
+                .exponent(1)
+                .domain(d3.extent(data, d => d[DOT_RADIUS_MAPPING]))
+                // .domain([0, 100])
+                .range([2, 25]);
+
+            function onlyUnique(value, index, self) { 
+                return self.indexOf(value) === index;
+            }
+            SCALE_DOT_COLOR = d3.scaleOrdinal(d3.schemeCategory10)
+                .domain(data.map(x => x.album.name).filter(onlyUnique));
+        }
 
 
-        // d3.json('/audioanalysis_spotify.json').then(function (data) {
 
+        // core global stuffs
+        var data = [];
+        var svg;
+        var fileReady = false;
+
+        initialize();
+
+        window.addEventListener("resize", function () {
+            initialize();
+            
+            if (fileReady) {
+                d3.selectAll("svg > *").remove();
+                draw(data);
+            }
+        });
+
+        d3.json('temp.json').then(function (data) {
+            console.log(data)
+            console.log(data.items.map(d=>d.uri.replace('spotify:track:', '')).join(','));
+        });
         Promise.all([
-            d3.json('../../data/Spotify.json'),
-            d3.json('../../data/Spotify_trackinfo.json'),
-        ]).then(function (files) {
-            console.log(files)
+            // d3.json('../../data/Spotify.json'),
+            // d3.json('../../data/Spotify_trackinfo.json'),
+            // d3.json('slotmachine.json'),
+            // d3.json('slotmachine_trackinfo.json'),
 
-            files = files[0].concat(files[1].tracks);
-            var data = d3.nest()
-                .key(d => d.uri)
-                .entries(files);
-            data = data.map(function (d) {
-                console.log(d)
-                return {...d.values[0], ...d.values[1]};
-            })
+            d3.json('radiohead.json'),
+            d3.json('radiohead_trackinfo.json'),
+        ]).then(function (loadedData) {
+            data = preprocessData(loadedData); 
+            fileReady = true;
             console.log(data);
 
-            audioAnalysis = data;
+            recomputeDataConsts();
+            
+            draw(data);
+        });
 
-            var svg = d3.select('.vis svg');
+
+        
+        function initialize () {
+            svg = d3.select('.vis svg');
 
             svg.style("height", window.innerHeight);
             svg.style("width", window.innerWidth);
 
-            var h = parseInt(svg.style("height"), 10);
-            var w = parseInt(svg.style("width"), 10);
+            recomputeScreenConsts();
+            if (fileReady) {
+                recomputeDataConsts();
+            }
+        }
 
-            var nSections = 24;
-            var angleTilt = Math.PI * 2 / nSections / 2;
-            var angleScale = d3.scaleLinear()
-                .domain([0, 24])
-                .range([angleTilt, Math.PI * 2 + angleTilt]);
+        function draw (data) {
+            drawGrid();
+            drawDataPoints();
+        }
 
-            var distanceScale = d3.scaleLinear()
-                .domain(d3.extent(data, d => d[radialAxisAttr]))
-                .range([h/6, h / 2 - 50]);
+        
 
-            var radiusScale = d3.scaleLinear()
-                .domain([0, 100])
-                .range([2.5, 20]);
 
-            var radialGridInterval = d3.range(
-                d3.min(data, d => d[radialAxisAttr]), 
-                d3.max(data, d => d[radialAxisAttr]), 
-                20);
+        function preprocessData (files) {
+            // outer join
+            // var filesConcat = files[0].concat(files[1].tracks);
+            // var data = d3.nest()
+            //     .key(d => d.uri)
+            //     .entries(filesConcat);
+            // data = data.map(function (d) {
+            //     return {...d.values[0], ...d.values[1]};
+            // })
+            // return data;
 
-            var angularGridInterval = d3.range(0, 24, 1);
+            // inner join
+            return arrayJoin(files[0], files[1].tracks, 'uri');
 
-            var radialGrid = svg.selectAll('circle.grid')
+        }
+
+        function drawGrid () {
+            var minRadialData = d3.min(data, d => d[RADIAL_MAPPING]);
+            var maxRadialData = d3.max(data, d => d[RADIAL_MAPPING]); 
+            var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
+            var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
+            var angularGridInterval = d3.range(0, NUM_KEYS, 1);
+
+            radialGridInterval.push(maxRadialData);
+
+            var gridG = svg.append('g')
+                .attr('class', 'grid')
+                .attr('transform', `translate(${W / 2}, ${H / 2})`);
+
+            var radialGrid = gridG.selectAll('circle.grid-line')
                 .data(radialGridInterval)
                 .enter()
                 .append('circle')
-                .attr('class', 'grid')
-                .attr('cx', d => w / 2)
-                .attr('cy', d => h / 2)
-                .attr('r', d => distanceScale(d))
-                .attr('fill', '')
+                .attr('class', 'grid-line')
+                .attr('r', d => SCALE_RADIAL(d))
                 .attr('fill-opacity', '0')
-                .attr('stroke', '#444444')
+                .attr('stroke-opacity', '0.2')
+                .attr('stroke', '#ffffff')
 
-            var maxTempo = d3.max(data, d => d[radialAxisAttr])
-            var minTempo = d3.min(data, d => d[radialAxisAttr])
-            var angleGrid = svg.selectAll('line.grid')
-                .data(angularGridInterval)
+            var angleGrid = gridG.selectAll('line.grid-line')
+                .data(ALL_KEYS)
                 .enter()
                 .append('line')
-                .attr('class', 'grid')
-                .attr('x1', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(minTempo))[0])
-                .attr('y1', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(minTempo))[1])
-                .attr('x2', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo))[0])
-                .attr('y2', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo))[1])
-                .attr('fill', '')
-                .attr('fill-opacity', '0')
-                .attr('stroke', '#333333')
+                .attr('class', 'grid-line')
+                .attr('x1', d => angleDistanceToXy(SCALE_ANGLE(d), MIN_RADIAL_DIST)[0])
+                .attr('y1', d => angleDistanceToXy(SCALE_ANGLE(d), MIN_RADIAL_DIST)[1])
+                .attr('x2', d => angleDistanceToXy(SCALE_ANGLE(d), MAX_RADIAL_DIST)[0])
+                .attr('y2', d => angleDistanceToXy(SCALE_ANGLE(d), MAX_RADIAL_DIST)[1])
 
+            var angleLabel = gridG.selectAll('text.key.label')
+                .data(ALL_KEYS)
+                .enter()
+                .append('text')
+                .attr('class', 'key label')
+                .text(d => d)
+                .attr('x', d => angleDistanceToXy(SCALE_ANGLE(d), MAX_RADIAL_DIST + 20)[0])
+                .attr('y', d => angleDistanceToXy(SCALE_ANGLE(d), MAX_RADIAL_DIST + 20)[1])
+                .attr('fill', '#ffffff')
+
+            var radialLabel = gridG.selectAll('text.tempo.label')
+                .data(radialGridInterval)
+                .enter()
+                .append('text')
+                .attr('class', 'tempo label')
+                .text(d => round(d, 1))
+                .attr('y', d => -SCALE_RADIAL(d))
+                .attr('fill', '#ffffff')
+
+            var radialTextLabelInner = gridG.append('text')
+                .attr('class', 'tempo label')
+                .text(RADIAL_MAPPING.toUpperCase())
+                .attr('y', -MIN_RADIAL_DIST + 30)
+                .attr('font-weight', 'bold')
+                .style('opacity', 0.7)
+                .attr('fill', '#ffffff')
+
+            var radialTextLabelOuter = gridG.append('text')
+                .attr('class', 'tempo label')
+                .text(RADIAL_MAPPING.toUpperCase())
+                .attr('y', -MAX_RADIAL_DIST - 30)
+                .attr('font-weight', 'bold')
+                .style('opacity', 0.7)
+                .attr('fill', '#ffffff')
+
+            // major/minor line
+            // FIXME hardcoding
+            var majorMinorLabelOffset = 60;
+            var majorMinorLineLeft = gridG.append('line')
+                .attr('class', 'grid-line-clear')
+                .attr('x1', -MIN_RADIAL_DIST)
+                .attr('y1', 0)
+                .attr('x2', -MAX_RADIAL_DIST - majorMinorLabelOffset)
+                .attr('y2', 0)
+
+            var majorMinorLinRight = gridG.append('line')
+                .attr('class', 'grid-line-clear')
+                .attr('x1', MIN_RADIAL_DIST)
+                .attr('y1', 0)
+                .attr('x2', MAX_RADIAL_DIST + majorMinorLabelOffset)
+                .attr('y2', 0)
+
+            var majorLabelLeft = gridG.append('text')
+                .text('MAJOR')
+                .attr('fill', '#ffffff')
+                .attr('x', -MAX_RADIAL_DIST - majorMinorLabelOffset)
+                .attr('y', -7)
+                .attr('aligment-baseline', 'baseline')
+                .attr('text-anchor', 'start')
+            
+            var minorLabelLeft = gridG.append('text')
+                .text('MINOR')
+                .attr('fill', '#ffffff')
+                .attr('x', -MAX_RADIAL_DIST - majorMinorLabelOffset)
+                .attr('y', 7)
+                .attr('alignment-baseline', 'hanging')
+                .attr('text-anchor', 'start')
+            
+            var majorLabelRight = gridG.append('text')
+                .text('MAJOR')
+                .attr('fill', '#ffffff')
+                .attr('x', MAX_RADIAL_DIST + majorMinorLabelOffset)
+                .attr('y', -7)
+                .attr('aligment-baseline', 'baseline')
+                .attr('text-anchor', 'end')
+            
+            var minorLabelRight = gridG.append('text')
+                .text('MINOR')
+                .attr('fill', '#ffffff')
+                .attr('x', MAX_RADIAL_DIST + majorMinorLabelOffset)
+                .attr('y', 7)
+                .attr('alignment-baseline', 'hanging')
+                .attr('text-anchor', 'end')
+        }
+
+        function drawDataPoints () {
             var songG = svg.selectAll('g.song')
                 .data(data)
                 .enter()
                 .append('g')
                 .attr('class', 'song')
                 .attr('transform', function (d) {
-                    let coord = angleDistanceToXy(angleScale(d.key + (d.mode ? 0 : 12)), distanceScale(d[radialAxisAttr]));
-                    let x = w / 2 + coord[0];
-                    let y = h / 2 + coord[1];
+                    let coord = angleDistanceToXy(SCALE_ANGLE(getKeyFromKeyId(d.key, d.mode)), SCALE_RADIAL(d[RADIAL_MAPPING]));
+                    let x = W / 2 + coord[0];
+                    let y = H / 2 + coord[1];
                     return `translate(${x}, ${y})`
                 });
 
             var dots = songG
                 .append('circle')
-                .attr('class', 'pulse')
+                .attr('class', 'dot pulse')
                 .attr('cx', 0)
                 .attr('cy', 0)
-                .attr('r', d => radiusScale(d[radiusAttr]))
-                .attr('stroke', d => d.mode ? '#00ffff' : '#ffff00')
-                .attr('stroke-width', 5)
-                .attr('fill-opacity', '0.4')
-                .style('animation-duration', d => `${60 / d.tempo}s`);
+                .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                .style('animation-duration', d => `${60 / d.tempo}s`)
+                .style('stroke-opacity', 1)
+                .style('stroke-width', 2)
+                .style('fill-opacity', 0.3)
+                // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].name))
+                // .style('fill', d => SCALE_DOT_COLOR(d.artists[0].name));
 
             var songLabels = songG
                 .append('text')
@@ -174,34 +382,47 @@
                 .attr('x', 0)
                 .attr('y', -30)
                 .attr('fill', d => '#ffffff')
-                
-            var scaleKeyMode = d3.scaleOrdinal()
-                .domain(d3.range(0, 24, 1))
-                .range([
-                    'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm',
-                    'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
-                    ])
+        }
 
-            var keyLabel = svg.selectAll('text.key.label')
-                .data(d3.range(0, 24, 1))
-                .enter()
-                .append('text')
-                .attr('class', 'key label')
-                .text(d => scaleKeyMode(d))
-                .attr('x', d => w / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo) + 20)[0])
-                .attr('y', d => h / 2 + angleDistanceToXy(angleScale(d), distanceScale(maxTempo) + 20)[1])
-                .attr('fill', '#ffffff')
 
-            var tempoLabel = svg.selectAll('text.tempo.label')
-                .data(radialGridInterval)
-                .enter()
-                .append('text')
-                .attr('class', 'tempo label')
-                .text(d => Math.round(d))
-                .attr('x', d => w / 2)
-                .attr('y', d => h / 2 - distanceScale(d))
-                .attr('fill', '#ffffff')
-        });
+
+        // helpers
+
+        function angleDistanceToXy (angle, distance) {
+            return [
+                Math.cos(angle) * distance,
+                Math.sin(angle) * distance
+            ]
+        }
+
+        function getKeyFromKeyId (key, mode = false) {
+            if (mode === false) {
+                mode = Math.ceil(key / 12);
+                key = key % 12;
+            }
+
+            return ALL_KEYS[key + mode * 12];
+            // return ALL_KEYS[key * 2 + mode];
+        }
+
+        function arrayJoin (a, b, key) {
+            var bKeys = b.map(y => y[key]);
+            var abJoined = a.map(function (x) {
+                var bIndex = bKeys.indexOf(x[key])
+                if (bIndex >= 0) {
+                    // console.log(x[key], b[bIndex].name);
+                    return {...x, ...b[bIndex]};
+                } else {
+                    return false;
+                }
+            });
+            
+            return abJoined.filter(x => x !== false);
+        }
+
+        function round(value, decimals) {
+           return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+        }
     </script>
 </body>
 </html>

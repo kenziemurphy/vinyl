@@ -1,0 +1,500 @@
+{
+    "href": "https://api.spotify.com/v1/albums/4gmBuVbwCTiPNI0PTSfJaK/tracks?offset=0&limit=50",
+    "items": [
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 209653,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6EL5ukDMVxNULe6PDEFWSz"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6EL5ukDMVxNULe6PDEFWSz",
+        "id": "6EL5ukDMVxNULe6PDEFWSz",
+        "is_local": false,
+        "name": "Give It All To You",
+        "preview_url": "https://p.scdn.co/mp3-preview/45092b180af29b327f5fecb390249e07f9cbdca9?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:6EL5ukDMVxNULe6PDEFWSz"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 210866,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/32QdRLPNwh3drDn6yt5Zc2"
+        },
+        "href": "https://api.spotify.com/v1/tracks/32QdRLPNwh3drDn6yt5Zc2",
+        "id": "32QdRLPNwh3drDn6yt5Zc2",
+        "is_local": false,
+        "name": "And We Go",
+        "preview_url": "https://p.scdn.co/mp3-preview/3c92c9562da4db142293357933f0e5c3789f51e3?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 2,
+        "type": "track",
+        "uri": "spotify:track:32QdRLPNwh3drDn6yt5Zc2"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 258813,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6bgRcL0UdKqx18EdIQ4aev"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6bgRcL0UdKqx18EdIQ4aev",
+        "id": "6bgRcL0UdKqx18EdIQ4aev",
+        "is_local": false,
+        "name": "Sky Burning Stars",
+        "preview_url": "https://p.scdn.co/mp3-preview/342d6b1507bd4b6d61f1c8d91ebd7a6fd6e6f52c?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:6bgRcL0UdKqx18EdIQ4aev"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 205520,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1vVMai4JDtUtDAGtt9taDj"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1vVMai4JDtUtDAGtt9taDj",
+        "id": "1vVMai4JDtUtDAGtt9taDj",
+        "is_local": false,
+        "name": "Say What You Want",
+        "preview_url": "https://p.scdn.co/mp3-preview/71b2782fa5499d16b5df6da0e3c9ceea285ca9c9?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 4,
+        "type": "track",
+        "uri": "spotify:track:1vVMai4JDtUtDAGtt9taDj"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 239400,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4DJNVeEARMmlpCERFSHkbZ"
+        },
+        "href": "https://api.spotify.com/v1/tracks/4DJNVeEARMmlpCERFSHkbZ",
+        "id": "4DJNVeEARMmlpCERFSHkbZ",
+        "is_local": false,
+        "name": "I Know, I Know",
+        "preview_url": "https://p.scdn.co/mp3-preview/c3d601688d9f0d07417f8a2445e97aa634267fa6?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 5,
+        "type": "track",
+        "uri": "spotify:track:4DJNVeEARMmlpCERFSHkbZ"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 224546,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/2YbbExmcIrmFke3GHlBoW2"
+        },
+        "href": "https://api.spotify.com/v1/tracks/2YbbExmcIrmFke3GHlBoW2",
+        "id": "2YbbExmcIrmFke3GHlBoW2",
+        "is_local": false,
+        "name": "Girl ! Do it again",
+        "preview_url": "https://p.scdn.co/mp3-preview/733773e265221eaa5a442b561a2b6c50786f3a41?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 6,
+        "type": "track",
+        "uri": "spotify:track:2YbbExmcIrmFke3GHlBoW2"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 168573,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4G7bsFH2ERLQT2hp06GrzT"
+        },
+        "href": "https://api.spotify.com/v1/tracks/4G7bsFH2ERLQT2hp06GrzT",
+        "id": "4G7bsFH2ERLQT2hp06GrzT",
+        "is_local": false,
+        "name": "Spin The World",
+        "preview_url": "https://p.scdn.co/mp3-preview/218add6206149a8e2a82259d42f9296f532cfd35?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 7,
+        "type": "track",
+        "uri": "spotify:track:4G7bsFH2ERLQT2hp06GrzT"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 259800,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1jCP0qGtB7fnQlKPo9dqqc"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1jCP0qGtB7fnQlKPo9dqqc",
+        "id": "1jCP0qGtB7fnQlKPo9dqqc",
+        "is_local": false,
+        "name": "The Land of Himmaphan",
+        "preview_url": "https://p.scdn.co/mp3-preview/669a0138f893c11ac77789212ae9aa2fe4da267e?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 8,
+        "type": "track",
+        "uri": "spotify:track:1jCP0qGtB7fnQlKPo9dqqc"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 234560,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3qnGaVG1zjECheR7AM99a4"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3qnGaVG1zjECheR7AM99a4",
+        "id": "3qnGaVG1zjECheR7AM99a4",
+        "is_local": false,
+        "name": "Sweet Bird",
+        "preview_url": "https://p.scdn.co/mp3-preview/868012d5f52edcd473c65e0eeb9682b1ac0223fc?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 9,
+        "type": "track",
+        "uri": "spotify:track:3qnGaVG1zjECheR7AM99a4"
+      },
+      {
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/6TNTFjkJA8PhP16Ds7CZnz"
+            },
+            "href": "https://api.spotify.com/v1/artists/6TNTFjkJA8PhP16Ds7CZnz",
+            "id": "6TNTFjkJA8PhP16Ds7CZnz",
+            "name": "Slot Machine",
+            "type": "artist",
+            "uri": "spotify:artist:6TNTFjkJA8PhP16Ds7CZnz"
+          }
+        ],
+        "available_markets": [
+          "AE",
+          "BH",
+          "EG",
+          "HK",
+          "ID",
+          "IN",
+          "KW",
+          "LB",
+          "MY",
+          "NZ",
+          "OM",
+          "PH",
+          "QA",
+          "SA",
+          "SG",
+          "TH",
+          "TN",
+          "TW",
+          "VN"
+        ],
+        "disc_number": 1,
+        "duration_ms": 232560,
+        "explicit": false,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/00rqZHA8MEKdO6MGkw1Gft"
+        },
+        "href": "https://api.spotify.com/v1/tracks/00rqZHA8MEKdO6MGkw1Gft",
+        "id": "00rqZHA8MEKdO6MGkw1Gft",
+        "is_local": false,
+        "name": "MRT",
+        "preview_url": "https://p.scdn.co/mp3-preview/0b657f9a9d1fcbd25428d863218af5c48097f915?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 10,
+        "type": "track",
+        "uri": "spotify:track:00rqZHA8MEKdO6MGkw1Gft"
+      }
+    ],
+    "limit": 50,
+    "next": null,
+    "offset": 0,
+    "previous": null,
+    "total": 10
+  }
