@@ -19,11 +19,11 @@
         }
 
         .song .dot {
-            stroke: #fff;
             fill: #fff;
-            stroke-width: 5;
-            stroke-opacity: 0.6;
             fill-opacity: 0;
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-opacity: 0.7;
         }
 
         .song .song-label {
@@ -135,8 +135,9 @@
 
         function recomputeDataConsts () {
             SCALE_RADIAL = d3.scaleLinear()
-                .domain(d3.extent(data, d => d[RADIAL_MAPPING]))
+                // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
                 // .domain([0, 1])
+                .domain(d3.extent(data, d => d[RADIAL_MAPPING]))
                 .range([MIN_RADIAL_DIST, MAX_RADIAL_DIST]);
 
             console.log(d3.extent(data, d => d[DOT_RADIUS_MAPPING]));
@@ -145,6 +146,7 @@
                 .domain(d3.extent(data, d => d[DOT_RADIUS_MAPPING]))
                 // .domain([0, 100])
                 .range([2, 25]);
+                // .range([10, 10]);
 
             function onlyUnique(value, index, self) { 
                 return self.indexOf(value) === index;
@@ -231,8 +233,8 @@
         }
 
         function drawGrid () {
-            var minRadialData = d3.min(data, d => d[RADIAL_MAPPING]);
-            var maxRadialData = d3.max(data, d => d[RADIAL_MAPPING]); 
+            var minRadialData = SCALE_RADIAL.domain()[0];
+            var maxRadialData = SCALE_RADIAL.domain()[1]; 
             var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
             var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
             var angularGridInterval = d3.range(0, NUM_KEYS, 1);
@@ -402,22 +404,63 @@
                 .attr("width", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
                 .attr("height", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]));
 
-            var dots = songG
+            // var dots = songG
+            //     .append('circle')
+            //     .attr('class', 'dot pulse')
+            //     .attr('cx', 0)
+            //     .attr('cy', 0)
+            //     .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+            //     .style('animation-duration', d => `${60 / d.tempo}s`)
+            //     .style('stroke-opacity', 1)
+            //     .style('stroke-width', 2.5)
+            //     .style('fill-opacity', 1)
+            //     .style('fill', '#fff')
+            //     .style('fill', d => `url(#image${d.id})`);
+                // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].name))
+                // .style('fill', d => SCALE_DOT_COLOR(d.artists[0].name));
+
+            var polygonPoints = songG
+                .filter(d => d.time_signature > 2)
+                .append('polygon')
+                .attr('class', 'dot pulse')
+                .attr('points', function (d) {
+                    var points = [];
+                    
+                    var n = d.time_signature;
+                    
+                    var theta_offset_radial = SCALE_ANGLE(getKeyFromKeyId(d.key, d.mode));
+                    var theta_offset = 2 * Math.PI / d.time_signature / 2 + Math.PI + theta_offset_radial;
+                    
+                    var size = SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]);
+                    var targetArea = Math.PI * size * size;
+                    var axesLength = Math.sqrt(targetArea / (n * Math.sin(Math.PI / n) * Math.cos(Math.PI / n)));
+
+                    for (var i = 0; i < d.time_signature; i++) {
+                        var theta = i * 2 * Math.PI / d.time_signature;
+
+                        var x = Math.cos(theta + theta_offset) * axesLength;
+                        var y = Math.sin(theta + theta_offset) * axesLength;
+                        points.push([x, y]);
+                    }
+
+                    return points.map(d => `${d[0]},${d[1]}`).join(' ');
+                })
+
+            var circlePoints = songG
+                .filter(d => d.time_signature <= 2)
                 .append('circle')
                 .attr('class', 'dot pulse')
                 .attr('cx', 0)
                 .attr('cy', 0)
                 .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                
+            songG.selectAll('.dot')
                 .style('animation-duration', d => `${60 / d.tempo}s`)
-                .style('stroke-opacity', 1)
-                .style('stroke-width', 2.5)
+                // .style('stroke-opacity', 1)
+                // .style('stroke-width', 2.5)
                 .style('fill-opacity', 1)
                 .style('fill', '#fff')
                 .style('fill', d => `url(#image${d.id})`)
-                // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].name))
-                // .style('fill', d => SCALE_DOT_COLOR(d.artists[0].name));
-
-            
 
 
             var songLabels = songG
