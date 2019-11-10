@@ -19,11 +19,11 @@
         }
 
         .song .dot {
-            stroke: #fff;
             fill: #fff;
-            stroke-width: 5;
-            stroke-opacity: 0.6;
             fill-opacity: 0;
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-opacity: 0.7;
         }
 
         .song .song-label {
@@ -83,6 +83,72 @@
                 transform: scale(1);
             }
         }
+
+        .rotate-anim {animation-iteration-count: infinite !important;}
+        .rotate-anim:hover.rotate-1 { animation: rotate-1; }
+        .rotate-anim:hover.rotate-2 { animation: rotate-2; }
+        .rotate-anim:hover.rotate-3 { animation: rotate-3; }
+        .rotate-anim:hover.rotate-4 { animation: rotate-4; }
+        .rotate-anim:hover.rotate-5 { animation: rotate-5; }
+        .rotate-anim:hover.rotate-6 { animation: rotate-6; }
+        .rotate-anim:hover.rotate-7 { animation: rotate-7; }
+        .rotate-anim:hover.rotate-8 { animation: rotate-8; }
+
+        @keyframes rotate-1 {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-2 {
+            0%   { transform: rotate(0deg); }
+            50%  { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-3 {
+            0%     { transform: rotate(0deg); }
+            33.33% { transform: rotate(120deg); }
+            66.67% { transform: rotate(240deg); }
+            100%   { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-4 {
+            0%      { transform: rotate(0deg); }
+            25%     { transform: rotate(90deg); }
+            50%     { transform: rotate(180deg); }
+            75%     { transform: rotate(270deg); }
+            100%    { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-5 {
+            0%      { transform: rotate(0deg); }
+            20%     { transform: rotate(72deg); }
+            40%     { transform: rotate(144deg); }
+            60%     { transform: rotate(216deg); }
+            80%     { transform: rotate(288deg); }
+            100%    { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-6 {
+            0%     { transform: rotate(0deg); }
+            16.67% { transform: rotate(60deg); }
+            33.33% { transform: rotate(120deg); }
+            50%    { transform: rotate(180deg); }
+            66.67% { transform: rotate(240deg); }
+            83.33% { transform: rotate(300deg); }
+            100%   { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-7 {
+            0%     { transform: rotate(0deg); }
+            14.29% { transform: rotate(51.43deg); }
+            28.57% { transform: rotate(102.86deg); }
+            42.86% { transform: rotate(154.29deg); }
+            57.14% { transform: rotate(205.71deg); }
+            71.43% { transform: rotate(257.14deg); }
+            85.71% { transform: rotate(308.57deg); }
+            100%   { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -90,21 +156,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
     <script>
         // config
+        const TIME_SIG_AS_POLYGON = true;
+        const ENABLE_FORCE = true;
         const RADIAL_MAPPING = 'tempo';
         const DOT_RADIUS_MAPPING = 'popularity';
 
         const NUM_RADIAL_GRID_LINES = 5;
+
+        // facts
         const ALL_KEYS = [
             'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
             'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
         ];
-        const NUM_KEYS = ALL_KEYS.length;
-
-        // const ALL_KEYS = [
-        //     'Cm', 'C', 'C♯m/D♭m', 'C♯/D♭', 'Dm', 'D', 'D♯m/E♭m', 'Dm/E♭', 'Em', 'E', 'Fm', 'F', 'F♯m/G♭m', 'F♯/G♭', 'Gm', 'G', 'G♯m/A♭m', 'G♯/A♭', 'Am', 'A', 'A♯m/B♭m', 'A♯/B♭', 'Bm', 'B'
-        // ];
   
         // computed consts
+        const NUM_KEYS = ALL_KEYS.length;
         const ANGLE_TILT = Math.PI * 2 / NUM_KEYS / 2;    // can't draw the "0" upright, we want the major/minor line to be completely horizontal
         const ALL_KEYS_RANGE = d3.range(0, NUM_KEYS, 1);
         const SCALE_ANGLE = d3.scaleOrdinal()
@@ -135,21 +201,25 @@
 
         function recomputeDataConsts () {
             SCALE_RADIAL = d3.scaleLinear()
-                .domain(d3.extent(data, d => d[RADIAL_MAPPING]))
+                // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
                 // .domain([0, 1])
+                .domain(d3.extent(data, d => d[RADIAL_MAPPING]))
                 .range([MIN_RADIAL_DIST, MAX_RADIAL_DIST]);
 
             console.log(d3.extent(data, d => d[DOT_RADIUS_MAPPING]));
+
+            // TODO: how to make billboard data look good? dynamic sizing?
             SCALE_DOT_RADIUS = d3.scalePow()
-                .exponent(1)
+                .exponent(0.5)
                 .domain(d3.extent(data, d => d[DOT_RADIUS_MAPPING]))
                 // .domain([0, 100])
+                // .range([2, Math.sqrt(targetAreaUse / sumArea)]);
                 .range([2, 25]);
 
             function onlyUnique(value, index, self) { 
                 return self.indexOf(value) === index;
             }
-            SCALE_DOT_COLOR = d3.scaleOrdinal(d3.schemeCategory10)
+            SCALE_DOT_COLOR = d3.scaleOrdinal(d3.schemePaired)
                 .domain(data.map(x => x.album.name).filter(onlyUnique));
         }
 
@@ -209,6 +279,18 @@
         function draw (data) {
             drawGrid();
             drawDataPoints();
+
+            if (ENABLE_FORCE) {
+                var force = d3.forceSimulation(data)
+                    .force('collision', d3.forceCollide().radius(d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]) + 1.5))
+                    .force('x', d3.forceX(d => W / 2 + angleDistanceToXy(SCALE_ANGLE(getKeyFromKeyId(d.key, d.mode)), SCALE_RADIAL(d[RADIAL_MAPPING]))[0]).strength(0.2))
+                    .force('y', d3.forceY(d => H / 2 + angleDistanceToXy(SCALE_ANGLE(getKeyFromKeyId(d.key, d.mode)), SCALE_RADIAL(d[RADIAL_MAPPING]))[1]).strength(0.2))
+                    // .force('center', d3.forceCenter().x(W / 2).y(H / 2))
+                    .on("tick", function tick(e) {
+                        svg.selectAll('g.song')
+                            .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                    });
+            }
         }
 
         
@@ -226,13 +308,18 @@
             // return data;
 
             // inner join
-            return arrayJoin(files[0], files[1].tracks, 'uri');
+            var data = arrayJoin(files[0], files[1].tracks, 'uri');
+            data.forEach(function (d) {
+                d.x = W / 2;
+                d.y = H / 2;
+            });
+            return data;
 
         }
 
         function drawGrid () {
-            var minRadialData = d3.min(data, d => d[RADIAL_MAPPING]);
-            var maxRadialData = d3.max(data, d => d[RADIAL_MAPPING]); 
+            var minRadialData = SCALE_RADIAL.domain()[0];
+            var maxRadialData = SCALE_RADIAL.domain()[1]; 
             var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
             var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
             var angularGridInterval = d3.range(0, NUM_KEYS, 1);
@@ -384,10 +471,14 @@
                     let x = W / 2 + coord[0];
                     let y = H / 2 + coord[1];
                     return `translate(${x}, ${y})`
-                });
+                })
+                
+            var songGInner = songG.append('g')
+                .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
+                .style('animation-duration', d => `${60 / d.tempo * d.time_signature}s`)
 
 
-            var defs = songG.append('svg:defs');
+            var defs = songGInner.append('svg:defs');
             
             defs.append('svg:pattern')
                 .attr('id', d => `image${d.id}`)
@@ -402,22 +493,49 @@
                 .attr("width", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
                 .attr("height", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]));
 
-            var dots = songG
+            var polygonPoints = songGInner
+                .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
+                .append('polygon')
+                .attr('class', 'dot pulse')
+                .attr('points', function (d) {
+                    var points = [];
+                    
+                    var n = d.time_signature;
+                    
+                    var theta_offset_radial = SCALE_ANGLE(getKeyFromKeyId(d.key, d.mode));
+                    var theta_offset = 2 * Math.PI / d.time_signature / 2 + Math.PI + theta_offset_radial;
+                    
+                    var size = SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]);
+                    var targetArea = Math.PI * size * size;
+                    var axesLength = Math.sqrt(targetArea / (n * Math.sin(Math.PI / n) * Math.cos(Math.PI / n)));
+
+                    for (var i = 0; i < d.time_signature; i++) {
+                        var theta = i * 2 * Math.PI / d.time_signature;
+
+                        var x = Math.cos(theta + theta_offset) * axesLength;
+                        var y = Math.sin(theta + theta_offset) * axesLength;
+                        points.push([x, y]);
+                    }
+
+                    return points.map(d => `${d[0]},${d[1]}`).join(' ');
+                })
+
+            var circlePoints = songGInner
+                .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature <= 2 : true)
                 .append('circle')
                 .attr('class', 'dot pulse')
                 .attr('cx', 0)
                 .attr('cy', 0)
                 .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+                
+            songGInner.selectAll('.dot')
                 .style('animation-duration', d => `${60 / d.tempo}s`)
-                .style('stroke-opacity', 1)
-                .style('stroke-width', 2.5)
-                .style('fill-opacity', 1)
+                // .style('stroke-width', 2.5)
+                // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].id))
+                // .style('stroke-opacity', 1)
                 .style('fill', '#fff')
                 .style('fill', d => `url(#image${d.id})`)
-                // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].name))
-                // .style('fill', d => SCALE_DOT_COLOR(d.artists[0].name));
-
-            
+                .style('fill-opacity', 1)
 
 
             var songLabels = songG
@@ -468,6 +586,10 @@
         function round(value, decimals) {
            return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
         }
+
+
+
+
     </script>
 </body>
 </html>
