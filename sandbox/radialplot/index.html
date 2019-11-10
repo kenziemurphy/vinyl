@@ -84,15 +84,71 @@
             }
         }
 
-        .rotate-anim {animation-iteration-count: infinite;}
-        .rotate-anim.rotate-1 { animation: rotate-1; }
-        .rotate-anim.rotate-2 { animation: rotate-2; }
-        .rotate-anim.rotate-3 { animation: rotate-3; }
-        .rotate-anim.rotate-4 { animation: rotate-4; }
-        .rotate-anim.rotate-5 { animation: rotate-5; }
-        .rotate-anim.rotate-6 { animation: rotate-6; }
-        .rotate-anim.rotate-7 { animation: rotate-7; }
-        .rotate-anim.rotate-8 { animation: rotate-8; }
+        .rotate-anim {animation-iteration-count: infinite !important;}
+        .rotate-anim:hover.rotate-1 { animation: rotate-1; }
+        .rotate-anim:hover.rotate-2 { animation: rotate-2; }
+        .rotate-anim:hover.rotate-3 { animation: rotate-3; }
+        .rotate-anim:hover.rotate-4 { animation: rotate-4; }
+        .rotate-anim:hover.rotate-5 { animation: rotate-5; }
+        .rotate-anim:hover.rotate-6 { animation: rotate-6; }
+        .rotate-anim:hover.rotate-7 { animation: rotate-7; }
+        .rotate-anim:hover.rotate-8 { animation: rotate-8; }
+
+        @keyframes rotate-1 {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-2 {
+            0%   { transform: rotate(0deg); }
+            50%  { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-3 {
+            0%     { transform: rotate(0deg); }
+            33.33% { transform: rotate(120deg); }
+            66.67% { transform: rotate(240deg); }
+            100%   { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-4 {
+            0%      { transform: rotate(0deg); }
+            25%     { transform: rotate(90deg); }
+            50%     { transform: rotate(180deg); }
+            75%     { transform: rotate(270deg); }
+            100%    { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-5 {
+            0%      { transform: rotate(0deg); }
+            20%     { transform: rotate(72deg); }
+            40%     { transform: rotate(144deg); }
+            60%     { transform: rotate(216deg); }
+            80%     { transform: rotate(288deg); }
+            100%    { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-6 {
+            0%     { transform: rotate(0deg); }
+            16.67% { transform: rotate(60deg); }
+            33.33% { transform: rotate(120deg); }
+            50%    { transform: rotate(180deg); }
+            66.67% { transform: rotate(240deg); }
+            83.33% { transform: rotate(300deg); }
+            100%   { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-7 {
+            0%     { transform: rotate(0deg); }
+            14.29% { transform: rotate(51.43deg); }
+            28.57% { transform: rotate(102.86deg); }
+            42.86% { transform: rotate(154.29deg); }
+            57.14% { transform: rotate(205.71deg); }
+            71.43% { transform: rotate(257.14deg); }
+            85.71% { transform: rotate(308.57deg); }
+            100%   { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -416,11 +472,13 @@
                     let y = H / 2 + coord[1];
                     return `translate(${x}, ${y})`
                 })
-                .append('g')
-                .append('class', d => `rotate-${d.time_signature}`);
+                
+            var songGInner = songG.append('g')
+                .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
+                .style('animation-duration', d => `${60 / d.tempo * d.time_signature}s`)
 
 
-            var defs = songG.append('svg:defs');
+            var defs = songGInner.append('svg:defs');
             
             defs.append('svg:pattern')
                 .attr('id', d => `image${d.id}`)
@@ -435,7 +493,7 @@
                 .attr("width", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
                 .attr("height", d => 2 * SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]));
 
-            var polygonPoints = songG
+            var polygonPoints = songGInner
                 .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
                 .append('polygon')
                 .attr('class', 'dot pulse')
@@ -462,7 +520,7 @@
                     return points.map(d => `${d[0]},${d[1]}`).join(' ');
                 })
 
-            var circlePoints = songG
+            var circlePoints = songGInner
                 .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature <= 2 : true)
                 .append('circle')
                 .attr('class', 'dot pulse')
@@ -470,7 +528,7 @@
                 .attr('cy', 0)
                 .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
                 
-            songG.selectAll('.dot')
+            songGInner.selectAll('.dot')
                 .style('animation-duration', d => `${60 / d.tempo}s`)
                 // .style('stroke-width', 2.5)
                 // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].id))

@@ -430,14 +430,14 @@
         "instrumentalness": 0.0328,
         "liveness": 0.11,
         "valence": 0.0398,
-        "tempo": 114.759,
+        "tempo": 76,
         "type": "audio_features",
         "id": "75YUnz58ajMo2VIIuUFvOV",
         "uri": "spotify:track:75YUnz58ajMo2VIIuUFvOV",
         "track_href": "https://api.spotify.com/v1/tracks/75YUnz58ajMo2VIIuUFvOV",
         "analysis_url": "https://api.spotify.com/v1/audio-analysis/75YUnz58ajMo2VIIuUFvOV",
         "duration_ms": 326533,
-        "time_signature": 5
+        "time_signature": 3
     },
     {
         "danceability": 0.293,
@@ -951,7 +951,7 @@
         "instrumentalness": 0.427,
         "liveness": 0.111,
         "valence": 0.0686,
-        "tempo": 77.078,
+        "tempo": 103.6,
         "type": "audio_features",
         "id": "3A9vIxzGBjEfqmDK7H9exS",
         "uri": "spotify:track:3A9vIxzGBjEfqmDK7H9exS",
