@@ -572,6 +572,7 @@
                 .style('fill-opacity', 1)
                 .on("mouseover", function (d, i) {
                     d.audio = new Audio(d.preview_url);
+                    d.audio.loop = true;
                     // d.audio.volume = 0;
                     d.audio.play();
                     // FIXME fadeTo is still buggy.
@@ -582,6 +583,7 @@
                     console.log(d.audio)
                     if (!d.audio) {
                         d.audio = new Audio(d.preview_url);
+                        d.audio.loop = true;
                     }
                     // d.audio.volume = 0;
                     d.audio.play();
