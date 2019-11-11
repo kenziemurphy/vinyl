@@ -170,6 +170,7 @@
     <div class="vis"><svg width="800" height="600"></svg></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+    <script src="audiohelpers.js"></script>
     <script>
         // config
         const TIME_SIG_AS_POLYGON = true;
@@ -571,7 +572,10 @@
                 .style('fill-opacity', 1)
                 .on("mouseover", function (d, i) {
                     d.audio = new Audio(d.preview_url);
+                    // d.audio.volume = 0;
                     d.audio.play();
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(1);
                     songToolTip.show(d, this);
                 })
                 .on("click", function (d, i) {
@@ -579,9 +583,18 @@
                     if (!d.audio) {
                         d.audio = new Audio(d.preview_url);
                     }
+                    // d.audio.volume = 0;
                     d.audio.play();
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(1);
                 })
                 .on("mouseout", function (d, i) {
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(0).then(function () {
+                    //     console.log('faded out');
+                    //     d.audio.pause();
+                    //     d.audio.currentTime = 0;
+                    // });
                     d.audio.pause();
                     d.audio.currentTime = 0;
                     songToolTip.hide(d, this);
