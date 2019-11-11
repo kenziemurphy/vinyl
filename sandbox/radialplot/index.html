@@ -152,13 +152,15 @@
     </style>
 </head>
 <body>
+
     <div class="vis"><svg width="800" height="600"></svg></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
     <script>
         // config
         const TIME_SIG_AS_POLYGON = true;
         const ENABLE_FORCE = true;
-        const RADIAL_MAPPING = 'tempo';
+        const RADIAL_MAPPING = 'danceability';
         const DOT_RADIUS_MAPPING = 'popularity';
 
         const NUM_RADIAL_GRID_LINES = 5;
@@ -498,6 +500,7 @@
                 .append('polygon')
                 .attr('class', 'dot pulse')
                 .attr('points', function (d) {
+                    // draw regular polygons
                     var points = [];
                     
                     var n = d.time_signature;
@@ -536,6 +539,14 @@
                 .style('fill', '#fff')
                 .style('fill', d => `url(#image${d.id})`)
                 .style('fill-opacity', 1)
+                .on("mouseover", function (d, i) {
+                    d.audio = new Audio(d.preview_url);
+                    d.audio.play();
+                })
+                .on("mouseout", function (d, i) {
+                    d.audio.pause();
+                    d.audio.currentTime = 0;
+                })
 
 
             var songLabels = songG

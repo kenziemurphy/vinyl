@@ -23,7 +23,7 @@
 
         // d3.json('/audioanalysis_spotify.json').then(function (data) {
 
-        d3.json('/jigsaw.json').then(function (data) {
+        d3.json('jigsaw.json').then(function (data) {
             console.log(data);
 
             audioAnalysis = data;
@@ -68,7 +68,7 @@
                 // .attr('y', d => (h - yScale(d.loudness_start)) / 2)
                 .attr('height', h / 2)
                 .attr('width', d => xScale(d.duration))
-                .attr('opacity', 0.5)
+                .attr('opacity', 0.4)
                 .attr('fill', (d, i) => randomColors(i));
 
             
