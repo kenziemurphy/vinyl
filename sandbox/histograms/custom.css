@@ -1,4 +1,11 @@
 body {
   background-color: black;
   color: white;
+  font-family: "Arial";
 }
+
+.x_label, .y_label {
+  fill: white;
+}
+
+
