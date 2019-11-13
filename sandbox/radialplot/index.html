@@ -149,11 +149,28 @@
             85.71% { transform: rotate(308.57deg); }
             100%   { transform: rotate(360deg); }
         }
+
+        .song-tooltip {
+            background-color: #333c;
+            color: #fff;
+            border-radius: 4px;
+            border: 1px #444 solid;
+            padding: 5px 10px;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .song-tooltip p {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
+
     <div class="vis"><svg width="800" height="600"></svg></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+    <script src="audiohelpers.js"></script>
     <script>
         // config
         const TIME_SIG_AS_POLYGON = true;
@@ -229,6 +246,7 @@
         var data = [];
         var svg;
         var fileReady = false;
+        var songToolTip;
 
         initialize();
 
@@ -291,6 +309,21 @@
                             .attr('transform', d => `translate(${d.x}, ${d.y})`);
                     });
             }
+
+            songToolTip = d3.tip()
+                .attr("class", "d3-tip song-tooltip")
+                .offset([-5, 0])
+                .direction('n')
+                .html(function(d) {
+                    console.log(d);
+                    return `
+                        <p>
+                            <b>${d.name}</b>
+                            <br>${d.artists ? d.artists.map(a => a.name) : 'Unknown Artist'}
+                        </p>
+                    `;
+                });
+            svg.call(songToolTip);
         }
 
         
@@ -498,6 +531,7 @@
                 .append('polygon')
                 .attr('class', 'dot pulse')
                 .attr('points', function (d) {
+                    // draw regular polygons
                     var points = [];
                     
                     var n = d.time_signature;
@@ -536,15 +570,46 @@
                 .style('fill', '#fff')
                 .style('fill', d => `url(#image${d.id})`)
                 .style('fill-opacity', 1)
+                .on("mouseover", function (d, i) {
+                    d.audio = new Audio(d.preview_url);
+                    d.audio.loop = true;
+                    // d.audio.volume = 0;
+                    d.audio.play();
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(1);
+                    songToolTip.show(d, this);
+                })
+                .on("click", function (d, i) {
+                    console.log(d.audio)
+                    if (!d.audio) {
+                        d.audio = new Audio(d.preview_url);
+                        d.audio.loop = true;
+                    }
+                    // d.audio.volume = 0;
+                    d.audio.play();
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(1);
+                })
+                .on("mouseout", function (d, i) {
+                    // FIXME fadeTo is still buggy.
+                    // d.audio.fadeTo(0).then(function () {
+                    //     console.log('faded out');
+                    //     d.audio.pause();
+                    //     d.audio.currentTime = 0;
+                    // });
+                    d.audio.pause();
+                    d.audio.currentTime = 0;
+                    songToolTip.hide(d, this);
+                })
 
 
-            var songLabels = songG
-                .append('text')
-                .text(d => `${d.artists ? d.artists.map(a => a.name) : 'Unknown'} - ${d.name}`)
-                .attr('class', 'song-label')
-                .attr('x', 0)
-                .attr('y', -30)
-                .attr('fill', d => '#ffffff')
+            // var songLabels = songG
+            //     .append('text')
+            //     .text(d => ``)
+            //     .attr('class', 'song-label')
+            //     .attr('x', 0)
+            //     .attr('y', -30)
+            //     .attr('fill', d => '#ffffff')
         }
 
 
