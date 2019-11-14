@@ -8,4 +8,19 @@ body {
   fill: white;
 }
 
+rect {
+  fill-opacity: .2;
+  stroke-width:3;
+   /* outline-color: rgb(0, 0, 255);;*/
+ /* outline-style: solid;
+  outline-width: 3px;
+  outline-offset: -3px;*/
+}
+
+.outlined {
+
+  outline-style: solid;
+  outline-width: 3px;
+  outline-offset: -3px;
+}
 

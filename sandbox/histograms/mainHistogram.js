@@ -21,7 +21,7 @@ fileNameArray.push('../radialplot/radiohead.json')
 fileNameArray.push('../radialplot/slotmachine.json')
 
 // sets colors for the histogram rectangles
-var colors = ['#fbb4ae','#b3cde3','#ccebc5','#decbe4'];
+var colors = ['#00FFFF','#FFFF00','#FF1A91','#decbe4'];
 
 // set the parameters for the histogram
 var histogram = d3.histogram()
@@ -112,13 +112,16 @@ svg.append("g")
 .data(dataset)
 .join("g")
   .attr("fill", function(d, i) { return colors[i]; })
+  .style('stroke', function(d, i) { return colors[i]; })
 .selectAll("rect")
 .data(d => d)
 .join("rect")
-  .attr("x", (d, i) => x(d.data.bin))
+  .attr("x", (d, i) => x(d.data.bin) + 3)
   .attr("y", d => y(d[1]))
-  .attr("height", d => y(d[0]) - y(d[1]))
-  .attr("width", 69)
+  .attr("height", d => y(d[0]) - y(d[1]) - 3)
+  .attr("width", 64)
+
+  // .style("opacity", .2)
 
 svg.append("g")
   .call(xAxis)
@@ -128,12 +131,12 @@ svg.append("g")
 
 svg.append('text')
     .attr('class', 'x_label')
-    .attr('transform', 'translate(356,635)')
+    .attr('transform', 'translate(375,635)')
     .text('Energy');
 
 svg.append('text')
     .attr('class', 'y_label')
-    .attr("transform","translate(20,307.5)rotate(270)")
+    .attr("transform","translate(20,345)rotate(270)")
     .text('Count');
 
 });
