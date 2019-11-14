@@ -84,9 +84,13 @@ for(let i = 0; i < jsonDataArray.length; i++) {
   }
 }
 
+console.log(processedArray);
+
 //stacks json groups for proper cumulative count formatting
 var dataset = d3.stack()
 .keys(["json0", "json1", "json2"])(processedArray)
+
+console.log(dataset);
 
 //obtains max count from last json data group max
 yMax = d3.max(dataset[dataset.length - 1], (d) => d[1])
@@ -103,8 +107,6 @@ let xAxis = (g) => g
 yAxis = (g) => g
 .attr("transform", `translate(50,0)`)
 .call(d3.axisLeft(y))
-.append("text")
-.text("Count");
 
 //adds to histogram to svg
 svg.append("g")
@@ -118,7 +120,7 @@ svg.append("g")
 .join("rect")
   .attr("x", (d, i) => x(d.data.bin) + 3)
   .attr("y", d => y(d[1]))
-  .attr("height", d => y(d[0]) - y(d[1]) - 3)
+  .attr("height", d => y(d[0]) - y(d[1]) - 4)
   .attr("width", 64)
 
   // .style("opacity", .2)
