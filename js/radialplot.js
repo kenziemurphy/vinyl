@@ -100,10 +100,10 @@ class RadialView {
         this.redraw();
     }
 
-    redraw () {
+    redraw (resetForce = true) {
         this.drawGrid();
         this.drawDataPoints();
-        if (ENABLE_FORCE) {
+        if (ENABLE_FORCE && resetForce) {
             this.initForce();
         }
 
@@ -128,12 +128,16 @@ class RadialView {
     onFilter (filterFunction) {
         this.filter = filterFunction;
         this.filteredData = this.data.filter(filterFunction);
-        this.redraw();
+        // this.redraw();
+        // FIXME force is not right when filtered
+        this.drawDataPoints();
     }
 
     onHighlight(filterFunction) {
         this.highlight = filterFunction;
-        this.redraw();
+        d3.selectAll('.song')
+            .classed('fade', d => !this.highlight(d));
+        // this.redraw();
     }
 
     scaleSelector (type) {
@@ -414,7 +418,7 @@ class RadialView {
     
     drawDataPoints () {
         let _this = this;
-        var songG = this.svg.selectAll('g.song').data(this.filteredData)
+        var songG = this.svg.selectAll('g.song').data(this.filteredData, d => d.id)
     
         var songGEnter = songG.enter()
             .append('g')
@@ -505,8 +509,13 @@ class RadialView {
                     .filter(k => k == _this.getKeyFromKeyId(d.key, d.mode))
                     .classed('highlight', true)
                 d3.selectAll('.song')
-                    .filter(k => k.id != d.id)
-                    .classed('fade', true)
+                    // .filter(k => k.id != d.id)
+                    .classed('fade', k => k.id != d.id)
+
+                // TODO trigger event
+                // var event = new Event('build');
+                // elem.addEventListener('build', function (e) { /* ... */ }, false);
+                // elem.dispatchEvent(event);
             })
             .on("click", function (d, i) {
                 console.log(d.audio)
@@ -536,17 +545,18 @@ class RadialView {
                 d3.selectAll('.label-angle')
                     .classed('highlight', false)
                 d3.selectAll('.song')
-                    .classed('fade', false)
+                    .classed('fade', d => !_this.highlight(d));
             });
 
         songG.merge(songGEnter)
+            .classed('fade', d => !this.highlight(d))
             .transition()
             .attr('transform', function (d) {
                 let coord = _this.dataToXy(d);
                 let x = _this.W / 2 + coord[0];
                 let y = _this.H / 2 + coord[1];
                 return `translate(${x}, ${y})`
-            });
+            })
     
         songG.exit().remove();
     }
@@ -583,17 +593,4 @@ class RadialView {
         let distance = distanceOverride || this.SCALE_RADIAL(d[this.RADIAL_MAPPING]);
         return this.angleDistanceToXy(angle, distance);
     }
-
-    
 }
-
-
-
-
-// core global stuffs
-// var data = [];
-// var svg;
-// var fileReady = false;
-// var songToolTip;
-
-// initialize();

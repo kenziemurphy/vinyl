@@ -64,12 +64,7 @@
             });
 
             window.addEventListener("resize", function() {
-                // initialize();
-
-                // if (fileReady) {
-				// d3.selectAll("svg > *").remove();
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
-                // }
 			});
 			
 			function preprocessData (files) {
@@ -83,7 +78,6 @@
 				var abJoined = a.map(function (x) {
 					var bIndex = bKeys.indexOf(x[key])
 					if (bIndex >= 0) {
-						// console.log(x[key], b[bIndex].name);
 						return {...x, ...b[bIndex]};
 					} else {
 						return false;
