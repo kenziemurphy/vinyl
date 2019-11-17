@@ -8,9 +8,10 @@
         <link rel="stylesheet" href="css/radialplot.css" />
     </head>
     <body>
-        <div style="display:flex;flex-direction: row;">
+        <div class="container">
             <div style="flex-grow: 1;">
-                Search boxes go here
+				Search boxes go here<br>
+				<svg id="..."></svg>
             </div>
             <div style="flex-grow: 2;">
                 <div id="radial-view-controls" class="controls fixed">
@@ -31,23 +32,27 @@
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
                 </div>
                 <div class="vis">
-                    <svg id="radial-plot"></svg>
+                    <svg id="radial-view" class="vis-stretch"></svg>
                 </div>
             </div>
             <div style="flex-grow: 1;">
-                Histograms go here
+				<svg id="histogram-view" class="vis-stretch"></svg>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="js/audiohelpers.js"></script>
         <script src="js/radialplot.js"></script>
+        <script src="js/histograms.js"></script>
 
         <script>
 			var components = [];
 			var data = [];
 
-			components.push(new RadialView(d3.select('.vis svg#radial-plot'), []));
+			var dispatch = d3.dispatch('filter', 'highlight');
+
+			components.push(new RadialView(d3.select('svg#radial-view'), [], dispatch));
+			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			
             Promise.all([
                 // d3.json('../../data/Spotify.json'),
@@ -61,11 +66,26 @@
 				console.log(data);
 				
 				components.forEach(function (c) { c.onDataChanged(data); });
-            });
+			});
+			
+			dispatch.on("filter", function (filterFunc) {
+				console.log('filter triggered', filterFunc)
+				components.forEach(function (c) { c.onFilter(filterFunc); });
+			});
+
+			dispatch.on("highlight", function (filterFunc) {
+				console.log('highlight triggered', filterFunc)
+				components.forEach(function (c) { c.onHighlight(filterFunc); });
+			});
 
             window.addEventListener("resize", function() {
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
+
+			// var event = new Event('filter');
+			document.body.addEventListener('highlight', function (e) { console.log('!') }, false);
+
+
 			
 			function preprocessData (files) {
 				// inner join

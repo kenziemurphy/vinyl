@@ -6,7 +6,13 @@ body {
     color: #ffffff;
 }
 
-svg#radial-plot {
+.container {
+    display:flex;
+    flex-direction: row;
+    min-height: 100vh;
+}
+
+svg.vis-stretch {
     width: 100%;
     height: 100vh;
 }

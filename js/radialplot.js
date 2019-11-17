@@ -24,10 +24,11 @@ const SCALE_ANGLE = d3.scaleOrdinal()
 
 
 class RadialView {
-    constructor (svg, data = []) {
+    constructor (svg, data = [], dispatch) {
         
         this.svg = svg;
         this.data = data;
+        this.dispatch = dispatch;
         
         // defaults
         this.RADIAL_MAPPING = 'tempo';
@@ -508,14 +509,11 @@ class RadialView {
                 d3.selectAll('.label-angle')
                     .filter(k => k == _this.getKeyFromKeyId(d.key, d.mode))
                     .classed('highlight', true)
-                d3.selectAll('.song')
-                    // .filter(k => k.id != d.id)
-                    .classed('fade', k => k.id != d.id)
+                // d3.selectAll('.song')
+                //     // .filter(k => k.id != d.id)
+                //     .classed('fade', k => k.id != d.id)
 
-                // TODO trigger event
-                // var event = new Event('build');
-                // elem.addEventListener('build', function (e) { /* ... */ }, false);
-                // elem.dispatchEvent(event);
+                dispatch.call('highlight', this, k => k.id == d.id);
             })
             .on("click", function (d, i) {
                 console.log(d.audio)
@@ -525,6 +523,7 @@ class RadialView {
                 }
                 // d.audio.volume = 0;
                 d.audio.play();
+                dispatch.call('highlight', this, k => k.id == d.id);
                 // FIXME fadeTo is still buggy.
                 // d.audio.fadeTo(1);
             })
@@ -544,8 +543,10 @@ class RadialView {
                     .transition()
                 d3.selectAll('.label-angle')
                     .classed('highlight', false)
-                d3.selectAll('.song')
-                    .classed('fade', d => !_this.highlight(d));
+                // d3.selectAll('.song')
+                //     .classed('fade', d => !_this.highlight(d));
+
+                dispatch.call('highlight', this, k => true);
             });
 
         songG.merge(songGEnter)
