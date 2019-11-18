@@ -16,7 +16,7 @@
 				<svg id="..."></svg>
             </div>
             <div style="flex-grow: 2; min-width: 50%;">
-                <div id="radial-view-controls" class="controls fixed">
+                <div id="radial-view-controls" class="controls">
                     <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
                     <button class="btn radial-mapping-select" data-scale-type="log"    data-attr="loudness">LOUDNESS</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
@@ -41,12 +41,20 @@
 				<h2>Distribution</h2>
 				<svg id="histogram-view" class="vis-stretch"></svg>
             </div>
-        </div>
+		</div>
+		<div class="container">
+			<div style="flex-grow: 1;">
+				<h2>Detailed Analysis</h2>
+				<svg id="star-view" class="vis-stretch"></svg>
+			</div>
+		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="js/audiohelpers.js"></script>
+        <script src="js/radialgrid.js"></script>
         <script src="js/radialplot.js"></script>
         <script src="js/histograms.js"></script>
+        <script src="js/starplots.js"></script>
 
         <script>
 			var components = [];
@@ -56,6 +64,7 @@
 
 			components.push(new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
+			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 			
             Promise.all([
                 // d3.json('../../data/Spotify.json'),

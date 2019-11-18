@@ -68,6 +68,7 @@ class RadialView {
                     <p>
                         <b>${d.name}</b>
                         <br>${d.artists ? d.artists.map(a => a.name) : 'Unknown Artist'}
+                        <br><small>Click to lock the selection</small>
                     </p>
                 `;
             });
@@ -115,7 +116,24 @@ class RadialView {
     }
 
     redraw (resetForce = true) {
-        this.drawGrid();
+        this.grid = axisRadial(this.SCALE_RADIAL, SCALE_ANGLE, [this.W / 2, this.H / 2], this.RADIAL_MAPPING);
+        this.svg.call(this.grid);
+
+        // multiple grids
+        // let gridCenters = [
+        //     [this.W / 4, this.H / 4],
+        //     [this.W / 4, 3 * this.H / 4],
+        //     [3 * this.W / 4, this.H / 4],
+        //     [3 * this.W / 4, 3 * this.H / 4]
+        // ]
+        // this.svg.selectAll('g.grid-small')
+        //     .data(gridCenters)
+        //     .enter()
+        //     .append('g')
+        //     .attr('class', 'grid-small')
+        //     .attr('transform', d => `translate(${d[0]}, ${d[1]})`)
+        //     .call(axisRadial(this.SCALE_RADIAL, SCALE_ANGLE, [0, 0], this.RADIAL_MAPPING))
+        
         this.drawDataPoints();
         if (ENABLE_FORCE && resetForce) {
             this.initForce();
@@ -176,6 +194,27 @@ class RadialView {
                     [this.SCALE_MIN_OVERRIDE, this.SCALE_MAX_OVERRIDE] : 
                     d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
             .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
+        
+        // if (this.filteredData) {
+        //     let tempScale = d3.scalePow()
+        //         .exponent(0.5)
+        //         .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
+        //         .range([2, 10]);
+        //     let dataByKey = d3.nest()
+        //         .key(d => this.getKeyFromKeyId(d.key, d.mode))
+        //         .rollup(v => ({
+        //             sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.DOT_RADIUS_MAPPING]) * tempScale(d[this.DOT_RADIUS_MAPPING])),
+        //             count: v.length
+        //         }))
+        //         .entries(this.filteredData);
+        //     let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
+        //     let maxCount = d3.max(dataByKey, d => d.value.count);
+        //     let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
+        //     this.SCALE_DOT_RADIUS = d3.scalePow()
+        //         .exponent(0.5)
+        //         .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
+        //         .range([2, drawingArea / 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
+        // }
     }
 
     recomputeDataConsts () {
@@ -189,7 +228,6 @@ class RadialView {
                     d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
             .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
         
-        // TODO: how to make billboard data look good? dynamic sizing?
         let tempScale = d3.scalePow()
             .exponent(0.5)
             .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
@@ -203,15 +241,12 @@ class RadialView {
             .entries(this.filteredData);
         let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
         let maxCount = d3.max(dataByKey, d => d.value.count);
-        console.log(maxSumAreaSpoke);
+        let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
         this.SCALE_DOT_RADIUS = d3.scalePow()
             .exponent(0.5)
             .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
-            // .domain([0, 100])
-            .range([2, 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
-            // .range([2, 10])
-            // .range([2, 20]);
-    
+            .range([2, drawingArea / 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
+            
         
         this.SCALE_DOT_COLOR = d3.scaleOrdinal(COLOR_SCALE)
             // .domain(this.data.map(x => x.album.name)
@@ -249,220 +284,6 @@ class RadialView {
             this.force.restart();
             console.log(this.force.nodes().length);
         }
-    }
-    
-    
-    drawGrid () {
-
-        // remove existing grid and start anew
-        d3.selectAll('svg g.grid')
-            .remove();
-
-        var minRadialData = this.SCALE_RADIAL.domain()[0];
-        var maxRadialData = this.SCALE_RADIAL.domain()[1]; 
-
-        minRadialData = isNaN(minRadialData) ? 0 : minRadialData;
-        maxRadialData = isNaN(maxRadialData) ? 1 : maxRadialData;
-
-        var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
-        var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
-        var angularGridInterval = d3.range(0, NUM_KEYS, 1);
-    
-        radialGridInterval.push(maxRadialData);
-    
-        var gridG = this.svg.append('g')
-            .attr('class', 'grid')
-            .attr('pointer-events', 'none')
-            .style('z-index', '-1')
-            .attr('transform', `translate(${this.W / 2}, ${this.H / 2})`);
-    
-        var radialGrid = gridG.selectAll('circle.grid-line')
-            .data(radialGridInterval)
-            .enter()
-            .append('circle')
-            .attr('class', 'grid-line')
-            .attr('r', d => this.SCALE_RADIAL(d))
-            .attr('fill-opacity', '0')
-            .attr('stroke-opacity', '0.2')
-            .attr('stroke', '#ffffff')
-    
-        var angleGrid = gridG.selectAll('line.grid-line')
-            .data(ALL_KEYS)
-            .enter()
-            .append('line')
-            .attr('class', 'grid-line')
-            .attr('x1', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MIN_RADIAL_DIST)[0])
-            .attr('y1', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MIN_RADIAL_DIST)[1])
-            .attr('x2', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MAX_RADIAL_DIST)[0])
-            .attr('y2', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MAX_RADIAL_DIST)[1])
-    
-        // guides only show up when an item is hovers to help deal with offset position from force-directed chart
-        var radialGuide = gridG.append('circle')
-            .attr('class', 'guide-line radial hidden')
-            .attr('r', this.SCALE_RADIAL(minRadialData))
-            .attr('fill-opacity', '0')
-    
-        var angleGuide = gridG.append('line')
-            .attr('class', 'guide-line angle hidden')
-            .attr('x1', this.angleDistanceToXy(SCALE_ANGLE('C'), this.MIN_RADIAL_DIST)[0])
-            .attr('y1', this.angleDistanceToXy(SCALE_ANGLE('C'), this.MIN_RADIAL_DIST)[1])
-            .attr('x2', this.angleDistanceToXy(SCALE_ANGLE('C'), this.MAX_RADIAL_DIST)[0])
-            .attr('y2', this.angleDistanceToXy(SCALE_ANGLE('C'), this.MAX_RADIAL_DIST)[1])
-    
-        var angleLabel = gridG.selectAll('text.label.label-angle')
-            .data(ALL_KEYS)
-            .enter()
-            .append('text')
-            .attr('class', 'label label-angle')
-            .text(d => d)
-            .attr('x', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MAX_RADIAL_DIST + 20)[0])
-            .attr('y', d => this.angleDistanceToXy(SCALE_ANGLE(d), this.MAX_RADIAL_DIST + 20)[1])
-            .attr('fill', '#ffffff')
-    
-        var radialLabelTop = gridG.selectAll('text.label.label-radial.top')
-            .data(radialGridInterval)
-            .enter()
-            .append('text')
-            .attr('class', 'label label-radial top')
-            .text(d => this.round(d, 1))
-            .attr('y', d => -this.SCALE_RADIAL(d))
-            .attr('fill', '#ffffff')
-    
-        var radialTextLabelInnerTop = gridG.append('text')
-            .attr('class', 'label label-axis-radial')
-            .text(this.RADIAL_MAPPING.toUpperCase())
-            .attr('y', -this.MIN_RADIAL_DIST + 30)
-            .attr('font-weight', 'bold')
-            .style('opacity', 0.7)
-            .attr('fill', '#ffffff')
-    
-        var radialTextLabelOuterTop = gridG.append('text')
-            .attr('class', 'label label-axis-radial')
-            .text(this.RADIAL_MAPPING.toUpperCase())
-            .attr('y', -this.MAX_RADIAL_DIST - 30)
-            .attr('font-weight', 'bold')
-            .style('opacity', 0.7)
-            .attr('fill', '#ffffff')
-    
-        var radialLabelBottom = gridG.selectAll('text.tempo.label.bottom')
-            .data(radialGridInterval)
-            .enter()
-            .append('text')
-            .attr('class', 'label label-radial bottom')
-            .text(d => this.round(d, 1))
-            .attr('y', d => this.SCALE_RADIAL(d))
-            .attr('fill', '#ffffff')
-    
-        var radialTextLabelInnerBottom = gridG.append('text')
-            .attr('class', 'label label-axis-radial')
-            .text(this.RADIAL_MAPPING.toUpperCase())
-            .attr('y', this.MIN_RADIAL_DIST - 30)
-            .attr('font-weight', 'bold')
-            .style('opacity', 0.7)
-            .attr('fill', '#ffffff')
-    
-        var radialTextLabelOuterBottom = gridG.append('text')
-            .attr('class', 'label label-axis-radial')
-            .text(this.RADIAL_MAPPING.toUpperCase())
-            .attr('y', this.MAX_RADIAL_DIST + 30)
-            .attr('font-weight', 'bold')
-            .style('opacity', 0.7)
-            .attr('fill', '#ffffff')
-    
-        // major/minor line
-        // FIXME hardcoding
-        var majorMinorLabelOffset = 60;
-        var majorMinorLineLeft = gridG.append('line')
-            .attr('class', 'grid-line-clear')
-            .attr('x1', -this.MIN_RADIAL_DIST)
-            .attr('y1', 0)
-            .attr('x2', -this.MAX_RADIAL_DIST - majorMinorLabelOffset)
-            .attr('y2', 0)
-    
-        var majorMinorLinRight = gridG.append('line')
-            .attr('class', 'grid-line-clear')
-            .attr('x1', this.MIN_RADIAL_DIST)
-            .attr('y1', 0)
-            .attr('x2', this.MAX_RADIAL_DIST + majorMinorLabelOffset)
-            .attr('y2', 0)
-    
-        var majorLabelLeft = gridG.append('text')
-            .text('MAJOR')
-            .attr('fill', '#ffffff')
-            .attr('x', -this.MAX_RADIAL_DIST - majorMinorLabelOffset)
-            .attr('y', -7)
-            .attr('aligment-baseline', 'baseline')
-            .attr('text-anchor', 'start')
-        
-        var minorLabelLeft = gridG.append('text')
-            .text('MINOR')
-            .attr('fill', '#ffffff')
-            .attr('x', -this.MAX_RADIAL_DIST - majorMinorLabelOffset)
-            .attr('y', 7)
-            .attr('alignment-baseline', 'hanging')
-            .attr('text-anchor', 'start')
-        
-        var majorLabelRight = gridG.append('text')
-            .text('MAJOR')
-            .attr('fill', '#ffffff')
-            .attr('x', this.MAX_RADIAL_DIST + majorMinorLabelOffset)
-            .attr('y', -7)
-            .attr('aligment-baseline', 'baseline')
-            .attr('text-anchor', 'end')
-        
-        var minorLabelRight = gridG.append('text')
-            .text('MINOR')
-            .attr('fill', '#ffffff')
-            .attr('x', this.MAX_RADIAL_DIST + majorMinorLabelOffset)
-            .attr('y', 7)
-            .attr('alignment-baseline', 'hanging')
-            .attr('text-anchor', 'end')
-    }
-    
-    updateGrid () {
-        var minRadialData = this.SCALE_RADIAL.domain()[0];
-        var maxRadialData = this.SCALE_RADIAL.domain()[1]; 
-        var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
-        var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
-        var angularGridInterval = d3.range(0, NUM_KEYS, 1);
-    
-        radialGridInterval.push(maxRadialData);
-    
-        var gridG = this.svg.select('g.grid')
-            
-        var radialGrid = gridG.selectAll('circle.grid-line').data(radialGridInterval)
-    
-        var radialGridEnter = radialGrid.enter()
-            .append('circle')
-            .attr('class', 'grid-line')
-        
-        radialGrid.merge(radialGridEnter)
-            .transition()
-            .attr('r', d => this.SCALE_RADIAL(d))
-            .attr('fill-opacity', '0')
-            .attr('stroke-opacity', '0.2')
-            .attr('stroke', '#ffffff')
-        
-        radialGrid.exit().remove();
-    
-        var radialLabelTop = gridG.selectAll('text.label.label-radial')
-            .data(radialGridInterval)
-    
-        var radialLabelTopEnter = radialLabelTop
-            .enter()
-            .append('text')
-            .attr('class', 'label label-radial top')
-        
-        radialLabelTop.merge(radialLabelTopEnter)
-            .transition()
-            .text(d => this.round(d, 1))
-            .attr('y', d => -this.SCALE_RADIAL(d))
-            .attr('fill', '#ffffff')
-        
-        radialLabelTop.exit().remove();
-    
-        var radialTextLabel = gridG.selectAll('text.label-axis-radial')
-            .text(this.RADIAL_MAPPING.toUpperCase())
     }
     
     drawDataPoints () {
@@ -536,42 +357,68 @@ class RadialView {
             .style('fill', d => `url(#image${d.id})`)
             .style('fill-opacity', 1)
             .on("mouseover", function (d, i) {
-                d.audio = new Audio(d.preview_url);
+                // deselect
+                if (_this.selectionLocked) {
+                    d.audio.pause();
+                    d.audio.currentTime = 0;
+                    _this.songToolTip.hide(d, this);
+        
+                    d3.selectAll('.guide-line')
+                        .classed('hidden', true)
+                        .transition()
+                    d3.selectAll('.label-angle')
+                        .classed('highlight', false)
+                    // d3.selectAll('.song')
+                    //     .classed('fade', d => !_this.highlight(d));
+
+                    _this.dispatch.call('highlight', this, k => true);
+                }
+
+                if (!d.audio) {
+                    d.audio = new Audio(d.preview_url);
+                }
                 d.audio.loop = true;
                 // d.audio.volume = 0;
                 d.audio.play();
                 // FIXME fadeTo is still buggy.
                 // d.audio.fadeTo(1);
+                
+                // highlight song
                 _this.songToolTip.show(d, this);
-    
-                // highlight on grid
-                d3.select('.guide-line.radial')
-                    .classed('hidden', false)
-                    .attr('r', _this.SCALE_RADIAL(d[_this.RADIAL_MAPPING]))
-                d3.select('.guide-line.angle')
-                    .classed('hidden', false)
-                    .attr('x1', _this.dataToXy(d, _this.MIN_RADIAL_DIST)[0])
-                    .attr('y1', _this.dataToXy(d, _this.MIN_RADIAL_DIST)[1])
-                    .attr('x2', _this.dataToXy(d, _this.MAX_RADIAL_DIST)[0])
-                    .attr('y2', _this.dataToXy(d, _this.MAX_RADIAL_DIST)[1])
-                d3.selectAll('.label-angle')
-                    .filter(k => k == _this.getKeyFromKeyId(d.key, d.mode))
-                    .classed('highlight', true)
-                // d3.selectAll('.song')
-                //     // .filter(k => k.id != d.id)
-                //     .classed('fade', k => k.id != d.id)
+                _this.grid.showGuide(_this.getKeyFromKeyId(d.key, d.mode), d[_this.RADIAL_MAPPING]);
 
-                dispatch.call('highlight', this, k => k.id == d.id);
+                _this.dispatch.call('highlight', this, k => k.id == d.id);
+            })
+            .on("mousedown", function (d, i) {
+                console.log('dragStart');
+                d.isDragging = true;
+            })
+            .on("mousemove", function (d, i, m) {
+                // console.log('mousemove', d, i, m[i]);
+                // console.log(_this.svg);
+                // let coordinates = d3.mouse(_this.svg);
+
+                // console.log(coordinates);
+                // d.fx = d.x + coordinates[0];
+                // d.fy = d.y + coordinates[1];
+                // d.isDragging = true;
+            })
+            .on("mouseup", function (d, i) {
+                console.log('mousemove');
+                d.isDragging = false;
             })
             .on("click", function (d, i) {
+                // TODO: lock selection
                 console.log(d.audio)
                 if (!d.audio) {
                     d.audio = new Audio(d.preview_url);
                     d.audio.loop = true;
+                    this.classed('active', true);
                 }
                 // d.audio.volume = 0;
                 d.audio.play();
-                dispatch.call('highlight', this, k => k.id == d.id);
+                _this.dispatch.call('highlight', this, k => k.id == d.id);
+                // _this.selectionLocked = true;
                 // FIXME fadeTo is still buggy.
                 // d.audio.fadeTo(1);
             })
@@ -582,19 +429,15 @@ class RadialView {
                 //     d.audio.pause();
                 //     d.audio.currentTime = 0;
                 // });
-                d.audio.pause();
-                d.audio.currentTime = 0;
-                _this.songToolTip.hide(d, this);
-    
-                d3.selectAll('.guide-line')
-                    .classed('hidden', true)
-                    .transition()
-                d3.selectAll('.label-angle')
-                    .classed('highlight', false)
-                // d3.selectAll('.song')
-                //     .classed('fade', d => !_this.highlight(d));
+                // if (!_this.selectionLocked) {
+                    d.audio.pause();
+                    d.audio.currentTime = 0;
 
-                dispatch.call('highlight', this, k => true);
+                    _this.songToolTip.hide(d, this);
+                    _this.grid.hideGuide();
+        
+                    _this.dispatch.call('highlight', this, k => true);
+                // }
             });
 
         songG.merge(songGEnter)
