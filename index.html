@@ -1,11 +1,118 @@
 <!DOCTYPE html>
-<html>
-		<head>
-			<script src="https://d3js.org/d3.v5.min.js"></script>
-			<script  type="text/javascript" src="main.js"></script>
-			<link rel="stylesheet" type="text/css" href="custom.css">
-		</head>
-		<body>
-			Hello World
-		</body>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Music Vis</title>
+		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
+        <link rel="stylesheet" href="css/radialplot.css" />
+    </head>
+    <body>
+        <div class="container">
+			<div style="flex-grow: 1;">
+				<h1>Untitled Music Vis</h1>
+				Search boxes go here<br>
+				<svg id="..."></svg>
+            </div>
+            <div style="flex-grow: 2; min-width: 50%;">
+                <div id="radial-view-controls" class="controls fixed">
+                    <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
+                    <button class="btn radial-mapping-select" data-scale-type="log"    data-attr="loudness">LOUDNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="acousticness">ACOUSTICNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="instrumentalness">INSTRUMENTALNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="liveness">LIVENESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="speechiness">SPEECHINESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration_ms">DURATION</button>
+                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
+                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
+                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
+                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
+                </div>
+                <div class="vis">
+                    <svg id="radial-view" class="vis-stretch"></svg>
+                </div>
+            </div>
+			<div style="flex-grow: 1;">
+				<h2>Distribution</h2>
+				<svg id="histogram-view" class="vis-stretch"></svg>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+        <script src="js/audiohelpers.js"></script>
+        <script src="js/radialplot.js"></script>
+        <script src="js/histograms.js"></script>
+
+        <script>
+			var components = [];
+			var data = [];
+
+			var dispatch = d3.dispatch('filter', 'highlight');
+
+			components.push(new RadialView(d3.select('svg#radial-view'), [], dispatch));
+			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
+			
+            Promise.all([
+                // d3.json('../../data/Spotify.json'),
+                // d3.json('../../data/Spotify_trackinfo.json'),
+                // d3.json('data/slotmachine.json'),
+                // d3.json('data/slotmachine_trackinfo.json'),
+                d3.json("data/radiohead.json"),
+				d3.json("data/radiohead_trackinfo.json")
+				// d3.json("data/merged.json"),
+				// d3.json("data/merged_trackinfo.json")
+				// d3.json("data/spoegwolf.json"),
+				// d3.json("data/spoegwolf_trackinfo.json")
+            ]).then(function(loadedData) {
+				data = preprocessData(loadedData);
+				console.log(data);
+				
+				components.forEach(function (c) { c.onDataChanged(data); });
+			});
+			
+			dispatch.on("filter", function (filterFunc) {
+				console.log('filter triggered', filterFunc)
+				components.forEach(function (c) { c.onFilter(filterFunc); });
+			});
+
+			dispatch.on("highlight", function (filterFunc) {
+				console.log('highlight triggered', filterFunc)
+				components.forEach(function (c) { c.onHighlight(filterFunc); });
+			});
+
+            window.addEventListener("resize", function() {
+				components.forEach(function (c) { c.onScreenSizeChanged(); });
+			});
+
+			// var event = new Event('filter');
+			document.body.addEventListener('highlight', function (e) { console.log('!') }, false);
+
+
+			
+			function preprocessData (files) {
+				// inner join
+				var data = arrayJoin(files[0], files[1].tracks, 'uri');
+				return data; 
+			}
+
+			function arrayJoin (a, b, key) {
+				var bKeys = b.map(y => y[key]);
+				var abJoined = a.map(function (x) {
+					var bIndex = bKeys.indexOf(x[key])
+					if (bIndex >= 0) {
+						return {...x, ...b[bIndex]};
+					} else {
+						return false;
+					}
+				});
+				
+				return abJoined.filter(x => x !== false);
+			}
+        </script>
+    </body>
 </html>

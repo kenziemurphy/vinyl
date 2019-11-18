@@ -1,0 +1,187 @@
+body {
+    margin: 0;
+    background-color: #141517;
+    overflow: hidden;
+    font-family: Helvetica, sans-serif
+}
+
+.pulse:hover {
+    animation: pulse;
+    animation-iteration-count: infinite;
+}
+
+.song {
+    transition: 0.3s opacity;
+}
+
+.song .dot {
+    fill: #fff;
+    fill-opacity: 0;
+    stroke: #fff;
+    stroke-width: 1;
+    stroke-opacity: 0.7;
+}
+
+.song .song-label {
+    opacity: 0;
+    text-anchor: middle;
+    z-index: 100;
+}
+
+.song:hover .song-label {
+    opacity: 1;
+}
+
+text {
+    font-size: 10pt;
+}
+
+.label {
+    text-anchor: middle;
+    alignment-baseline: central;
+    opacity: 0.3;
+}
+
+.label-align-bottom {
+    text-anchor: middle;
+    alignment-baseline: bottom;
+}
+
+.label-align-top {
+    text-anchor: middle;
+    alignment-baseline: top;
+}
+
+.grid-line {
+    fill-opacity: 0;
+    stroke-opacity: 0.13;
+    stroke: #ffffff;
+}
+
+.grid-line-clear {
+    fill-opacity: 0;
+    stroke-opacity: 1;
+    stroke-width: 3;
+    stroke: #ffffff;
+}
+
+.guide-line {
+    fill-opacity: 0;
+    stroke-width: 3;
+    stroke-opacity: 1;
+    stroke: #ffffff;
+    transition: 0.2s all;
+}
+
+.hidden {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+}
+
+.highlight {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.fade {
+    opacity: 0.2;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    5% {
+        transform: scale(1.4);
+    }
+    80% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.rotate-anim {animation-iteration-count: infinite !important;}
+.rotate-anim:hover.rotate-1 { animation: rotate-1; }
+.rotate-anim:hover.rotate-2 { animation: rotate-2; }
+.rotate-anim:hover.rotate-3 { animation: rotate-3; }
+.rotate-anim:hover.rotate-4 { animation: rotate-4; }
+.rotate-anim:hover.rotate-5 { animation: rotate-5; }
+.rotate-anim:hover.rotate-6 { animation: rotate-6; }
+.rotate-anim:hover.rotate-7 { animation: rotate-7; }
+.rotate-anim:hover.rotate-8 { animation: rotate-8; }
+
+@keyframes rotate-1 {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate-2 {
+    0%   { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate-3 {
+    0%     { transform: rotate(0deg); }
+    33.33% { transform: rotate(120deg); }
+    66.67% { transform: rotate(240deg); }
+    100%   { transform: rotate(360deg); }
+}
+
+@keyframes rotate-4 {
+    0%      { transform: rotate(0deg); }
+    25%     { transform: rotate(90deg); }
+    50%     { transform: rotate(180deg); }
+    75%     { transform: rotate(270deg); }
+    100%    { transform: rotate(360deg); }
+}
+
+@keyframes rotate-5 {
+    0%      { transform: rotate(0deg); }
+    20%     { transform: rotate(72deg); }
+    40%     { transform: rotate(144deg); }
+    60%     { transform: rotate(216deg); }
+    80%     { transform: rotate(288deg); }
+    100%    { transform: rotate(360deg); }
+}
+
+@keyframes rotate-6 {
+    0%     { transform: rotate(0deg); }
+    16.67% { transform: rotate(60deg); }
+    33.33% { transform: rotate(120deg); }
+    50%    { transform: rotate(180deg); }
+    66.67% { transform: rotate(240deg); }
+    83.33% { transform: rotate(300deg); }
+    100%   { transform: rotate(360deg); }
+}
+
+@keyframes rotate-7 {
+    0%     { transform: rotate(0deg); }
+    14.29% { transform: rotate(51.43deg); }
+    28.57% { transform: rotate(102.86deg); }
+    42.86% { transform: rotate(154.29deg); }
+    57.14% { transform: rotate(205.71deg); }
+    71.43% { transform: rotate(257.14deg); }
+    85.71% { transform: rotate(308.57deg); }
+    100%   { transform: rotate(360deg); }
+}
+
+.song-tooltip {
+    background-color: #333c;
+    color: #fff;
+    border-radius: 4px;
+    border: 1px #444 solid;
+    padding: 5px 10px;
+    font-size: 10pt;
+    text-align: center;
+}
+
+.song-tooltip p {
+    margin: 0;
+}
+
+.fixed {
+    position: fixed;
+}
