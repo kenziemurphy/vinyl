@@ -1,9 +1,30 @@
 body {
     margin: 0;
-    background-color: #141517;
+    padding: 0 30px;
+    background-color: #212039;
     overflow: hidden;
     font-family: Helvetica, sans-serif;
     color: #ffffff;
+
+    font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+body * { 
+    font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: proxima-nova, sans-serif;
+    font-style: italic;
+    font-weight: 800;
+}
+
+b, [font-weight="bold"] {
+    font-weight: 800;
 }
 
 .container {

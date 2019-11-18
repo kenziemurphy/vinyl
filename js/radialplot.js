@@ -3,6 +3,8 @@ const TIME_SIG_AS_POLYGON = true;
 const ENABLE_FORCE = true;
 const NUM_RADIAL_GRID_LINES = 5;
 
+const COLOR_SCALE = ['#fca981', '#6988f2', '#f36293', '#81d0ef'];
+
 // facts
 const ALL_KEYS = [
     'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
@@ -90,10 +92,16 @@ class RadialView {
     // }
 
     onDataChanged (newData) {
+        let _this = this
+
         this.data = newData;
+        this.data.forEach(function (d) {
+            d.x = _this.W / 2;
+            d.y = _this.H / 2;
+        });
         this.filteredData = this.data.filter(this.filter)
         this.recomputeDataConsts();
-        this.redraw();
+        this.redraw(true);
     }
 
     onScreenSizeChanged () {
@@ -178,39 +186,54 @@ class RadialView {
             .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
             // .domain([0, 100])
             // .range([2, Math.sqrt(targetAreaUse / sumArea)]);
-            .range([2, 20]);
+            .range([2, 10])
+            // .range([2, 20]);
     
         
-        this.SCALE_DOT_COLOR = d3.scaleOrdinal(d3.schemePaired)
-            .domain(this.data.map(x => x.album.name)
-            .filter(function (value, index, self) { 
-                // unique filter
-                return self.indexOf(value) === index;
-            }));
+        this.SCALE_DOT_COLOR = d3.scaleOrdinal(COLOR_SCALE)
+            // .domain(this.data.map(x => x.album.name)
+            // .filter(function (value, index, self) { 
+            //     // unique filter
+            //     return self.indexOf(value) === index;
+            // }));
     }
     
     
     initForce () {
         let _this = this;
-        this.data.forEach(function (d) {
-            d.x = _this.W / 2;
-            d.y = _this.H / 2;
-        });
-        let force = d3.forceSimulation(this.filteredData)
-            .force('collision', d3.forceCollide().radius(d => _this.SCALE_DOT_RADIUS(d[_this.DOT_RADIUS_MAPPING]) + 1.5))
-            .force('x', d3.forceX(d => _this.W / 2 + _this.dataToXy(d)[0]).strength(0.2))
-            .force('y', d3.forceY(d => _this.H / 2 + _this.dataToXy(d)[1]).strength(0.2))
-            .on("tick", function tick(e) {
-                _this.svg.selectAll('g.song')
-                    .attr('transform', d => `translate(${d.x}, ${d.y})`);
-            });
+        if (!this.force) {
+            this.force = d3.forceSimulation(this.filteredData)
+                .force('collision', d3.forceCollide().radius(d => _this.SCALE_DOT_RADIUS(d[_this.DOT_RADIUS_MAPPING]) + 1.5))
+                .force('x', d3.forceX().x(d => _this.W / 2 + _this.dataToXy(d)[0]).strength(0.2))
+                .force('y', d3.forceY().y(d => _this.H / 2 + _this.dataToXy(d)[1]).strength(0.2))
+                .alphaTarget(1)
+                .on("tick", function tick(e) {
+                    _this.svg.selectAll('g.song')
+                        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                });
+            // this.force.restart();
+        } else {
+            console.log('update force', this.RADIAL_MAPPING)
+            
+            this.force.nodes(this.filteredData);
+            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.DOT_RADIUS_MAPPING]) + 1.5);
+            this.force.force('x').x(d => _this.W / 2 + _this.dataToXy(d)[0]).strength(0.2);
+            this.force.force('y').y(d => _this.H / 2 + _this.dataToXy(d)[1]).strength(0.2);
+            // .on("tick", function tick(e) {
+                //     _this.svg.selectAll('g.song')
+                //         .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                // });
+            this.force.restart();
+            console.log(this.force.nodes().length);
+        }
     }
     
     
     drawGrid () {
 
         // remove existing grid and start anew
-        d3.selectAll('svg g.grid').remove();
+        d3.selectAll('svg g.grid')
+            .remove();
 
         var minRadialData = this.SCALE_RADIAL.domain()[0];
         var maxRadialData = this.SCALE_RADIAL.domain()[1]; 
@@ -226,6 +249,8 @@ class RadialView {
     
         var gridG = this.svg.append('g')
             .attr('class', 'grid')
+            .attr('pointer-events', 'none')
+            .style('z-index', '-1')
             .attr('transform', `translate(${this.W / 2}, ${this.H / 2})`);
     
         var radialGrid = gridG.selectAll('circle.grid-line')
@@ -477,14 +502,14 @@ class RadialView {
             .attr('class', 'dot pulse')
             .attr('cx', 0)
             .attr('cy', 0)
-            .attr('r', d => SCALE_DOT_RADIUS(d[DOT_RADIUS_MAPPING]))
+            .attr('r', d => this.SCALE_DOT_RADIUS(d[this.DOT_RADIUS_MAPPING]))
             
         songGEnterInner.selectAll('.dot')
             .style('animation-duration', d => `${60 / d.tempo}s`)
             // .style('stroke-width', 2.5)
-            // .style('stroke', d => SCALE_DOT_COLOR(d.artists[0].id))
-            // .style('stroke-opacity', 1)
-            .style('fill', '#fff')
+            .style('stroke-opacity', 1)
+            .style('stroke', d => this.SCALE_DOT_COLOR(d.artists[0].id))
+            .style('fill', d => this.SCALE_DOT_COLOR(d.artists[0].id))
             .style('fill', d => `url(#image${d.id})`)
             .style('fill-opacity', 1)
             .on("mouseover", function (d, i) {
@@ -551,13 +576,14 @@ class RadialView {
 
         songG.merge(songGEnter)
             .classed('fade', d => !this.highlight(d))
-            .transition()
-            .attr('transform', function (d) {
-                let coord = _this.dataToXy(d);
-                let x = _this.W / 2 + coord[0];
-                let y = _this.H / 2 + coord[1];
-                return `translate(${x}, ${y})`
-            })
+            // .attr("cy", function(d) { return d.x; })
+            // .transition()
+            // .attr('transform', function (d) {
+            //     let coord = _this.dataToXy(d);
+            //     let x = _this.W / 2 + coord[0];
+            //     let y = _this.H / 2 + coord[1];
+            //     return `translate(${x}, ${y})`
+            // })
     
         songG.exit().remove();
     }

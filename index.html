@@ -4,28 +4,30 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <title>Music Vis</title>
+		<title>Music Vis</title>
+		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
         <link rel="stylesheet" href="css/radialplot.css" />
     </head>
     <body>
         <div class="container">
-            <div style="flex-grow: 1;">
+			<div style="flex-grow: 1;">
+				<h1>Untitled Music Vis</h1>
 				Search boxes go here<br>
 				<svg id="..."></svg>
             </div>
-            <div style="flex-grow: 2;">
+            <div style="flex-grow: 2; min-width: 50%;">
                 <div id="radial-view-controls" class="controls fixed">
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="tempo">Tempo</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="danceability">Danceability</button>
-                    <button class="btn radial-mapping-select" data-scale-type="log" data-attr="loudness">Loudness</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="acousticness">Acousticness</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="instrumentalness">Instrumentalness</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="liveness">Liveness</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="speechiness">Speechiness</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="energy">Energy</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="valence">Valence</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration_ms">Duration (ms)</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="popularity">Popularity</button>
+                    <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="danceability">DANCEABILITY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="log" data-attr="loudness">LOUDNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="acousticness">ACOUSTICNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="instrumentalness">INSTRUMENTALNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="liveness">LIVENESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="speechiness">SPEECHINESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="energy">ENERGY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="valence">VALENCE</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration_ms">DURATION</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="popularity">POPULARITY</button>
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
@@ -35,7 +37,8 @@
                     <svg id="radial-view" class="vis-stretch"></svg>
                 </div>
             </div>
-            <div style="flex-grow: 1;">
+			<div style="flex-grow: 1;">
+				<h2>Distribution</h2>
 				<svg id="histogram-view" class="vis-stretch"></svg>
             </div>
         </div>
@@ -59,8 +62,10 @@
                 // d3.json('../../data/Spotify_trackinfo.json'),
                 // d3.json('data/slotmachine.json'),
                 // d3.json('data/slotmachine_trackinfo.json'),
-                d3.json("data/radiohead.json"),
-                d3.json("data/radiohead_trackinfo.json")
+                // d3.json("data/radiohead.json"),
+				// d3.json("data/radiohead_trackinfo.json")
+				d3.json("data/merged.json"),
+                d3.json("data/merged_trackinfo.json")
             ]).then(function(loadedData) {
 				data = preprocessData(loadedData);
 				console.log(data);
