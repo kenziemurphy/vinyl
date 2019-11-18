@@ -42,18 +42,21 @@ class RadialView {
         // screen-dependent computed consts, will update when screen size is changed for responsive vis
         // this.svg.style("height", window.innerHeight);
         // this.svg.style("width", window.innerWidth / 2);
+        this.SCALE_MIN_OVERRIDE = false;
+        this.SCALE_MAX_OVERRIDE = false;
         this.recomputeScreenConsts();
         
         // data-dependent computed consts, will update when data is loaded
         this.SCALE_RADIAL = x => x;
         this.SCALE_DOT_RADIUS = x => x;
         this.SCALE_DOT_COLOR = x => x;
-        this.recomputeDataConsts();
 
         this.filter = x => true;
         this.highlight = x => true;
         this.filteredData = this.data.filter(this.filter);
 
+        this.recomputeDataConsts();
+        
         this.redraw();
         
         this.songToolTip = d3.tip()
@@ -76,6 +79,8 @@ class RadialView {
             .on('click', function () {
                 _this.RADIAL_MAPPING = this.getAttribute('data-attr');
                 _this.SCALE_RADIAL_TYPE = this.getAttribute('data-scale-type');
+                _this.SCALE_MIN_OVERRIDE = this.getAttribute('data-scale-min') || false;
+                _this.SCALE_MAX_OVERRIDE = this.getAttribute('data-scale-max') || false;
                 _this.recomputeDataConsts();
                 _this.redraw();
 
@@ -166,8 +171,10 @@ class RadialView {
         this.SCALE_RADIAL = this.scaleSelector(this.SCALE_RADIAL_TYPE)
             // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
             // .domain([0, 1])
-            .domain(this.data.length > 0 ?
-                d3.extent(this.data, d => d[this.RADIAL_MAPPING]) : [0, 1])
+            .domain(this.data.length == 0 ? [0, 1] :
+                this.SCALE_MIN_OVERRIDE !== false ? 
+                    [this.SCALE_MIN_OVERRIDE, this.SCALE_MAX_OVERRIDE] : 
+                    d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
             .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
     }
 
@@ -176,17 +183,33 @@ class RadialView {
         this.SCALE_RADIAL = this.scaleSelector(this.SCALE_RADIAL_TYPE)
             // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
             // .domain([0, 1])
-            .domain(this.data.length > 0 ?
-                d3.extent(this.data, d => d[this.RADIAL_MAPPING]) : [0, 1])
+            .domain(this.data.length == 0 ? [0, 1] :
+                this.SCALE_MIN_OVERRIDE !== false ? 
+                    [this.SCALE_MIN_OVERRIDE, this.SCALE_MAX_OVERRIDE] : 
+                    d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
             .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
         
         // TODO: how to make billboard data look good? dynamic sizing?
+        let tempScale = d3.scalePow()
+            .exponent(0.5)
+            .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
+            .range([2, 10]);
+        let dataByKey = d3.nest()
+            .key(d => this.getKeyFromKeyId(d.key, d.mode))
+            .rollup(v => ({
+                sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.DOT_RADIUS_MAPPING]) * tempScale(d[this.DOT_RADIUS_MAPPING])),
+                count: v.length
+            }))
+            .entries(this.filteredData);
+        let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
+        let maxCount = d3.max(dataByKey, d => d.value.count);
+        console.log(maxSumAreaSpoke);
         this.SCALE_DOT_RADIUS = d3.scalePow()
             .exponent(0.5)
             .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
             // .domain([0, 100])
-            // .range([2, Math.sqrt(targetAreaUse / sumArea)]);
-            .range([2, 10])
+            .range([2, 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
+            // .range([2, 10])
             // .range([2, 20]);
     
         
