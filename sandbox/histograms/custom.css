@@ -1,7 +1,8 @@
 body {
-  background-color: black;
+  background-color: #212039;
   color: white;
   font-family: "Arial";
+  font-size: 9px;
 }
 
 .x_label, .y_label {
@@ -9,18 +10,10 @@ body {
 }
 
 rect {
-  fill-opacity: .2;
-  stroke-width:3;
-   /* outline-color: rgb(0, 0, 255);;*/
- /* outline-style: solid;
+  /*fill-opacity: .2;*/
+  stroke-width: 2;
+    /*outline-color: rgb(0, 0, 255);;
+  outline-style: solid;
   outline-width: 3px;
   outline-offset: -3px;*/
 }
-
-.outlined {
-
-  outline-style: solid;
-  outline-width: 3px;
-  outline-offset: -3px;
-}
-

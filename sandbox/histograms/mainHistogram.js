@@ -8,14 +8,15 @@ let jsonDataArray = []; // the raw data as loaded from the json files
 fileNameArray.push('../../python_scripts/billboard.json');
 fileNameArray.push('../radialplot/radiohead.json')
 fileNameArray.push('../radialplot/slotmachine.json')
+fileNameArray.push('../radialplot/radiohead.json')
 
 // sets colors for the histogram rectangles
-var colors = ['#00FFFF','#FFFF00','#FF1A91','#decbe4'];
-var dimensions = ["energy", "danceability", "acousticness", "liveness"]; // Edit this for more histograms
+var colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
+var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence"]; // Edit this for more histograms
 
 var x = d3.scaleLinear()
   .domain([0, 1])
-  .range([52, 750]);
+  .range([52, 300]);
 
 ////////////////////////////// LOAD JSON DATA FROM FILES ///////////////////////////////
 
@@ -83,7 +84,7 @@ function stackData(dimension) {
   var histogram = d3.histogram()
       .value((d) => d[dimension])   // I need to give the vector of value
       .domain(x.domain())  // then the domain of the graphic
-      .thresholds(x.ticks(10)); // then the numbers of bins
+      .thresholds(x.ticks(20)); // then the numbers of bins
 
   // creates bins histogram array that we will use to fill our processedArray with correct format
   data = jsonDataArray[0];
@@ -96,7 +97,7 @@ function stackData(dimension) {
   // bin:1, json0: 0, json1: 2
   // etc
   // bin is then followed with counts for each json below
-  for (i = 0; i < 11; i++) {
+  for (i = 0; i < 21; i++) {
     processedArray.push({"bin": bins[i]['x0']})
   }
 
@@ -131,7 +132,7 @@ function drawHistogram(stackedData, i) {
   console.log(i*400);
   console.log(i*400 + 50);
 
-  let range = [i*450 + 400, i*450 + 50];
+  let range = [i*150 + 100, i*150 + 50];
   let domain = [0, yMax];
 
   console.log(range);
@@ -146,7 +147,8 @@ function drawHistogram(stackedData, i) {
 
   let yAxis = (g) => g
   .attr("transform", 'translate(50,0)')
-  .call(d3.axisLeft(y));
+  .call(d3.axisLeft(y)
+      .ticks(2));
 
   //adds to histogram to svg
   svg.append("g")
@@ -154,14 +156,14 @@ function drawHistogram(stackedData, i) {
       .data(stackedData)
       .join("g")
         .attr("fill", function(d, i) { return colors[i]; })
-        .style('stroke', function(d, i) { return colors[i]; })
+        // .style('stroke', function(d, i) { return colors[i]; })
       .selectAll("rect")
       .data(d => d)
       .join("rect")
-        .attr("x", (d, i) => x(d.data.bin) + 3)
+        .attr("x", (d, i) => x(d.data.bin))
         .attr("y", d => y(d[1]))
-        .attr("height", d => y(d[0]) - y(d[1]) - 4)
-        .attr("width", 64);
+        .attr("height", d => y(d[0]) - y(d[1]))
+        .attr("width", 10);
 
     // .style("opacity", .2)
 
@@ -172,10 +174,10 @@ function drawHistogram(stackedData, i) {
   svg.append("g")
       .call(yAxis)
 
-  let xLabel = dimensions[i].charAt(0).toUpperCase() +  dimensions[i].slice(1); 
+  let xLabel = dimensions[i].charAt(0).toUpperCase() +  dimensions[i].slice(1);
   svg.append('text')
       .attr('class', 'x_label')
-      .attr('transform', 'translate(375,' + parseInt(range[0]+35) + ')')
+      .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
       .text(xLabel);
       console.log(parseInt((range[0] - range[1])/2)+range[1]);
   svg.append('text')
