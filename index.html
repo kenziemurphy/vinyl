@@ -9,14 +9,15 @@
         <link rel="stylesheet" href="css/radialplot.css" />
     </head>
     <body>
+		<!-- TODO remove inline CSS -->
         <div class="container">
-			<div style="flex-grow: 1;">
-				<h1>Untitled Music Vis</h1>
+			<div style="flex-grow: 1; width: 25%;" class="full-height">
+				<h1>The Music Vis</h1>
 				Search boxes go here<br>
 				<svg id="..."></svg>
             </div>
-            <div style="flex-grow: 2; min-width: 50%;">
-                <div id="radial-view-controls" class="controls">
+            <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
+                <div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
                     <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
                     <button class="btn radial-mapping-select" data-scale-type="log"    data-attr="loudness">LOUDNESS</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
@@ -27,17 +28,16 @@
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration_ms">DURATION</button>
-                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
+					
+					<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
                 </div>
-                <div class="vis">
-                    <svg id="radial-view" class="vis-stretch"></svg>
-                </div>
+				<svg id="radial-view" class="vis-stretch"></svg>
             </div>
-			<div style="flex-grow: 1;">
+			<div style="flex-grow: 1; width: 25%; display: flex; flex-direction: column;" class="full-height">
 				<h2>Distribution</h2>
 				<svg id="histogram-view" class="vis-stretch"></svg>
             </div>
@@ -56,16 +56,23 @@
         <script src="js/histograms.js"></script>
         <script src="js/starplots.js"></script>
 
+		<script>
+			
+		</script>
+
         <script>
 			var components = [];
 			var data = [];
 
 			var dispatch = d3.dispatch('filter', 'highlight');
 
-			components.push(new RadialView(d3.select('svg#radial-view'), [], dispatch));
+			var rv
+			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 			
+			// stretchElem();
+
             Promise.all([
                 // d3.json('../../data/Spotify.json'),
                 // d3.json('../../data/Spotify_trackinfo.json'),
@@ -95,6 +102,8 @@
 			});
 
             window.addEventListener("resize", function() {
+				// Layout stuffs
+				// stretchElem();
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
@@ -105,7 +114,10 @@
 			
 			function preprocessData (files) {
 				// inner join
-				var data = arrayJoin(files[0], files[1].tracks, 'uri');
+				var data = arrayJoin(files[0], files[1].tracks, 'id');
+				data.forEach(function (d) {
+					d.duration = d.duration_ms / 1000;
+				})
 				return data; 
 			}
 
@@ -121,6 +133,15 @@
 				});
 				
 				return abJoined.filter(x => x !== false);
+			}
+
+			function stretchElem () {
+				let visStretches = document.getElementsByClassName('vis-stretch');
+				for (let i = 0; i < visStretches.length; i++) {
+					let el = visStretches[i];
+					el.style.width = el.parentElement.offsetWidth;
+					el.style.height = el.parentElement.offsetHeight;
+				}
 			}
         </script>
     </body>

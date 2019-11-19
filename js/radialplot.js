@@ -31,20 +31,20 @@ class RadialView {
         this.svg = svg;
         this.data = data;
         this.dispatch = dispatch;
+
+        this.config = {
+            showAlbumArt: true,
+            multiView: false
+        }
         
         // defaults
         this.RADIAL_MAPPING = 'tempo';
         this.DOT_RADIUS_MAPPING = 'popularity';
         this.SCALE_RADIAL_TYPE = 'linear';
-        
-        // svg = d3.select('.vis svg#radial-plot');
-    
+            
         // screen-dependent computed consts, will update when screen size is changed for responsive vis
-        // this.svg.style("height", window.innerHeight);
-        // this.svg.style("width", window.innerWidth / 2);
         this.SCALE_MIN_OVERRIDE = false;
         this.SCALE_MAX_OVERRIDE = false;
-        this.recomputeScreenConsts();
         
         // data-dependent computed consts, will update when data is loaded
         this.SCALE_RADIAL = x => x;
@@ -55,8 +55,6 @@ class RadialView {
         this.highlight = x => true;
         this.filteredData = this.data.filter(this.filter);
 
-        this.recomputeDataConsts();
-        
         this.redraw();
         
         this.songToolTip = d3.tip()
@@ -82,20 +80,22 @@ class RadialView {
                 _this.SCALE_RADIAL_TYPE = this.getAttribute('data-scale-type');
                 _this.SCALE_MIN_OVERRIDE = this.getAttribute('data-scale-min') || false;
                 _this.SCALE_MAX_OVERRIDE = this.getAttribute('data-scale-max') || false;
-                _this.recomputeDataConsts();
-                _this.redraw();
 
                 d3.selectAll('button.radial-mapping-select')
-                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') ==_this.RADIAL_MAPPING)
-                // d3.select('#radial-view-controls')
-                //     .style('transform-origin', `50% 50%`)
-                //     .style('transform', `rotate(${this.getAttribute('data-angle') * 180 / Math.PI}deg)`)
-            });
-    }
+                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') ==_this.RADIAL_MAPPING);
 
-    // init () {
-        
-    // }
+                _this.redraw();
+            });
+
+        // // TODO stop music when clicking outside
+        // d3.select('body').on('click', function () {
+        //     var outside = d3.selectAll('.dot.active').filter(function () { this == d3.event.target; }).empty();
+        //     if (outside) {
+        //         console.log('!!!!!');
+        //         _this.resetSelection();
+        //     }
+        // });
+    }
 
     onDataChanged (newData) {
         let _this = this
@@ -106,50 +106,47 @@ class RadialView {
             d.y = _this.H / 2;
         });
         this.filteredData = this.data.filter(this.filter)
-        this.recomputeDataConsts();
-        this.redraw(true);
-    }
-
-    onScreenSizeChanged () {
-        this.recomputeScreenConsts();
         this.redraw();
     }
 
-    redraw (resetForce = true) {
+    onScreenSizeChanged () {
+        this.redraw();
+    }
+
+    setConfig (config) {
+        for (let i in config) {
+            this.config[i] = config[i];
+        }
+        this.redraw();
+    }
+
+    redraw () {
+        this.recomputeConsts();
+
         this.grid = axisRadial(this.SCALE_RADIAL, SCALE_ANGLE, [this.W / 2, this.H / 2], this.RADIAL_MAPPING);
         this.svg.call(this.grid);
 
-        // multiple grids
-        // let gridCenters = [
-        //     [this.W / 4, this.H / 4],
-        //     [this.W / 4, 3 * this.H / 4],
-        //     [3 * this.W / 4, this.H / 4],
-        //     [3 * this.W / 4, 3 * this.H / 4]
-        // ]
-        // this.svg.selectAll('g.grid-small')
-        //     .data(gridCenters)
-        //     .enter()
-        //     .append('g')
-        //     .attr('class', 'grid-small')
-        //     .attr('transform', d => `translate(${d[0]}, ${d[1]})`)
-        //     .call(axisRadial(this.SCALE_RADIAL, SCALE_ANGLE, [0, 0], this.RADIAL_MAPPING))
-        
         this.drawDataPoints();
-        if (ENABLE_FORCE && resetForce) {
+        if (ENABLE_FORCE) {
             this.initForce();
         }
 
         let _this = this;
+        let angle = d3.select('.radial-mapping-select.active').attr('data-angle');
+        // d3.select('#radial-view-controls')
+        //     .attr('data-angle', angle)
+        //     .style('transform', `rotate(-${+angle + 90}deg)`)
         d3.selectAll('.radial-mapping-select')
             .style('position', 'absolute')
             .attr('data-angle', function (d, i) {
-                return i / d3.selectAll('.radial-mapping-select').size() * Math.PI * 2 - Math.PI / 2;
+                return i / d3.selectAll('.radial-mapping-select').size() * 360;
             })
             .style('transform', function (d, i) {
-                let angle = i / d3.selectAll('.radial-mapping-select').size() * Math.PI * 2 - Math.PI / 2;
-                let x = _this.W / 2 + (_this.MAX_RADIAL_DIST + 70) * Math.cos(angle);
-                let y = _this.H / 2 + (_this.MAX_RADIAL_DIST + 70) * Math.sin(angle);
-                let selfAngle = angle * 180 / Math.PI + 90;
+                let parentAngle = d3.select('#radial-view-controls').attr('data-angle');
+                let angle = i / d3.selectAll('.radial-mapping-select').size() * 360 - 90;
+                let x = (_this.MAX_RADIAL_DIST + 70) * Math.cos(angle* Math.PI / 180);
+                let y = (_this.MAX_RADIAL_DIST + 70) * Math.sin(angle* Math.PI / 180);
+                let selfAngle = angle + 90;
                 if (selfAngle > 90 && selfAngle < 270) {
                     selfAngle += 180;
                 }
@@ -179,7 +176,7 @@ class RadialView {
             return d3.scaleLog()
     }
 
-    recomputeScreenConsts() {
+    recomputeConsts() {
         this.H = parseInt(this.svg.style("height"), 10);
         this.W = parseInt(this.svg.style("width"), 10);
         
@@ -187,73 +184,34 @@ class RadialView {
         this.MAX_RADIAL_DIST = Math.min(this.W, this.H) / 2 - 100;
 
         this.SCALE_RADIAL = this.scaleSelector(this.SCALE_RADIAL_TYPE)
-            // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
-            // .domain([0, 1])
             .domain(this.data.length == 0 ? [0, 1] :
                 this.SCALE_MIN_OVERRIDE !== false ? 
                     [this.SCALE_MIN_OVERRIDE, this.SCALE_MAX_OVERRIDE] : 
                     d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
             .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
         
-        // if (this.filteredData) {
-        //     let tempScale = d3.scalePow()
-        //         .exponent(0.5)
-        //         .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
-        //         .range([2, 10]);
-        //     let dataByKey = d3.nest()
-        //         .key(d => this.getKeyFromKeyId(d.key, d.mode))
-        //         .rollup(v => ({
-        //             sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.DOT_RADIUS_MAPPING]) * tempScale(d[this.DOT_RADIUS_MAPPING])),
-        //             count: v.length
-        //         }))
-        //         .entries(this.filteredData);
-        //     let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
-        //     let maxCount = d3.max(dataByKey, d => d.value.count);
-        //     let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
-        //     this.SCALE_DOT_RADIUS = d3.scalePow()
-        //         .exponent(0.5)
-        //         .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
-        //         .range([2, drawingArea / 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
-        // }
-    }
-
-    recomputeDataConsts () {
-        
-        this.SCALE_RADIAL = this.scaleSelector(this.SCALE_RADIAL_TYPE)
-            // .domain([0, d3.max(data, d => d[RADIAL_MAPPING])])
-            // .domain([0, 1])
-            .domain(this.data.length == 0 ? [0, 1] :
-                this.SCALE_MIN_OVERRIDE !== false ? 
-                    [this.SCALE_MIN_OVERRIDE, this.SCALE_MAX_OVERRIDE] : 
-                    d3.extent(this.data, d => d[this.RADIAL_MAPPING]))
-            .range([this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST]);
-        
-        let tempScale = d3.scalePow()
-            .exponent(0.5)
-            .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
-            .range([2, 10]);
-        let dataByKey = d3.nest()
-            .key(d => this.getKeyFromKeyId(d.key, d.mode))
-            .rollup(v => ({
-                sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.DOT_RADIUS_MAPPING]) * tempScale(d[this.DOT_RADIUS_MAPPING])),
-                count: v.length
-            }))
-            .entries(this.filteredData);
-        let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
-        let maxCount = d3.max(dataByKey, d => d.value.count);
-        let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
-        this.SCALE_DOT_RADIUS = d3.scalePow()
-            .exponent(0.5)
-            .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
-            .range([2, drawingArea / 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
+        if (this.filteredData) {
+            let tempScale = d3.scalePow()
+                .exponent(0.5)
+                .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
+                .range([2, 10]);
+            let dataByKey = d3.nest()
+                .key(d => this.getKeyFromKeyId(d.key, d.mode))
+                .rollup(v => ({
+                    sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.DOT_RADIUS_MAPPING]) * tempScale(d[this.DOT_RADIUS_MAPPING])),
+                    count: v.length
+                }))
+                .entries(this.filteredData);
+            let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
+            let maxCount = d3.max(dataByKey, d => d.value.count);
+            let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
+            this.SCALE_DOT_RADIUS = d3.scalePow()
+                .exponent(0.5)
+                .domain(d3.extent(this.data, d => d[this.DOT_RADIUS_MAPPING]))
+                .range([2, drawingArea / 700 * Math.sqrt(1 / maxSumAreaSpoke)]);
+        }
             
-        
-        this.SCALE_DOT_COLOR = d3.scaleOrdinal(COLOR_SCALE)
-            // .domain(this.data.map(x => x.album.name)
-            // .filter(function (value, index, self) { 
-            //     // unique filter
-            //     return self.indexOf(value) === index;
-            // }));
+        this.SCALE_DOT_COLOR = d3.scaleOrdinal(COLOR_SCALE);
     }
     
     
@@ -269,21 +227,12 @@ class RadialView {
                     _this.svg.selectAll('g.song')
                         .attr('transform', d => `translate(${d.x}, ${d.y})`);
                 });
-            // this.force.restart();
-        } else {
-            console.log('update force', this.RADIAL_MAPPING)
-            
+        } else {            
             this.force.nodes(this.filteredData);
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.DOT_RADIUS_MAPPING]) + 1.5);
             this.force.force('x').x(d => _this.W / 2 + _this.dataToXy(d)[0]).strength(0.2);
             this.force.force('y').y(d => _this.H / 2 + _this.dataToXy(d)[1]).strength(0.2);
-            // .on("tick", function tick(e) {
-                //     _this.svg.selectAll('g.song')
-                //         .attr('transform', d => `translate(${d.x}, ${d.y})`);
-                // });
-            this.force.restart();
-            console.log(this.force.nodes().length);
-        }
+            this.force.restart();        }
     }
     
     drawDataPoints () {
@@ -316,6 +265,28 @@ class RadialView {
             .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
             .append('polygon')
             .attr('class', 'dot pulse')
+    
+        var circlePoints = songGEnterInner
+            .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature <= 2 : true)
+            .append('circle')
+            .attr('class', 'dot pulse')
+            
+        songGEnterInner.selectAll('.dot')
+            .on("mouseover", this.mouseActions('mouseover'))
+            .on("click", this.mouseActions('click'))
+            .on("mouseout", this.mouseActions('mouseout'));
+
+        songG.merge(songGEnter)
+            .classed('fade', d => !this.highlight(d))
+
+        songG.merge(songGEnter)
+            .selectAll('.dot')
+            .style('animation-duration', d => `${60 / d.tempo}s`)
+            .style('stroke', d => this.SCALE_DOT_COLOR(d.artists[0].id))
+            .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(d.artists[0].id))
+
+        songG.merge(songGEnter)
+            .selectAll('polygon.dot.pulse')
             .attr('points', function (d) {
                 // draw regular polygons
                 var points = [];
@@ -339,121 +310,75 @@ class RadialView {
     
                 return points.map(d => `${d[0]},${d[1]}`).join(' ');
             })
-    
-        var circlePoints = songGEnterInner
-            .filter(d => TIME_SIG_AS_POLYGON ? d.time_signature <= 2 : true)
-            .append('circle')
-            .attr('class', 'dot pulse')
-            .attr('cx', 0)
-            .attr('cy', 0)
+
+        songG.merge(songGEnter)
+            .selectAll('circle.dot.pulse')
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.DOT_RADIUS_MAPPING]))
-            
-        songGEnterInner.selectAll('.dot')
-            .style('animation-duration', d => `${60 / d.tempo}s`)
-            // .style('stroke-width', 2.5)
-            .style('stroke-opacity', 1)
-            .style('stroke', d => this.SCALE_DOT_COLOR(d.artists[0].id))
-            .style('fill', d => this.SCALE_DOT_COLOR(d.artists[0].id))
-            .style('fill', d => `url(#image${d.id})`)
-            .style('fill-opacity', 1)
-            .on("mouseover", function (d, i) {
-                // deselect
-                if (_this.selectionLocked) {
-                    d.audio.pause();
-                    d.audio.currentTime = 0;
-                    _this.songToolTip.hide(d, this);
-        
-                    d3.selectAll('.guide-line')
-                        .classed('hidden', true)
-                        .transition()
-                    d3.selectAll('.label-angle')
-                        .classed('highlight', false)
-                    // d3.selectAll('.song')
-                    //     .classed('fade', d => !_this.highlight(d));
-
-                    _this.dispatch.call('highlight', this, k => true);
-                }
-
+    
+        songG.exit().remove();
+    }
+    
+    mouseActions (action) {
+        let _this = this;
+        console.log(_this)
+        if (action == 'mouseover') {
+            return function (d, i) {
+                // if (_this.currentPlayingMusic) {
+                //     _this.currentPlayingMusic.stopFadeOut();
+                //     d3.selectAll('.dot.pulse').classed('active', false);
+                // }
                 if (!d.audio) {
                     d.audio = new Audio(d.preview_url);
+                    d.audio.loop = true;
                 }
-                d.audio.loop = true;
-                // d.audio.volume = 0;
-                d.audio.play();
-                // FIXME fadeTo is still buggy.
-                // d.audio.fadeTo(1);
+                d.audio.playFadeIn();
                 
-                // highlight song
+                _this.currentPlayingMusic = d.audio;
                 _this.songToolTip.show(d, this);
                 _this.grid.showGuide(_this.getKeyFromKeyId(d.key, d.mode), d[_this.RADIAL_MAPPING]);
 
                 _this.dispatch.call('highlight', this, k => k.id == d.id);
-            })
-            .on("mousedown", function (d, i) {
-                console.log('dragStart');
-                d.isDragging = true;
-            })
-            .on("mousemove", function (d, i, m) {
-                // console.log('mousemove', d, i, m[i]);
-                // console.log(_this.svg);
-                // let coordinates = d3.mouse(_this.svg);
-
-                // console.log(coordinates);
-                // d.fx = d.x + coordinates[0];
-                // d.fy = d.y + coordinates[1];
-                // d.isDragging = true;
-            })
-            .on("mouseup", function (d, i) {
-                console.log('mousemove');
-                d.isDragging = false;
-            })
-            .on("click", function (d, i) {
-                // TODO: lock selection
-                console.log(d.audio)
+            }
+        } else if (action == 'click') {
+            return function (d, i, m) {
                 if (!d.audio) {
                     d.audio = new Audio(d.preview_url);
                     d.audio.loop = true;
-                    this.classed('active', true);
                 }
-                // d.audio.volume = 0;
-                d.audio.play();
+                console.log(_this)
+                if (d.audio.paused)
+                    d.audio.playFadeIn();
+                _this.currentPlayingMusic = d.audio;
                 _this.dispatch.call('highlight', this, k => k.id == d.id);
+                // TODO lock selection when clicked
                 // _this.selectionLocked = true;
-                // FIXME fadeTo is still buggy.
-                // d.audio.fadeTo(1);
-            })
-            .on("mouseout", function (d, i) {
-                // FIXME fadeTo is still buggy.
-                // d.audio.fadeTo(0).then(function () {
-                //     console.log('faded out');
-                //     d.audio.pause();
-                //     d.audio.currentTime = 0;
-                // });
-                // if (!_this.selectionLocked) {
-                    d.audio.pause();
-                    d.audio.currentTime = 0;
+                // m[i].classList.add('active');
+            }
+        } else if (action == 'mouseout') {
+            return function (d, i) {
+                if (!_this.selectionLocked) {
+                    
+                    d.audio.stopFadeOut();
 
                     _this.songToolTip.hide(d, this);
                     _this.grid.hideGuide();
         
                     _this.dispatch.call('highlight', this, k => true);
-                // }
-            });
-
-        songG.merge(songGEnter)
-            .classed('fade', d => !this.highlight(d))
-            // .attr("cy", function(d) { return d.x; })
-            // .transition()
-            // .attr('transform', function (d) {
-            //     let coord = _this.dataToXy(d);
-            //     let x = _this.W / 2 + coord[0];
-            //     let y = _this.H / 2 + coord[1];
-            //     return `translate(${x}, ${y})`
-            // })
-    
-        songG.exit().remove();
+                }
+            }
+        }
     }
-    
+
+    resetSelection () {
+        console.log('!', this, this.currentPlayingMusic);
+        if (this.currentPlayingMusic) {
+            this.currentPlayingMusic.stopFadeOut();
+            d3.selectAll('.dot.pulse').classed('active', false);
+            this.songToolTip.hide({}, this);
+            this.grid.hideGuide();
+            this.dispatch.call('highlight', this, k => true);
+        }
+    }
     
     
     // helpers
