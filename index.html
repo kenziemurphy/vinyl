@@ -24,7 +24,7 @@
             <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
                 <div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
                     <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
-                    <button class="btn radial-mapping-select" data-scale-type="log"    data-attr="loudness">LOUDNESS</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear"    data-attr="loudness">LOUDNESS</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="acousticness">ACOUSTICNESS</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="instrumentalness">INSTRUMENTALNESS</button>
@@ -33,6 +33,7 @@
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
+                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="release_year">YEAR</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
 					
 					<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
@@ -107,10 +108,7 @@
 			// UI events 
 			document.getElementById('toggle-split-view')
 				.addEventListener('click', function (e) { 
-					if (rv.config.splits == 1)
-						rv.setConfig({splits: 2});
-					else
-						rv.setConfig({splits: 1});
+					rv.setConfig({isSplitting: !rv.config.isSplitting});
 				}, false);
 
 			document.getElementById('toggle-album-art')
@@ -129,6 +127,10 @@
 				var data = arrayJoin(files[0], files[1].tracks, 'id');
 				data.forEach(function (d) {
 					d.duration = d.duration_ms / 1000;
+					d.release_year = d.album.release_date.indexOf('-') < 0 ? 
+						+d.album.release_date : 
+						+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
+					console.log(d.album.release_date, d.release_year);
 				})
 				return data; 
 			}

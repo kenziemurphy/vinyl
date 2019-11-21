@@ -1,4 +1,5 @@
 // facts
+const MAX_SPLITS = 4;
 const ALL_KEYS = [
     'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
     'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
@@ -31,13 +32,14 @@ class RadialView {
             scaleRadialType:'linear',
             scaleMinOverride: false,
             scaleMaxOverride: false,
+            isSplitting: false,
             splits: 1,
-            enableForce: true
+            enableForce: true,
+            splitKey: x => x.artists[0].id
         }
         
-        this.COLOR_SCHEME = ['#fca981', '#6988f2', '#f36293', '#81d0ef'];
+        this.COLOR_SCHEME = ['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
-        this.ENABLE_FORCE = true;
         
         // data-dependent computed consts, will update when data is loaded
         this.SCALE_RADIAL = x => x;
@@ -108,7 +110,7 @@ class RadialView {
     }
 
     setConfig (config) {
-        if (config.splits !== undefined && config.splits != this.config.splits) {
+        if (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) {
             this.svg.selectAll('g.grid').remove();
             this.shouldReinitGrid = true;
         }
@@ -123,12 +125,12 @@ class RadialView {
     initGrid () {
         this.grids = [];
         this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
-        for (let i = 0 ; i < this.config.splits; i++) {
+        for (let i = 0 ; i < this.SPLITS; i++) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
             let g = axisRadial(
                 this.SCALE_RADIAL, 
                 SCALE_ANGLE, 
-                this.CENTER_BY_NUM_SPLITS[this.config.splits][i],
+                this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.radialMapping);
             this.grids.push(g);
             multiGridG.call(this.grids[i]);
@@ -143,11 +145,12 @@ class RadialView {
             this.initGrid();
         }
         
-        for (let i in this.CENTER_BY_NUM_SPLITS[this.config.splits]) {
+        // console.log('///', this.SPLITS);
+        for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
             this.grids[i].update(this.SCALE_RADIAL, 
                 SCALE_ANGLE, 
-                this.CENTER_BY_NUM_SPLITS[this.config.splits][i],
+                this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.radialMapping);
             multiGridG.call(this.grids[i]);
         }
@@ -225,11 +228,17 @@ class RadialView {
                 [this.W * 3 / 4, this.H * 3 / 4],
             ], 
         }
+
+        let nGroups = d3.nest()
+            .key(this.config.splitKey)
+            .entries(this.filteredData)
+            .length
+        this.SPLITS = this.config.isSplitting ? Math.min(nGroups, MAX_SPLITS) : 1;
         
-        this.MIN_RADIAL_DIST = this.config.splits == 1 ? 
+        this.MIN_RADIAL_DIST = this.SPLITS == 1 ? 
             Math.min(this.W, this.H) / 8 : 
-            Math.min(this.W, this.H) / 20;
-        this.MAX_RADIAL_DIST = this.config.splits == 1 ? 
+            Math.min(this.W, this.H) / 16;
+        this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
             Math.min(this.W, this.H) / 2 - 100 : 
             Math.min(this.W, this.H) / 4 - 50;
 
@@ -246,9 +255,9 @@ class RadialView {
                 .domain(d3.extent(this.data, d => d[this.config.dotRadiusMapping]))
                 .range([2, 10]);
             let dataByKey = d3.nest()
-                .key(d => this.config.splits == 1 ? 
+                .key(d => this.SPLITS == 1 ? 
                     this.getKeyFromKeyId(d.key, d.mode) : 
-                    `${this.getKeyFromKeyId(d.key, d.mode)} - ${d.artists[0].id}` )
+                    `${this.getKeyFromKeyId(d.key, d.mode)} - ${this.config.splitKey(d)}` )
                 .rollup(v => ({
                     sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.config.dotRadiusMapping]) * tempScale(d[this.config.dotRadiusMapping])),
                     count: v.length
@@ -260,13 +269,13 @@ class RadialView {
             this.SCALE_DOT_RADIUS = d3.scalePow()
                 .exponent(0.5)
                 .domain(d3.extent(this.data, d => d[this.config.dotRadiusMapping]))
-                .range([2, drawingArea / (this.config.splits == 1 ? 700 : 1400) * Math.sqrt(1 / maxSumAreaSpoke)]);
+                .range([2, drawingArea / (this.SPLITS == 1 ? 700 : 1400) * Math.sqrt(1 / maxSumAreaSpoke)]);
         }
             
         this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME);
-        this.SCALE_DOT_CHART_INDEX = this.config.splits == 1 ?
+        this.SCALE_DOT_CHART_INDEX = this.SPLITS == 1 ?
             x => 0 :
-            d3.scaleOrdinal(d3.range(0, this.config.splits, 1))
+            d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
     }
     
     initForce () {
@@ -289,8 +298,8 @@ class RadialView {
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
         else
             this.force.force('collision').radius(0);
-        this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
-        this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
+        this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][0] + _this.dataToXy(d)[0]).strength(0.2);
+        this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][1] + _this.dataToXy(d)[1]).strength(0.2);
         this.force.alphaTarget(0.7).restart()
        
     }
@@ -311,15 +320,9 @@ class RadialView {
         
         defs.append('svg:pattern')
             .attr('id', d => `image${d.id}`)
-            // .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            // .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            // .attr("x", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            // .attr("y", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
             .attr("xlink:href", d => d.album.images[2].url)
-            // .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            // .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
     
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
@@ -352,8 +355,8 @@ class RadialView {
         songG.merge(songGEnter)
             .selectAll('.dot')
             .style('animation-duration', d => `${60 / d.tempo}s`)
-            .style('stroke', d => this.SCALE_DOT_COLOR(d.artists[0].id))
-            .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(d.artists[0].id))
+            .style('stroke', d => this.SCALE_DOT_COLOR(this.config.splitKey(d)))
+            .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(this.config.splitKey(d)))
 
         songG.merge(songGEnter)
             .selectAll('polygon.dot.pulse')
@@ -415,7 +418,7 @@ class RadialView {
                     let index = Math.floor(Math.random() * _this.filteredData.length);
                     similarSongs.push(_this.filteredData[index]);
                 }
-                _this.svg.selectAll('line.similarity-link')
+                let similarityLinks = _this.svg.selectAll('line.similarity-link')
                     .data(similarSongs)
                     .enter()
                     .append('line')
@@ -426,6 +429,11 @@ class RadialView {
                     .attr('opacity', d => Math.random() * 0.7 + 0.3)
                     .attr('x1', s => d.x)
                     .attr('y1', s => d.y)
+                    .attr('x2', s => d.x)
+                    .attr('y2', s => d.y)
+                
+                _this.svg.selectAll('line.similarity-link')
+                    .transition()
                     .attr('x2', s => s.x)
                     .attr('y2', s => s.y)
 
