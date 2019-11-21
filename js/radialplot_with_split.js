@@ -273,8 +273,8 @@ class RadialView {
         if (!this.force) {
             this.force = d3.forceSimulation(this.filteredData)
                 .force('collision', d3.forceCollide().radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5))
-                .force('x', d3.forceX().x(d => _this.CENTER_BY_NUM_SPLITS[this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2))
-                .force('y', d3.forceY().y(d => _this.CENTER_BY_NUM_SPLITS[this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2))
+                .force('x', d3.forceX().x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2))
+                .force('y', d3.forceY().y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2))
                 .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
@@ -283,8 +283,8 @@ class RadialView {
         } else {            
             this.force.nodes(this.filteredData);
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
-            this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
-            this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
+            this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
+            this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
             this.force.restart();
         }
     }
@@ -392,7 +392,26 @@ class RadialView {
                     g.showGuide(_this.getKeyFromKeyId(d.key, d.mode), d[_this.config.radialMapping]);
                 });
 
-                _this.dispatch.call('highlight', this, k => k.id == d.id);
+                // FIXME compute song similarity
+                let n = 5;
+                let similarSongs = [];
+                for (let i = 0; i < n; i++) {
+                    let index = Math.floor(Math.random() * _this.filteredData.length);
+                    similarSongs.push(_this.filteredData[index]);
+                }
+                _this.svg.selectAll('line.similarity-link')
+                    .data(similarSongs)
+                    .enter()
+                    .append('line')
+                    .attr('class', 'similarity-link')
+                    .attr('stroke', '#fff')
+                    .attr('stroke-width', 2)
+                    .attr('x1', s => d.x)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0])
+                    .attr('y1', s => d.y)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1])
+                    .attr('x2', s => s.x)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(s)[0])
+                    .attr('y2', s => s.y)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(s)[1])
+
+                _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.id == k.id).length > 0);
             }
         } else if (action == 'click') {
             return function (d, i, m) {
@@ -422,6 +441,9 @@ class RadialView {
         
                     _this.dispatch.call('highlight', this, k => true);
                 }
+
+                // TODO make it look better
+                _this.svg.selectAll('line.similarity-link').remove();
             }
         }
     }
