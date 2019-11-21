@@ -16,7 +16,8 @@
 				Search boxes go here<br>
 				<svg id="..."></svg>
 				<div>
-					<button id="toggle-split-view" class="btn">Split view</button>
+					<button id="toggle-split-view" class="btn">Toggle split view</button>
+					<br><br><button id="toggle-album-art" class="btn">Toggle album art</button>
 				</div>
             </div>
             <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
@@ -72,8 +73,6 @@
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 			
-			// stretchElem();
-
             Promise.all([
                 // d3.json('../../data/Spotify.json'),
                 // d3.json('../../data/Spotify_trackinfo.json'),
@@ -93,18 +92,14 @@
 			});
 			
 			dispatch.on("filter", function (filterFunc) {
-				console.log('filter triggered', filterFunc)
 				components.forEach(function (c) { c.onFilter(filterFunc); });
 			});
 
 			dispatch.on("highlight", function (filterFunc) {
-				console.log('highlight triggered', filterFunc)
 				components.forEach(function (c) { c.onHighlight(filterFunc); });
 			});
 
             window.addEventListener("resize", function() {
-				// Layout stuffs
-				// stretchElem();
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
@@ -116,7 +111,14 @@
 					else
 						rv.setConfig({splits: 1});
 				}, false);
-			
+
+			document.getElementById('toggle-album-art')
+				.addEventListener('click', function (e) { 
+					rv.setConfig({showAlbumArt: !rv.config.showAlbumArt});
+					console.log(rv.config.showAlbumArt)
+				}, false);
+
+			// helpers
 			function preprocessData (files) {
 				// inner join
 				var data = arrayJoin(files[0], files[1].tracks, 'id');
@@ -138,15 +140,6 @@
 				});
 				
 				return abJoined.filter(x => x !== false);
-			}
-
-			function stretchElem () {
-				let visStretches = document.getElementsByClassName('vis-stretch');
-				for (let i = 0; i < visStretches.length; i++) {
-					let el = visStretches[i];
-					el.style.width = el.parentElement.offsetWidth;
-					el.style.height = el.parentElement.offsetHeight;
-				}
 			}
         </script>
     </body>

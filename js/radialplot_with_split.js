@@ -275,17 +275,18 @@ class RadialView {
                 .force('collision', d3.forceCollide().radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5))
                 .force('x', d3.forceX().x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2))
                 .force('y', d3.forceY().y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2))
-                .alphaTarget(1)
+                // // .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
-                        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                    .attr('transform', d => `translate(${d.x}, ${d.y})`);
                 });
         } else {            
+            this.force.velocityDecay(0.5);
             this.force.nodes(this.filteredData);
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
             this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
             this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
-            this.force.restart();
+            this.force.alphaTarget(0.7).restart()
         }
     }
     
@@ -406,10 +407,12 @@ class RadialView {
                     .attr('class', 'similarity-link')
                     .attr('stroke', '#fff')
                     .attr('stroke-width', 2)
-                    .attr('x1', s => d.x)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0])
-                    .attr('y1', s => d.y)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1])
-                    .attr('x2', s => s.x)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(s)[0])
-                    .attr('y2', s => s.y)//_this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(s)[1])
+                    .attr('pointer-events', 'none')
+                    .attr('opacity', d => Math.random() * 0.7 + 0.3)
+                    .attr('x1', s => d.x)
+                    .attr('y1', s => d.y)
+                    .attr('x2', s => s.x)
+                    .attr('y2', s => s.y)
 
                 _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.id == k.id).length > 0);
             }
