@@ -51,9 +51,6 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
             .attr('fill-opacity', '0')
             .attr('stroke-opacity', '0.2')
             .attr('stroke', '#ffffff')
-
-        console.log(radialMappingLabel, radialGrid.enter().size(), radialGrid.exit().size());
-        console.trace();
         
         radialGrid.merge(radialGridEnter)
             .transition()

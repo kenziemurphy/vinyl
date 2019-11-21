@@ -306,15 +306,15 @@ class RadialView {
         
         defs.append('svg:pattern')
             .attr('id', d => `image${d.id}`)
-            .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            .attr("x", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            .attr("y", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            // .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            // .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            // .attr("x", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            // .attr("y", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
             .attr("xlink:href", d => d.album.images[2].url)
-            .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-            .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
+            // .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            // .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
     
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
@@ -330,6 +330,16 @@ class RadialView {
             .on("mouseover", this.mouseActions('mouseover'))
             .on("click", this.mouseActions('click'))
             .on("mouseout", this.mouseActions('mouseout'));
+
+        songG.merge(songGEnter)
+            .selectAll('defs pattern')
+            .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            .attr("x", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            .attr("y", d => -this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            .selectAll("image")
+            .attr("width", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+            .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
 
         songG.merge(songGEnter)
             .classed('fade', d => !this.highlight(d))
