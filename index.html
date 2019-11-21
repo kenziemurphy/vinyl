@@ -18,6 +18,7 @@
 				<div>
 					<button id="toggle-split-view" class="btn">Toggle split view</button>
 					<br><br><button id="toggle-album-art" class="btn">Toggle album art</button>
+					<br><br><button id="toggle-force" class="btn">Toggle force jittering</button>
 				</div>
             </div>
             <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
@@ -115,6 +116,11 @@
 			document.getElementById('toggle-album-art')
 				.addEventListener('click', function (e) { 
 					rv.setConfig({showAlbumArt: !rv.config.showAlbumArt});
+				}, false);
+			
+			document.getElementById('toggle-force')
+				.addEventListener('click', function (e) { 
+					rv.setConfig({enableForce: !rv.config.enableForce});
 				}, false);
 
 			// helpers

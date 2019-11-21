@@ -31,7 +31,8 @@ class RadialView {
             scaleRadialType:'linear',
             scaleMinOverride: false,
             scaleMaxOverride: false,
-            splits: 1
+            splits: 1,
+            enableForce: true
         }
         
         this.COLOR_SCHEME = ['#fca981', '#6988f2', '#f36293', '#81d0ef'];
@@ -152,9 +153,9 @@ class RadialView {
         }
 
         this.drawDataPoints();
-        if (this.ENABLE_FORCE) {
+        // if (this.ENABLE_FORCE) {
             this.initForce();
-        }
+        // }
 
         // buttons
         let _this = this;
@@ -272,22 +273,26 @@ class RadialView {
         let _this = this;
         if (!this.force) {
             this.force = d3.forceSimulation(this.filteredData)
-                .force('collision', d3.forceCollide().radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5))
-                .force('x', d3.forceX().x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2))
-                .force('y', d3.forceY().y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2))
+                .force('collision', d3.forceCollide())
+                .force('x', d3.forceX())
+                .force('y', d3.forceY())
                 // // .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
                     .attr('transform', d => `translate(${d.x}, ${d.y})`);
                 });
-        } else {            
-            this.force.velocityDecay(0.5);
-            this.force.nodes(this.filteredData);
+        }          
+
+        this.force.velocityDecay(0.5);
+        this.force.nodes(this.filteredData);
+        if (this.config.enableForce)
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
-            this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
-            this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
-            this.force.alphaTarget(0.7).restart()
-        }
+        else
+            this.force.force('collision').radius(0);
+        this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][0] + _this.dataToXy(d)[0]).strength(0.2);
+        this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.config.splits][_this.SCALE_DOT_CHART_INDEX(d.artists[0].id)][1] + _this.dataToXy(d)[1]).strength(0.2);
+        this.force.alphaTarget(0.7).restart()
+       
     }
     
     drawDataPoints () {
