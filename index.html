@@ -15,6 +15,9 @@
 				<h1>The Music Vis</h1>
 				Search boxes go here<br>
 				<svg id="..."></svg>
+				<div>
+					<button id="toggle-split-view" class="btn">Split view</button>
+				</div>
             </div>
             <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
                 <div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
@@ -35,7 +38,7 @@
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
                 </div>
-				<svg id="radial-view" class="vis-stretch"></svg>
+				<svg id="radial-view" class="vis-stretch" overflow="visible"></svg>
             </div>
 			<div style="flex-grow: 1; width: 25%; display: flex; flex-direction: column;" class="full-height">
 				<h2>Distribution</h2>
@@ -50,15 +53,13 @@
 		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+        <script src="js/utils.js"></script>
         <script src="js/audiohelpers.js"></script>
         <script src="js/radialgrid.js"></script>
-        <script src="js/radialplot.js"></script>
+        <!-- <script src="js/radialplot.js"></script> -->
+        <script src="js/radialplot_with_split.js"></script>
         <script src="js/histograms.js"></script>
         <script src="js/starplots.js"></script>
-
-		<script>
-			
-		</script>
 
         <script>
 			var components = [];
@@ -78,10 +79,10 @@
                 // d3.json('../../data/Spotify_trackinfo.json'),
                 // d3.json('data/slotmachine.json'),
                 // d3.json('data/slotmachine_trackinfo.json'),
-                d3.json("data/radiohead.json"),
-				d3.json("data/radiohead_trackinfo.json")
-				// d3.json("data/merged.json"),
-				// d3.json("data/merged_trackinfo.json")
+                // d3.json("data/radiohead.json"),
+				// d3.json("data/radiohead_trackinfo.json")
+				d3.json("data/merged.json"),
+				d3.json("data/merged_trackinfo.json")
 				// d3.json("data/spoegwolf.json"),
 				// d3.json("data/spoegwolf_trackinfo.json")
             ]).then(function(loadedData) {
@@ -107,10 +108,14 @@
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
-			// var event = new Event('filter');
-			document.body.addEventListener('highlight', function (e) { console.log('!') }, false);
-
-
+			// UI events 
+			document.getElementById('toggle-split-view')
+				.addEventListener('click', function (e) { 
+					if (rv.config.splits == 1)
+						rv.setConfig({splits: 2});
+					else
+						rv.setConfig({splits: 1});
+				}, false);
 			
 			function preprocessData (files) {
 				// inner join

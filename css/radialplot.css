@@ -60,6 +60,11 @@ svg.vis-stretch {
     opacity: 0.25;
 }
 
+.btn.btn-block {
+    display: block;
+    width: 100%;
+}
+
 .btn:hover, .btn.active {
     white-space: nowrap;
     background-color: #fff;
@@ -159,7 +164,7 @@ text {
 }
 
 .fade {
-    opacity: 0.2;
+    opacity: 0.4;
 }
 
 @keyframes pulse {

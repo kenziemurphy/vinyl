@@ -1,5 +1,9 @@
 function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
 
+    const NUM_RADIAL_GRID_LINES = 5;
+    const MID_LABEL_HORIZONTAL_OFFSET = 60;
+    const MID_LABEL_VERTICAL_OFFSET = 7;
+
     var minRadialData = scaleRadial.domain()[0];
     var maxRadialData = scaleRadial.domain()[1]; 
 
@@ -14,6 +18,8 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
     var angularGridInterval = d3.range(0, NUM_KEYS, 1);
 
     var radialGuide, angleGuide;
+    
+    var gridG;
     
     radialGridInterval.push(maxRadialData);
 
@@ -30,29 +36,24 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
 
     var axis = function (context) {
         let selection = context.selection ? context.selection() : context
-
-        // remove existing grid and start anew
-        // TODO make grid dynamic
-        selection.selectAll('g.grid')
-            .remove();
         
-        var gridG = selection.select('g.grid');
-        if (gridG.size() <= 0) {
-            gridG = selection.append('g')
-                .attr('class', 'grid')
-                .attr('pointer-events', 'none')
-                .style('z-index', '-1')
-                .attr('transform', `translate(${center[0]}, ${center[1]})`);
-        }
+        gridG = selectAllOrCreateIfNotExist(selection, 'g.grid')
+            .attr('pointer-events', 'none')
+            .style('z-index', '-1')
+            .attr('transform', `translate(${center[0]}, ${center[1]})`);
+        
 
+        // radial grid enter-update-exit
         var radialGrid = gridG.selectAll('circle.grid-line').data(radialGridInterval);
-
         var radialGridEnter = radialGrid.enter()
             .append('circle')
             .attr('class', 'grid-line')
             .attr('fill-opacity', '0')
             .attr('stroke-opacity', '0.2')
             .attr('stroke', '#ffffff')
+
+        console.log(radialMappingLabel, radialGrid.enter().size(), radialGrid.exit().size());
+        console.trace();
         
         radialGrid.merge(radialGridEnter)
             .transition()
@@ -60,153 +61,156 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
 
         radialGrid.exit().remove();
 
-        var axisLabels = selection.select('text.label.label-radial');
-        if (axisLabels.size() <= 0) {
-            var radialTextLabelInnerTop = gridG.append('text')
-                .attr('class', 'label label-axis-radial grid-axis-label')
-                .attr('y', -minRadialDist + 30)
-        
-            var radialTextLabelOuterTop = gridG.append('text')
-                .attr('class', 'label label-axis-radial grid-axis-label')
-                .attr('y', -maxRadialDist - 30)
-        
-            var radialTextLabelInnerBottom = gridG.append('text')
-                .attr('class', 'label label-axis-radial grid-axis-label')
-                .attr('y', minRadialDist - 30)
-        
-            var radialTextLabelOuterBottom = gridG.append('text')
-                .attr('class', 'label label-axis-radial grid-axis-label')
-                .attr('y', maxRadialDist + 30)
+        // axis labels
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
+            .attr('y', maxRadialDist + 30);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom')
+            .attr('y', minRadialDist - 30);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
+            .attr('y', -maxRadialDist - 30);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top')
+            .attr('y', -minRadialDist + 30);
+        selection.selectAll('text.label.label-axis-radial').text(radialMappingLabel.toUpperCase());
 
-            axisLabels = d3.selectAll('text.label.label-axis-radial');
-        } 
-        axisLabels.text(radialMappingLabel.toUpperCase());
-
-        var radialLabelTop = gridG.selectAll('text.label.label-radial.top')
-            .data(radialGridInterval)
-            .enter()
+        // radial scale labels
+        // top
+        var radialLabelsTop = gridG.selectAll('text.label.label-radial.top').data(radialGridInterval)
+        var radialLabelsTopEnter = radialLabelsTop.enter()
             .append('text')
             .attr('class', 'label label-radial top')
+        
+        radialLabelsTop.merge(radialLabelsTopEnter)
+            .transition()
             .text(d => round(d, 1))
             .attr('y', d => -scaleRadial(d))
-            .attr('fill', '#ffffff')
+            .attr('fill', '#ffffff');
 
-        var radialLabelBottom = gridG.selectAll('text.tempo.label.bottom')
-            .data(radialGridInterval)
-            .enter()
+        radialLabelsTop.exit().remove();
+
+        // bottom
+        var radialLabelsBottom = gridG.selectAll('text.label.label-radial.bottom').data(radialGridInterval)
+        var radialLabelsBottomEnter = radialLabelsBottom.enter()
             .append('text')
             .attr('class', 'label label-radial bottom')
+        
+        radialLabelsBottom.merge(radialLabelsBottomEnter)
+            .transition()
             .text(d => round(d, 1))
             .attr('y', d => scaleRadial(d))
             .attr('fill', '#ffffff');
 
-        var angleGrid = gridG.selectAll('line.grid-line')
-            .data(scaleAngle.domain())
-            .enter()
+        radialLabelsBottom.exit().remove();
+        
+        // angle grid
+        var angleGrid = gridG.selectAll('line.grid-line').data(scaleAngle.domain())
+        var angleGridEnter = angleGrid.enter()
             .append('line')
             .attr('class', 'grid-line')
+        
+        angleGrid.merge(angleGridEnter)
             .attr('x1', d => angleDistanceToXy(scaleAngle(d), minRadialDist)[0])
             .attr('y1', d => angleDistanceToXy(scaleAngle(d), minRadialDist)[1])
             .attr('x2', d => angleDistanceToXy(scaleAngle(d), maxRadialDist)[0])
             .attr('y2', d => angleDistanceToXy(scaleAngle(d), maxRadialDist)[1])
         
-        var angleLabel = gridG.selectAll('text.label.label-angle')
-            .data(scaleAngle.domain())
-            .enter()
+        angleGrid.exit().remove();
+
+        var angleLabel = gridG.selectAll('text.label.label-angle').data(scaleAngle.domain())
+        var angleLabelEnter = angleLabel.enter()
             .append('text')
             .attr('class', 'label label-angle')
+        
+        angleLabel.merge(angleLabelEnter)
             .text(d => d)
             .attr('x', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 20)[0])
             .attr('y', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 20)[1])
             .attr('fill', '#ffffff')
-    
+        angleLabel.exit().remove();
         
     
-        
-    
-        // major/minor line
-        // FIXME hardcoding
-        var majorMinorLabelOffset = 60;
-        var majorMinorLineLeft = gridG.append('line')
-            .attr('class', 'grid-line-clear')
+        // major/minor line        
+        var majorMinorLinRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-right.grid-line-clear.grid-axis-label')
             .attr('x1', -minRadialDist)
             .attr('y1', 0)
-            .attr('x2', -maxRadialDist - majorMinorLabelOffset)
+            .attr('x2', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y2', 0)
     
-        var majorMinorLinRight = gridG.append('line')
-            .attr('class', 'grid-line-clear')
+        var majorMinorLinRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-left.grid-line-clear.grid-axis-label')
             .attr('x1', minRadialDist)
             .attr('y1', 0)
-            .attr('x2', maxRadialDist + majorMinorLabelOffset)
+            .attr('x2', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y2', 0)
     
-        var majorLabelLeft = gridG.append('text')
+        var majorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-top-left.grid-axis-label')
             .text('MAJOR')
-            .attr('class', 'grid-axis-label')
-            .attr('x', -maxRadialDist - majorMinorLabelOffset)
-            .attr('y', -7)
+            .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('y', -MID_LABEL_VERTICAL_OFFSET)
             .attr('aligment-baseline', 'baseline')
             .attr('text-anchor', 'start')
         
-        var minorLabelLeft = gridG.append('text')
+        var minorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-bottom-left.grid-axis-label')
             .text('MINOR')
-            .attr('class', 'grid-axis-label')
-            .attr('x', -maxRadialDist - majorMinorLabelOffset)
-            .attr('y', 7)
+            .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('y', MID_LABEL_VERTICAL_OFFSET)
             .attr('alignment-baseline', 'hanging')
             .attr('text-anchor', 'start')
         
-        var majorLabelRight = gridG.append('text')
+        var majorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-top-right.grid-axis-label')
             .text('MAJOR')
-            .attr('class', 'grid-axis-label')
-            .attr('x', maxRadialDist + majorMinorLabelOffset)
-            .attr('y', -7)
+            .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('y', -MID_LABEL_VERTICAL_OFFSET)
             .attr('aligment-baseline', 'baseline')
             .attr('text-anchor', 'end')
         
-        var minorLabelRight = gridG.append('text')
+        var minorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-bottom-right.grid-axis-label')
             .text('MINOR')
-            .attr('class', 'grid-axis-label')
-            .attr('x', maxRadialDist + majorMinorLabelOffset)
-            .attr('y', 7)
+            .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('y', MID_LABEL_VERTICAL_OFFSET)
             .attr('alignment-baseline', 'hanging')
             .attr('text-anchor', 'end');
 
         // guides only show up when an item is hovers to help deal with offset position from force-directed chart
-        radialGuide = gridG.append('circle')
-            .attr('class', 'guide-line radial hidden')
+        radialGuide = selectAllOrCreateIfNotExist(gridG, 'circle#radial-guide.guide-line.radial')
+            .classed('hidden', true)
             .attr('r', scaleRadial(minRadialData))
             .attr('fill-opacity', '0');
 
-        angleGuide = gridG.append('line')
-            .attr('class', 'guide-line angle hidden')
+        angleGuide = selectAllOrCreateIfNotExist(gridG, 'line#angle-guide.guide-line.angle')
+            .classed('hidden', true)
             .attr('x1', angleDistanceToXy(scaleAngle(scaleAngle.domain()[0]), minRadialDist)[0])
             .attr('y1', angleDistanceToXy(scaleAngle(scaleAngle.domain()[0]), minRadialDist)[1])
             .attr('x2', angleDistanceToXy(scaleAngle(scaleAngle.domain()[0]), maxRadialDist)[0])
             .attr('y2', angleDistanceToXy(scaleAngle(scaleAngle.domain()[0]), maxRadialDist)[1]);
     }
 
+    axis.update = function (_scaleRadial, _scaleAngle, _center, _radialMappingLabel) {
+        scaleRadial = _scaleRadial;
+        scaleAngle = _scaleAngle;
+        center = _center;
+        radialMappingLabel = _radialMappingLabel;
+        return axis;
+    }
+
     axis.showGuide = function (angle, radial) {
-        d3.select('.guide-line.radial')
+        gridG.select('.guide-line.radial')
             .classed('hidden', false)
             .attr('r', scaleRadial(radial));
-        d3.select('.guide-line.angle')
+        gridG.select('.guide-line.angle')
             .classed('hidden', false)
             .attr('x1', angleDistanceToXy(scaleAngle(angle), minRadialDist)[0])
             .attr('y1', angleDistanceToXy(scaleAngle(angle), minRadialDist)[1])
             .attr('x2', angleDistanceToXy(scaleAngle(angle), maxRadialDist)[0])
             .attr('y2', angleDistanceToXy(scaleAngle(angle), maxRadialDist)[1]);
-        d3.selectAll('.label-angle')
+        gridG.selectAll('.label-angle')
             .filter(k => k == angle)
             .classed('highlight', true);
     }
 
     axis.hideGuide = function () {
-        d3.selectAll('.guide-line')
+        gridG.selectAll('.guide-line')
             .classed('hidden', true)
             .transition();
-        d3.selectAll('.label-angle')
+        gridG.selectAll('.label-angle')
             .classed('highlight', false);
     }
 
