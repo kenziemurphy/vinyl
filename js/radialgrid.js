@@ -109,6 +109,9 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
             .attr('y1', d => angleDistanceToXy(scaleAngle(d), minRadialDist)[1])
             .attr('x2', d => angleDistanceToXy(scaleAngle(d), maxRadialDist)[0])
             .attr('y2', d => angleDistanceToXy(scaleAngle(d), maxRadialDist)[1])
+            // .attr('stroke', d => {
+            //     console.log(d, d.indexOf('♯') >= 0)
+            //     return d.indexOf('♯') >= 0 ? '#000' : '#fff' })
         
         angleGrid.exit().remove();
 
