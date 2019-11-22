@@ -6,6 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<title>Music Vis</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
+        <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
     </head>
     <body>
@@ -34,7 +35,7 @@
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
                     <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
-					
+
 					<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
                     <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
@@ -43,7 +44,8 @@
 				<svg id="radial-view" class="vis-stretch" overflow="visible"></svg>
             </div>
 			<div style="flex-grow: 1; width: 25%; display: flex; flex-direction: column;" class="full-height">
-				<h2>Distribution</h2>
+				<!-- <h2>Distribution</h2> -->
+        <br/>
 				<svg id="histogram-view" class="vis-stretch"></svg>
             </div>
 		</div>
@@ -73,7 +75,7 @@
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
-			
+
             Promise.all([
                 // d3.json('../../data/Spotify.json'),
                 // d3.json('../../data/Spotify_trackinfo.json'),
@@ -88,10 +90,10 @@
             ]).then(function(loadedData) {
 				data = preprocessData(loadedData);
 				console.log(data);
-				
+
 				components.forEach(function (c) { c.onDataChanged(data); });
 			});
-			
+
 			dispatch.on("filter", function (filterFunc) {
 				components.forEach(function (c) { c.onFilter(filterFunc); });
 			});
@@ -104,9 +106,9 @@
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
-			// UI events 
+			// UI events
 			document.getElementById('toggle-split-view')
-				.addEventListener('click', function (e) { 
+				.addEventListener('click', function (e) {
 					if (rv.config.splits == 1)
 						rv.setConfig({splits: 2});
 					else
@@ -114,12 +116,12 @@
 				}, false);
 
 			document.getElementById('toggle-album-art')
-				.addEventListener('click', function (e) { 
+				.addEventListener('click', function (e) {
 					rv.setConfig({showAlbumArt: !rv.config.showAlbumArt});
 				}, false);
-			
+
 			document.getElementById('toggle-force')
-				.addEventListener('click', function (e) { 
+				.addEventListener('click', function (e) {
 					rv.setConfig({enableForce: !rv.config.enableForce});
 				}, false);
 
@@ -130,7 +132,7 @@
 				data.forEach(function (d) {
 					d.duration = d.duration_ms / 1000;
 				})
-				return data; 
+				return data;
 			}
 
 			function arrayJoin (a, b, key) {
@@ -143,7 +145,7 @@
 						return false;
 					}
 				});
-				
+
 				return abJoined.filter(x => x !== false);
 			}
         </script>

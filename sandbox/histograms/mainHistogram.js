@@ -12,7 +12,7 @@ fileNameArray.push('../radialplot/radiohead.json')
 
 // sets colors for the histogram rectangles
 var colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
-var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence"]; // Edit this for more histograms
+var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 
 var x = d3.scaleLinear()
   .domain([0, 1])
@@ -132,7 +132,7 @@ function drawHistogram(stackedData, i) {
   console.log(i*400);
   console.log(i*400 + 50);
 
-  let range = [i*150 + 100, i*150 + 50];
+  let range = [i*100 + 50, i*100 + 10];
   let domain = [0, yMax];
 
   console.log(range);
