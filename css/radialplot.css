@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0 30px;
     background-color: #212039;
+    /* background: linear-gradient(to bottom, #212039, #111111); */
     /* overflow: hidden; */
     font-family: Helvetica, sans-serif;
     color: #ffffff;
@@ -151,9 +152,9 @@ text {
 
 .guide-line {
     fill-opacity: 0;
-    stroke-width: 3;
+    stroke-width: 1;
     stroke-opacity: 1;
-    stroke: #ffffff;
+    /* stroke: #ffffff; */
     transition: 0.2s all;
 }
 

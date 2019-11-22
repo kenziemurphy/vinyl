@@ -429,8 +429,11 @@ class RadialView {
                 
                 _this.currentPlayingMusic = d.audio;
                 _this.songToolTip.show(d, this);
-                _this.grids.forEach(function (g) {
-                    g.showGuide(_this.getKeyFromKeyId(d.key, d.mode), d[_this.config.radialMapping]);
+                _this.grids.forEach(function (g, i) {
+                    g.showGuide(
+                        _this.getKeyFromKeyId(d.key, d.mode), 
+                        d[_this.config.radialMapping], 
+                        _this.SCALE_DOT_COLOR(_this.config.splitKey(d)));
                 });
 
                 // FIXME compute song similarity
@@ -441,7 +444,7 @@ class RadialView {
                     .append('line')
                     .attr('class', 'similarity-link')
                     .attr('stroke', '#fff')
-                    .attr('stroke-width', 2)
+                    .attr('stroke-width', 3)
                     .attr('pointer-events', 'none')
                     .attr('opacity', s => s.similarity)
                     .attr('x1', s => d.x)
