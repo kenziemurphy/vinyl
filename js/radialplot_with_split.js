@@ -314,7 +314,7 @@ class RadialView {
         this.force.velocityDecay(0.5);
         this.force.nodes(this.filteredData);
         if (this.config.enableForce)
-            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
+            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 2);
         else
             this.force.force('collision').radius(0);
         this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][0] + _this.dataToXy(d)[0]).strength(0.2);
