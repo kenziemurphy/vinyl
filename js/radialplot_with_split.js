@@ -72,14 +72,14 @@ class RadialView {
         let _this = this;
         d3.selectAll('button.radial-mapping-select')
             .on('click', function () {
+                d3.selectAll('button.radial-mapping-select')
+                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == this.getAttribute('data-attr'));
                 _this.setConfig({
                     radialMapping: this.getAttribute('data-attr'),
                     scaleRadialType: this.getAttribute('data-scale-type'),
                     scaleMinOverride: this.getAttribute('data-scale-min') || false,
                     scaleMaxOverride: this.getAttribute('data-scale-max') || false
                 });
-                d3.selectAll('button.radial-mapping-select')
-                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == _this.config.radialMapping);
             });
 
         // // TODO stop music when clicking outside
@@ -144,6 +144,23 @@ class RadialView {
         if (this.shouldReinitGrid) {
             this.initGrid();
         }
+
+        // IF you want to actually draw a vinyl record...
+        // FIXME z-index issues
+        // d3.selectAll('g.vinyl').remove();
+        // for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+        //     let vinylG = selectAllOrCreateIfNotExist(this.svg, `g.vinyl#vinyl-${i}`)
+        //         .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+        //     let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+        //         .attr('r', this.SCALE_RADIAL.range()[1])
+        //         .style('fill', '#020202');
+        //     let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
+        //         .attr('r', this.SCALE_RADIAL.range()[0])
+        //         .style('fill', this.COLOR_SCHEME[i]);
+        //     let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
+        //         .attr('r', this.SCALE_RADIAL.range()[0] / 20)
+        //         .style('fill', '#212039');
+        // }
         
         // console.log('///', this.SPLITS);
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
@@ -155,17 +172,19 @@ class RadialView {
             multiGridG.call(this.grids[i]);
         }
 
+        this.lineLayer = selectAllOrCreateIfNotExist(this.svg, 'g#line-layer')
+
+
         this.drawDataPoints();
-        // if (this.ENABLE_FORCE) {
-            this.initForce();
-        // }
+        this.initForce();
+        
 
         // buttons
         let _this = this;
         let angle = d3.select('.radial-mapping-select.active').attr('data-angle');
         // d3.select('#radial-view-controls')
         //     .attr('data-angle', angle)
-        //     .style('transform', `rotate(-${+angle + 90}deg)`)
+        //     .style('transform', `rotate(-${angle}deg)`)
         d3.selectAll('.radial-mapping-select')
             .style('position', 'absolute')
             .attr('data-angle', function (d, i) {
@@ -174,8 +193,8 @@ class RadialView {
             .style('transform', function (d, i) {
                 let parentAngle = d3.select('#radial-view-controls').attr('data-angle');
                 let angle = i / d3.selectAll('.radial-mapping-select').size() * 360 - 90;
-                let x = (_this.MAX_RADIAL_DIST + 70) * Math.cos(angle* Math.PI / 180);
-                let y = (_this.MAX_RADIAL_DIST + 70) * Math.sin(angle* Math.PI / 180);
+                let x = (_this.MAX_RADIAL_DIST + 65) * Math.cos(angle * Math.PI / 180);
+                let y = (_this.MAX_RADIAL_DIST + 65) * Math.sin(angle * Math.PI / 180);
                 let selfAngle = angle + 90;
                 if (selfAngle > 90 && selfAngle < 270) {
                     selfAngle += 180;
@@ -239,7 +258,7 @@ class RadialView {
             Math.min(this.W, this.H) / 8 : 
             Math.min(this.W, this.H) / 16;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
-            Math.min(this.W, this.H) / 2 - 100 : 
+            Math.min(this.W, this.H) / 2 - 80 : 
             Math.min(this.W, this.H) / 4 - 50;
 
         this.SCALE_RADIAL = this.scaleSelector(this.config.scaleRadialType)
@@ -357,6 +376,9 @@ class RadialView {
             .style('animation-duration', d => `${60 / d.tempo}s`)
             .style('stroke', d => this.SCALE_DOT_COLOR(this.config.splitKey(d)))
             .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(this.config.splitKey(d)))
+            .transition()
+            .style('fill-opacity', d => this.config.enableForce ? 1 : 0.2)
+            .style('stroke-opacity', d => this.config.enableForce ? 1 : 0.8)
 
         songG.merge(songGEnter)
             .selectAll('polygon.dot.pulse')
@@ -412,13 +434,8 @@ class RadialView {
                 });
 
                 // FIXME compute song similarity
-                let n = 5;
-                let similarSongs = [];
-                for (let i = 0; i < n; i++) {
-                    let index = Math.floor(Math.random() * _this.filteredData.length);
-                    similarSongs.push(_this.filteredData[index]);
-                }
-                let similarityLinks = _this.svg.selectAll('line.similarity-link')
+                let similarSongs = _this.getSimilarSongs(d);
+                let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
                     .data(similarSongs)
                     .enter()
                     .append('line')
@@ -426,7 +443,7 @@ class RadialView {
                     .attr('stroke', '#fff')
                     .attr('stroke-width', 2)
                     .attr('pointer-events', 'none')
-                    .attr('opacity', d => Math.random() * 0.7 + 0.3)
+                    .attr('opacity', s => s.similarity)
                     .attr('x1', s => d.x)
                     .attr('y1', s => d.y)
                     .attr('x2', s => d.x)
@@ -434,10 +451,10 @@ class RadialView {
                 
                 _this.svg.selectAll('line.similarity-link')
                     .transition()
-                    .attr('x2', s => s.x)
-                    .attr('y2', s => s.y)
+                    .attr('x2', s => s.song.x)
+                    .attr('y2', s => s.song.y)
 
-                _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.id == k.id).length > 0);
+                _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.song.id == k.id).length > 0);
             }
         } else if (action == 'click') {
             return function (d, i, m) {
@@ -484,6 +501,20 @@ class RadialView {
             this.dispatch.call('highlight', this, k => true);
         }
     }
+
+    getSimilarSongs (d) {
+        // FIXME make this work
+        let n = 5;
+        let similarSongs = [];
+        for (let i = 0; i < n; i++) {
+            let index = Math.floor(Math.random() * this.filteredData.length);
+            similarSongs.push({
+                song: this.filteredData[index],
+                similarity: Math.random() * 0.8 + 0.2 
+            });
+        }
+        return similarSongs;
+    }
     
     
     // helpers
@@ -511,9 +542,27 @@ class RadialView {
        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
-    dataToXy (d, distanceOverride) {
-        let angle = SCALE_ANGLE(this.getKeyFromKeyId(d.key, d.mode));
-        let distance = distanceOverride || this.SCALE_RADIAL(d[this.config.radialMapping]);
-        return this.angleDistanceToXy(angle, distance);
+    dataToXy (d, distanceOverride, isRadial = true) {
+        if (isRadial) {
+            let angle = SCALE_ANGLE(this.getKeyFromKeyId(d.key, d.mode));
+            let distance = distanceOverride || this.SCALE_RADIAL(d[this.config.radialMapping]);
+            return this.angleDistanceToXy(angle, distance);
+        } else {
+            // temp
+            let s = Math.min(this.W, this.H);
+            let xKey = 'release_year';
+            let xScale = d3.scaleLinear()
+                .domain(d3.extent(this.data, d => d[xKey]))
+                .range([-s / 2 + 100, s / 2 - 100]);
+
+            let yScale = this.scaleSelector(this.config.scaleRadialType)
+                .domain(this.data.length == 0 ? [0, 1] :
+                    this.config.scaleMinOverride !== false ? 
+                        [this.config.scaleMinOverride, this.config.scaleMaxOverride] : 
+                        d3.extent(this.data, d => d[this.config.radialMapping]))
+                .range([s / 2 - 100, -s / 2 + 100]);
+            
+            return [xScale(d[xKey]), yScale(d[this.config.radialMapping])];
+        }
     }
 }

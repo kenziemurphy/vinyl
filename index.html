@@ -132,7 +132,6 @@
 					d.release_year = d.album.release_date.indexOf('-') < 0 ?
 						+d.album.release_date :
 						+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
-					console.log(d.album.release_date, d.release_year);
 				})
 				return data;
 			}
