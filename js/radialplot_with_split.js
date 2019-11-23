@@ -23,6 +23,8 @@ class RadialView {
         this.data = data;
         this.dispatch = dispatch;
         
+        this.selectedSong = false;
+
         // default config
         this.config = {
             showAlbumArt: true,
@@ -83,13 +85,18 @@ class RadialView {
             });
 
         // // TODO stop music when clicking outside
-        // d3.select('body').on('click', function () {
-        //     var outside = d3.selectAll('.dot.active').filter(function () { this == d3.event.target; }).empty();
-        //     if (outside) {
-        //         console.log('!!!!!');
-        //         _this.resetSelection();
-        //     }
-        // });
+        d3.select('body').on('click', function () {
+            function equalToEventTarget() {
+                return this == d3.event.target;
+            }
+
+            var outsideDot = d3.selectAll('.song.active .dot').filter(equalToEventTarget).empty();
+            var outsideButton = d3.selectAll('.radial-mapping-select').filter(equalToEventTarget).empty();
+            if (outsideDot && outsideButton) {
+                _this.resetSelection();
+                _this.selectionLocked = false;
+            }
+        });
     }
 
     onDataChanged (newData) {
@@ -170,6 +177,14 @@ class RadialView {
                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.radialMapping);
             multiGridG.call(this.grids[i]);
+
+            if (this.selectedSong) {
+                this.grids[i].showGuide(
+                    this.getKeyFromKeyId(this.selectedSong.key, this.selectedSong.mode), 
+                    this.selectedSong[this.config.radialMapping], 
+                    this.SCALE_DOT_COLOR(this.config.splitKey(this.selectedSong))
+                    );
+            }
         }
 
         this.lineLayer = selectAllOrCreateIfNotExist(this.svg, 'g#line-layer')
@@ -307,7 +322,16 @@ class RadialView {
                 // // .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
-                    .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+                    // FIXME transition animation is lost after the 1st time
+                    let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
+                        .attr('opacity', s => s.similarity)
+                        .attr('x1', s => s.source.x)
+                        .attr('y1', s => s.source.y)
+                        .transition(d3.transition().duration(70))
+                        .attr('x2', s => s.song.x)
+                        .attr('y2', s => s.song.y)
                 });
         }          
 
@@ -329,7 +353,8 @@ class RadialView {
     
         var songGEnter = songG.enter()
             .append('g')
-            .attr('class', 'song');
+            .attr('class', 'song')
+            .attr('id', d => `song-${d.id}`);
             
         var songGEnterInner = songGEnter.append('g')
             .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
@@ -353,8 +378,7 @@ class RadialView {
             .append('circle')
             .attr('class', 'dot pulse')
             
-        songGEnterInner.selectAll('.dot')
-            .on("mouseover", this.mouseActions('mouseover'))
+        songGEnter.on("mouseover", this.mouseActions('mouseover'))
             .on("click", this.mouseActions('click'))
             .on("mouseout", this.mouseActions('mouseout'));
 
@@ -369,7 +393,7 @@ class RadialView {
             .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
 
         songG.merge(songGEnter)
-            .classed('fade', d => !this.highlight(d))
+            .classed('fade', d => !this.highlight(d));
 
         songG.merge(songGEnter)
             .selectAll('.dot')
@@ -381,7 +405,7 @@ class RadialView {
             .style('stroke-opacity', d => this.config.enableForce ? 1 : 0.8)
 
         songG.merge(songGEnter)
-            .selectAll('polygon.dot.pulse')
+            .selectAll('polygon.dot')
             .attr('points', function (d) {
                 // draw regular polygons
                 var points = [];
@@ -407,111 +431,157 @@ class RadialView {
             })
 
         songG.merge(songGEnter)
-            .selectAll('circle.dot.pulse')
+            .selectAll('circle.dot')
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
     
         songG.exit().remove();
+
+        // if similarity link exists in the svg
+        // setTimeout(function () {
+        //     let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
+        //         .transition()
+        //         .attr('opacity', s => s.similarity)
+        //         .attr('x1', s => s.source.x)
+        //         .attr('y1', s => s.source.y)
+        //         .attr('x2', s => s.song.x)
+        //         .attr('y2', s => s.song.y)
+        // }, 500);
     }
     
     mouseActions (action) {
         let _this = this;
         if (action == 'mouseover') {
             return function (d, i) {
-                // if (_this.currentPlayingMusic) {
-                //     _this.currentPlayingMusic.stopFadeOut();
-                //     d3.selectAll('.dot.pulse').classed('active', false);
-                // }
-                if (!d.audio) {
-                    d.audio = new Audio(d.preview_url);
-                    d.audio.loop = true;
+                if (!_this.selectedSong) {
+                    // d = d;
+                    _this.selectSong(d);
+                } else {
+                    _this.dispatch.call('highlight', this, function (k) {
+                        let isTheSong = k.id == d.id;
+                        let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                        return isTheSelectedSong || isTheSong// || isSimilarSong;
+                    });
                 }
-                d.audio.playFadeIn();
-                
-                _this.currentPlayingMusic = d.audio;
+
                 _this.songToolTip.show(d, this);
-                _this.grids.forEach(function (g, i) {
-                    g.showGuide(
-                        _this.getKeyFromKeyId(d.key, d.mode), 
-                        d[_this.config.radialMapping], 
-                        _this.SCALE_DOT_COLOR(_this.config.splitKey(d)));
-                });
-
-                // FIXME compute song similarity
-                let similarSongs = _this.getSimilarSongs(d);
-                let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
-                    .data(similarSongs)
-                    .enter()
-                    .append('line')
-                    .attr('class', 'similarity-link')
-                    .attr('stroke', '#fff')
-                    .attr('stroke-width', 3)
-                    .attr('pointer-events', 'none')
-                    .attr('opacity', s => s.similarity)
-                    .attr('x1', s => d.x)
-                    .attr('y1', s => d.y)
-                    .attr('x2', s => d.x)
-                    .attr('y2', s => d.y)
-                
-                _this.svg.selectAll('line.similarity-link')
-                    .transition()
-                    .attr('x2', s => s.song.x)
-                    .attr('y2', s => s.song.y)
-
-                _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.song.id == k.id).length > 0);
             }
         } else if (action == 'click') {
             return function (d, i, m) {
-                if (!d.audio) {
-                    d.audio = new Audio(d.preview_url);
-                    d.audio.loop = true;
+                if (!_this.selectedSong) {
+                    _this.selectSong(d);
+                    _this.songToolTip.show(d, this);
                 }
-                console.log(_this)
-                if (d.audio.paused)
-                    d.audio.playFadeIn();
-                _this.currentPlayingMusic = d.audio;
-                _this.dispatch.call('highlight', this, k => k.id == d.id);
-                // TODO lock selection when clicked
-                // _this.selectionLocked = true;
-                // m[i].classList.add('active');
+
+                if (_this.selectionLocked) {
+                    if (_this.selectedSong == d) {
+                        _this.resetSelection();
+                        _this.selectionLocked = false;
+                    } else {
+                        _this.resetSelection();
+                        _this.selectSong(d);
+                        _this.songToolTip.show(d, this);
+                        m[i].closest('.song').classList.add('active');
+                        _this.selectedSong = d;
+                    }
+                } else {
+                    _this.selectionLocked = true;
+                    m[i].closest('.song').classList.add('active');
+                    _this.selectedSong = d;
+                }
+                
             }
         } else if (action == 'mouseout') {
             return function (d, i) {
                 if (!_this.selectionLocked) {
-                    
-                    d.audio.stopFadeOut();
-
-                    _this.songToolTip.hide(d, this);
-                    _this.grids.forEach(function (g) {
-                        g.hideGuide();
+                    _this.resetSelection();
+                } else {
+                    _this.songToolTip.hide({}, this);
+                    _this.dispatch.call('highlight', this, function (k) {
+                        let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                        return isTheSelectedSong// || isSimilarSong;
                     });
-        
-                    _this.dispatch.call('highlight', this, k => true);
                 }
-
                 // TODO make it look better
-                _this.svg.selectAll('line.similarity-link').remove();
             }
         }
     }
 
-    resetSelection () {
-        console.log('!', this, this.currentPlayingMusic);
-        if (this.currentPlayingMusic) {
-            this.currentPlayingMusic.stopFadeOut();
-            d3.selectAll('.dot.pulse').classed('active', false);
-            this.songToolTip.hide({}, this);
-            this.grid.hideGuide();
-            this.dispatch.call('highlight', this, k => true);
+    selectSong (d, k = 5) {
+        this.selectedSong = d;
+        if (!this.selectedSong.audio) {
+            this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
+            this.selectedSong.audio.loop = true;
         }
+        this.selectedSong.audio.playFadeIn();
+
+        let similarSongs = this.getSimilarSongs(this.selectedSong, k);
+
+        let _this = this;
+        this.dispatch.call('highlight', this, s => s.id == d.id);
+        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+    
+        _this.grids.forEach(function (g, i) {
+            g.showGuide(
+                _this.getKeyFromKeyId(d.key, d.mode), 
+                d[_this.config.radialMapping], 
+                _this.SCALE_DOT_COLOR(_this.config.splitKey(d)));
+            });
+
+        let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
+            .data(similarSongs)
+            .enter()
+            .append('line')
+            .attr('class', 'similarity-link')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 3)
+            .attr('pointer-events', 'none')
+            .attr('opacity', s => s.similarity)
+            .attr('x1', s => s.source.x)
+            .attr('y1', s => s.source.y)
+            .attr('x2', s => s.source.x)
+            .attr('y2', s => s.source.y)
+        
+        _this.svg.selectAll('line.similarity-link')
+            .transition()
+            .attr('x2', s => s.song.x)
+            .attr('y2', s => s.song.y)
+        
+        _this.svg.selectAll('.song')
+            .filter(d => similarSongs.filter(x => x.song.id == d.id).length > 0)
+            .classed('similar-highlight', true);
     }
 
-    getSimilarSongs (d) {
+    resetSelection () {
+        let _this = this;
+        
+        if (this.selectedSong) {
+            this.selectedSong.audio.stopFadeOut();
+            this.selectedSong = false;
+        }
+
+        this.svg.selectAll('.song')
+            .classed('active', false)
+            .classed('similar-highlight', false);
+
+        this.songToolTip.hide({}, this);
+        this.grids.forEach(function (g) {
+            g.hideGuide();
+        });
+        this.dispatch.call('highlight', this, k => true);
+
+        this.svg.selectAll('line.similarity-link').remove();
+    }
+
+    getSimilarSongs (d, k = 5) {
         // FIXME make this work
-        let n = 5;
         let similarSongs = [];
-        for (let i = 0; i < n; i++) {
+        for (let i = 0; i < k; i++) {
             let index = Math.floor(Math.random() * this.filteredData.length);
+            // please return in this format
             similarSongs.push({
+                source: d,
                 song: this.filteredData[index],
                 similarity: Math.random() * 0.8 + 0.2 
             });
