@@ -100,6 +100,11 @@ class RadialView {
         });
     }
 
+    /**
+     * @desc updates vis according to new data
+     * @param Array newData - new data to be drawn
+     * @return void
+    */
     onDataChanged (newData) {
         let _this = this
 
@@ -113,10 +118,20 @@ class RadialView {
         this.redraw();
     }
 
+    /**
+     * @desc redraws the vis when screen size is changed
+     * @param void
+     * @return void
+    */
     onScreenSizeChanged () {
         this.redraw();
     }
 
+    /**
+     * @desc updates parameters of the vis, then redraw the vis
+     * @param Object config - key-value of config parameters used in this vis
+     * @return void
+    */
     setConfig (config) {
         if (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) {
             this.svg.selectAll('g.grid').remove();
@@ -130,6 +145,11 @@ class RadialView {
         this.redraw();
     }
 
+    /**
+     * @desc draws grid in the back of the vis
+     * @param void
+     * @return void
+    */
     initGrid () {
         this.grids = [];
         this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
@@ -145,6 +165,11 @@ class RadialView {
         }
     }
 
+    /**
+     * @desc draws the whole vis if have not drawn, otherwise updates the vis
+     * @param void
+     * @return void
+    */
     redraw () {
         this.recomputeConsts();
 
@@ -219,6 +244,11 @@ class RadialView {
             });
     }
 
+    /**
+     * @desc change filter function for data, the data drawn in vis are only those that satisfies the filter
+     * @param function filterFunction - boolean function for the filter
+     * @return void
+    */
     onFilter (filterFunction) {
         this.filter = filterFunction;
         this.filteredData = this.data.filter(filterFunction);
@@ -227,6 +257,11 @@ class RadialView {
         this.drawDataPoints();
     }
 
+    /**
+     * @desc change highlighting function for data, the data that satisfies the function will be highlighted
+     * @param function filterFunction - boolean function for the highlighting function
+     * @return void
+    */
     onHighlight(filterFunction) {
         this.highlight = filterFunction;
         d3.selectAll('.song')
@@ -234,6 +269,11 @@ class RadialView {
         // this.redraw();
     }
 
+    /**
+     * @desc gives a little more flexibiliy in choosing the scale function
+     * @param string type ('linear' | 'log') - type of desired scale
+     * @return d3.scale with the type corresponding to the input
+    */
     scaleSelector (type) {
         if (type == 'linear')
             return d3.scaleLinear()
@@ -241,6 +281,11 @@ class RadialView {
             return d3.scaleLog()
     }
 
+    /**
+     * @desc recompute all computed constants for drawing the vis. The constants may be computed from the data or the screen size or both
+     * @param void
+     * @return void
+    */
     recomputeConsts() {
         this.H = parseInt(this.svg.style("height"), 10);
         this.W = parseInt(this.svg.style("width"), 10);
@@ -313,6 +358,11 @@ class RadialView {
             d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
     }
     
+    /**
+     * @desc initlize or update d3.forceSimulation
+     * @param void
+     * @return void
+    */
     initForce () {
         let _this = this;
         if (!this.force) {
@@ -348,6 +398,11 @@ class RadialView {
        
     }
     
+    /**
+     * @desc draw data points or updates if they already exists
+     * @param void
+     * @return void
+    */
     drawDataPoints () {
         let _this = this;
         var songG = this.svg.selectAll('g.song').data(this.filteredData, d => d.id);
@@ -451,19 +506,13 @@ class RadialView {
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
     
         songG.exit().remove();
-
-        // if similarity link exists in the svg
-        // setTimeout(function () {
-        //     let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
-        //         .transition()
-        //         .attr('opacity', s => s.similarity)
-        //         .attr('x1', s => s.source.x)
-        //         .attr('y1', s => s.source.y)
-        //         .attr('x2', s => s.song.x)
-        //         .attr('y2', s => s.song.y)
-        // }, 500);
     }
     
+    /**
+     * @desc mouse action function selector for each data point
+     * @param string action ('mouseover' | 'click' | 'mouseout') - type of event
+     * @return function for handling the specified mouse event
+    */
     mouseActions (action) {
         let _this = this;
         if (action == 'mouseover') {
@@ -526,6 +575,12 @@ class RadialView {
         }
     }
 
+    /**
+     * @desc highlight, play, and show similar songs to a song on the vis
+     * @param Object d - data of the selected point
+     * @param int k - number of similar songs to be suggested
+     * @return function for handling the specified mouse event
+    */
     selectSong (d, k = 5) {
         console.trace();
         this.selectedSong = d;
@@ -572,6 +627,11 @@ class RadialView {
             .classed('similar-highlight', true);
     }
 
+    /**
+     * @desc deselects everything in the vis, stops music playback
+     * @param void
+     * @return void
+    */
     resetSelection () {
         let _this = this;
         
@@ -593,6 +653,12 @@ class RadialView {
         this.svg.selectAll('line.similarity-link').remove();
     }
 
+    /**
+     * @desc suggests songs similar to a song from within the local data
+     * @param Object d - data of the reference song
+     * @param int k - number of similar songs to be suggested
+     * @return array of Objects containing: the source song, suggested song, and similarity score in [0, 1] range
+    */
     getSimilarSongs (d, k = 5) {
         // FIXME make this work
         let similarSongs = [];
@@ -611,13 +677,25 @@ class RadialView {
     
     // helpers
     
+    /**
+     * @desc converts polar coordinates to x,y coordinates
+     * @param float angle - angle in polar coordinates
+     * @param float distance - distance from origin in polar coordinates
+     * @return Array of [x, y] coordinates corresponding to the given polar coordinates
+    */
     angleDistanceToXy (angle, distance) {
         return [
             Math.cos(angle) * distance,
             Math.sin(angle) * distance
         ]
     }
-    
+
+    /**
+     * @desc converts spotify's key and mode attributes to key and mode in musical notation
+     * @param int key - key in range of [0, 11] (C to A)
+     * @param int mode - mode in range of [0, 1] (major/minor)
+     * @return string - musical notation of the key
+    */
     getKeyFromKeyId (key, mode = false) {
         if (mode === false) {
             mode = Math.ceil(key / 12);
@@ -628,12 +706,25 @@ class RadialView {
         // return ALL_KEYS[key * 2 + mode];
     }
     
-    
-    
+    /**
+     * @desc round number to a certain decimal points
+     * @param float value - the number to be rounded
+     * @param int decimal - number of desired decimal points
+     * @return float - rounded number
+    */
     round(value, decimals) {
        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
+    /**
+     * @desc map a data point to its target x,y position
+     * @param Object d - the data point
+     * @param float distanceOverride (optional) - for radial coordinates: arbitrary distance from the origin
+     * @param boolean isRadial (optional) - 
+     *      true if you want the radial coordinates plot with key/mode as the angle axis
+     *      false if you want x,y coordinates for a given pair of attibutes and scales (unfinished)
+     * @return Array - [x, y] coordinates of the data point
+    */
     dataToXy (d, distanceOverride, isRadial = true) {
         if (isRadial) {
             let angle = SCALE_ANGLE(this.getKeyFromKeyId(d.key, d.mode));
