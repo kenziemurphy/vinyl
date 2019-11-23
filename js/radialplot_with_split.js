@@ -53,8 +53,6 @@ class RadialView {
         this.filteredData = this.data.filter(this.filter);
 
         this.shouldReinitGrid = true;
-
-        this.redraw();
         
         this.songToolTip = d3.tip()
             .attr("class", "d3-tip song-tooltip")
@@ -98,6 +96,8 @@ class RadialView {
                 _this.selectionLocked = false;
             }
         });
+
+        this.redraw();
     }
 
     /**
@@ -319,7 +319,7 @@ class RadialView {
             Math.min(this.W, this.H) / 8 : 
             Math.min(this.W, this.H) / 16;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
-            Math.min(this.W, this.H) / 2 - 80 : 
+            Math.min(this.W, this.H) / 2 - 100 : 
             Math.min(this.W, this.H) / 4 - 50;
 
         this.SCALE_RADIAL = this.scaleSelector(this.config.scaleRadialType)
