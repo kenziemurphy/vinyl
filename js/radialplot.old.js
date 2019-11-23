@@ -102,8 +102,8 @@ d3.json('temp.json').then(function (data) {
 Promise.all([
     // d3.json('../../data/Spotify.json'),
     // d3.json('../../data/Spotify_trackinfo.json'),
-    // d3.json('data/slotmachine.json'),
-    // d3.json('data/slotmachine_trackinfo.json'),
+    //d3.json('data/slotmachine.json'),
+    //d3.json('data/slotmachine_trackinfo.json'),
     d3.json('data/radiohead.json'),
     d3.json('data/radiohead_trackinfo.json'),
 ]).then(function (loadedData) {

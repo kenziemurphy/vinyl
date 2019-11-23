@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
         <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
+        <link rel="stylesheet" href="css/starplot.css" />
     </head>
     <body>
 		<!-- TODO remove inline CSS -->
@@ -58,7 +59,7 @@
 		<div class="container">
 			<div style="flex-grow: 1;">
 				<h2>Detailed Analysis</h2>
-				<svg id="star-view" class="vis-stretch"></svg>
+				<svg id="star-view" class="vis-stretch" overflow="visible"></svg>
 			</div>
 		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
@@ -69,6 +70,7 @@
         <!-- <script src="js/radialplot.js"></script> -->
         <script src="js/radialplot_with_split.js"></script>
         <script src="js/histograms.js"></script>
+        <script src="js/starGrid.js"></script>
         <script src="js/starplots.js"></script>
 
         <script>
@@ -87,8 +89,8 @@
                 // d3.json('../../data/Spotify_trackinfo.json'),
                 // d3.json('data/slotmachine.json'),
                 // d3.json('data/slotmachine_trackinfo.json'),
-                // d3.json("data/radiohead.json"),
-				// d3.json("data/radiohead_trackinfo.json")
+                //d3.json("data/radiohead.json"),
+				//d3.json("data/radiohead_trackinfo.json"),
 				d3.json("data/merged.json"),
 				d3.json("data/merged_trackinfo.json")
 				// d3.json("data/spoegwolf.json"),
