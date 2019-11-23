@@ -22,27 +22,32 @@
 					<br><br><button id="toggle-force" class="btn">Toggle force jittering</button>
 				</div>
             </div>
-            <div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
-                <div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
-                    <button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear"    data-attr="loudness">LOUDNESS</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="acousticness">ACOUSTICNESS</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="instrumentalness">INSTRUMENTALNESS</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="liveness">LIVENESS</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="speechiness">SPEECHINESS</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="release_year">YEAR</button>
-                    <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
-
-					<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
-                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
-                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
-                    <!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
-                </div>
-				<svg id="radial-view" class="vis-stretch" overflow="visible"></svg>
+			<div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
+				<div id="vis-area" class="vis-stretch" style="display: flex; flex-direction: column;">
+					<div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
+						<button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear"    data-attr="loudness">LOUDNESS</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="acousticness">ACOUSTICNESS</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="instrumentalness">INSTRUMENTALNESS</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="liveness">LIVENESS</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="speechiness">SPEECHINESS</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-attr="release_year">YEAR</button>
+						<button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
+	
+						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
+						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
+						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
+						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
+					</div>
+					<svg id="radial-view" class="vis-stretch" overflow="visible"></svg>
+				</div>
+				<div id="drop-area" style="height: 7vh; display: flex; flex-direction: column; justify-content:center; align-items:center;">
+					Drag a song here for more details
+				</div>
             </div>
 			<div style="flex-grow: 1; width: 25%; display: flex; flex-direction: column;" class="full-height">
 				<!-- <h2>Distribution</h2> -->

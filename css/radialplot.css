@@ -34,7 +34,7 @@ b, [font-weight="bold"] {
     min-height: 100vh;
 }
 
-svg.vis-stretch {
+.vis-stretch {
     width: 100%;
     flex-grow: 1;
     /* height: 100vh; */

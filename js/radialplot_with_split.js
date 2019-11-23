@@ -53,6 +53,7 @@ class RadialView {
         this.filteredData = this.data.filter(this.filter);
 
         this.shouldReinitGrid = true;
+
         this.redraw();
         
         this.songToolTip = d3.tip()
@@ -84,8 +85,8 @@ class RadialView {
                 });
             });
 
-        // // TODO stop music when clicking outside
-        d3.select('body').on('click', function () {
+        // handler for clicking outside of a song
+        this.svg.on('click', function () {
             function equalToEventTarget() {
                 return this == d3.event.target;
             }
@@ -354,7 +355,22 @@ class RadialView {
         var songGEnter = songG.enter()
             .append('g')
             .attr('class', 'song')
-            .attr('id', d => `song-${d.id}`);
+            .attr('id', d => `song-${d.id}`)
+            .call(d3.drag()
+                .on('drag', function (d) {
+                    d.isDragging = true;
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                })
+                .on('end', function (d, i, m) {
+                    d.isDragging = false;
+                    d.fx = null;
+                    d.fy = null;
+                    let targetId = d3.select(document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY)).attr("id");
+                    if (targetId == 'drop-area') {
+                        alert('TODO: detailed analysis');
+                    }
+                }));
             
         var songGEnterInner = songGEnter.append('g')
             .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
@@ -452,6 +468,8 @@ class RadialView {
         let _this = this;
         if (action == 'mouseover') {
             return function (d, i) {
+                if (d.isDragging) return;
+                
                 if (!_this.selectedSong) {
                     // d = d;
                     _this.selectSong(d);
@@ -509,6 +527,7 @@ class RadialView {
     }
 
     selectSong (d, k = 5) {
+        console.trace();
         this.selectedSong = d;
         if (!this.selectedSong.audio) {
             this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
