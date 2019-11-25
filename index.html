@@ -82,6 +82,8 @@
 			var components = [];
 			var data = [];
 
+			var newData = [];
+
 			var dispatch = d3.dispatch('filter', 'highlight');
 
 			var rv
@@ -90,8 +92,9 @@
 			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 
             // Load data and call onDataChanged for components once load is complete
+            // TODO: remove this and just call appendArtistData instead each time the user adds an artist using the search bar
             loadData("data/merged.json", "data/merged_trackinfo.json");
-            //loadDataNew();
+            
 
 			dispatch.on("filter", function (filterFunc) {
 				components.forEach(function (c) { c.onFilter(filterFunc); });
@@ -147,10 +150,9 @@
 			    // Override the default behaviour which is to set the searchbar value to the artist id
 			    document.getElementById('search-artist').value = event.text.label;
 
-			    var id = event.text.value;
-
 			    // Retrieve songs for this artist from our API
-			    console.log(id);
+			    var artistID = event.text.value;
+			    appendArtistData(artistID);
 			});
 
 			// helpers
@@ -199,6 +201,29 @@
 
 					components.forEach(function (c) { c.onDataChanged(data); });
 				});
+			}
+
+			// Loads an array of song data for the given artistID and append that to our dataset
+			function appendArtistData(artistID) {
+				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID;
+
+				d3.json(url).then((data) => {
+					
+					// Append to data array
+					newData.push(data);
+
+					console.log(newData);
+				}).catch((error) => console.log(error));
+			}
+
+			// Removes the data for the artist at index i from the dataset
+			function removeArtistData(i) {
+				newData.splice(i, 1);
+			}
+
+			// Clears all selected artist data
+			function clearArtistData() {
+				newData = [];
 			}
 
 
