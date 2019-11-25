@@ -7,17 +7,37 @@ div.awesomplete {
 #search-artist {
 	width: 100% !important;
 	height: 30px !important;
+	font-size: medium; 
+	color: #222222;
+	font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    border-radius: 5px;
+    padding-left: 10px;
 }
 
 /* Results list */
-div.awesomplete ul li p { 
+div.awesomplete ul li { 
 	display: block; 
-	font-size: small; 
-	margin-left: 1em;
+	font-size: medium; 
+	color: #222222;
+	font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
 }
 
-div.awesomplete .awe-found { border: 3px solid green }
+.awesomplete mark {
+	background: #6988f2;
+}
 
-.hide-not-found div.awesomplete .awe-not-found { border-color: black }
+.awesomplete li:hover mark {
+	background: #6988f2;
+}
 
-div.awesomplete .awe-not-found { border: 3px solid red }
+div.awesomplete .awe-found { 
+	border: 3px solid #6DAC4FFF
+}
+
+div.awesomplete .awe-not-found {
+	border: 3px solid #FE0000FF
+}

@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>Music Vis</title>
+		<title>MusicOctoRobot</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
 		<link rel="stylesheet" href="https://nico-amsterdam.github.io/awesomplete-util/css/awesomplete.css">
         <link rel="stylesheet" href="css/histograms.css" />
@@ -16,8 +16,8 @@
 		<!-- TODO remove inline CSS -->
         <div class="container">
 			<div style="flex-grow: 1; width: 25%;" class="full-height">
-				<h1>The Music Vis</h1>
-				<input class="form-control" id="search-artist" name="search[artist]" type="text" />
+				<h1>MusicOctoRobot</h1>
+				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search artists..." />
 				<br>
 				<svg id="..."></svg>
 				<div>
@@ -147,8 +147,8 @@
 			// Listen to searchbar selection
 			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
 
-			    // Override the default behaviour which is to set the searchbar value to the artist id
-			    document.getElementById('search-artist').value = event.text.label;
+			    // Clear the searchbar to be ready for a new search
+			    document.getElementById('search-artist').value = "";
 
 			    // Retrieve songs for this artist from our API
 			    var artistID = event.text.value;
