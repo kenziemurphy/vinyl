@@ -1,0 +1,23 @@
+/* Searchbar */
+div.awesomplete { 
+	width: 100%;
+	display: block; 
+}
+
+#search-artist {
+	width: 100% !important;
+	height: 30px !important;
+}
+
+/* Results list */
+div.awesomplete ul li p { 
+	display: block; 
+	font-size: small; 
+	margin-left: 1em;
+}
+
+div.awesomplete .awe-found { border: 3px solid green }
+
+.hide-not-found div.awesomplete .awe-not-found { border-color: black }
+
+div.awesomplete .awe-not-found { border: 3px solid red }

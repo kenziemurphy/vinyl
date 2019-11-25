@@ -6,16 +6,19 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<title>Music Vis</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
+		<link rel="stylesheet" href="https://nico-amsterdam.github.io/awesomplete-util/css/awesomplete.css">
         <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
         <link rel="stylesheet" href="css/starplot.css" />
+        <link rel="stylesheet" href="css/main.css" />
     </head>
     <body>
 		<!-- TODO remove inline CSS -->
         <div class="container">
 			<div style="flex-grow: 1; width: 25%;" class="full-height">
 				<h1>The Music Vis</h1>
-				Search boxes go here<br>
+				<input class="form-control" id="search-artist" name="search[artist]" type="text" />
+				<br>
 				<svg id="..."></svg>
 				<div>
 					<button id="toggle-split-view" class="btn">Toggle split view</button>
@@ -64,6 +67,8 @@
 		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+        <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete.min.js"></script>
+  		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
         <script src="js/utils.js"></script>
         <script src="js/audiohelpers.js"></script>
         <script src="js/radialgrid.js"></script>
@@ -84,23 +89,9 @@
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 
-            Promise.all([
-                // d3.json('../../data/Spotify.json'),
-                // d3.json('../../data/Spotify_trackinfo.json'),
-                // d3.json('data/slotmachine.json'),
-                // d3.json('data/slotmachine_trackinfo.json'),
-                //d3.json("data/radiohead.json"),
-				//d3.json("data/radiohead_trackinfo.json"),
-				d3.json("data/merged.json"),
-				d3.json("data/merged_trackinfo.json")
-				// d3.json("data/spoegwolf.json"),
-				// d3.json("data/spoegwolf_trackinfo.json")
-            ]).then(function(loadedData) {
-				data = preprocessData(loadedData);
-				console.log(data);
-
-				components.forEach(function (c) { c.onDataChanged(data); });
-			});
+            // Load data and call onDataChanged for components once load is complete
+            loadData("data/merged.json", "data/merged_trackinfo.json");
+            //loadDataNew();
 
 			dispatch.on("filter", function (filterFunc) {
 				components.forEach(function (c) { c.onFilter(filterFunc); });
@@ -130,6 +121,38 @@
 					rv.setConfig({enableForce: !rv.config.enableForce});
 				}, false);
 
+			// Searchbar
+			AwesompleteUtil.start('#search-artist',
+				 {  /* util options */
+				   url:    "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot/search?searchString=",
+				   urlEnd: "*",
+				   limit: 1
+				 }, 
+				 {  /* awesomplete options */
+				   minChars: 1,
+				   data: (rec, input) => {
+
+				   	return { 
+			         label: rec['name'], 
+			         value: rec['id']
+			       };
+
+				  }
+				 }
+			);
+
+			// Listen to searchbar selection
+			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
+
+			    // Override the default behaviour which is to set the searchbar value to the artist id
+			    document.getElementById('search-artist').value = event.text.label;
+
+			    var id = event.text.value;
+
+			    // Retrieve songs for this artist from our API
+			    console.log(id);
+			});
+
 			// helpers
 			function preprocessData (files) {
 				// inner join
@@ -156,6 +179,30 @@
 
 				return abJoined.filter(x => x !== false);
 			}
+
+			function loadData(src1, src2) {
+				Promise.all([
+	                // d3.json('../../data/Spotify.json'),
+	                // d3.json('../../data/Spotify_trackinfo.json'),
+	                // d3.json('data/slotmachine.json'),
+	                // d3.json('data/slotmachine_trackinfo.json'),
+	                //d3.json("data/radiohead.json"),
+					//d3.json("data/radiohead_trackinfo.json"),
+					d3.json(src1),
+					d3.json(src2)
+					// d3.json("data/spoegwolf.json"),
+					// d3.json("data/spoegwolf_trackinfo.json")
+	            ]).then(function(loadedData) {
+	            	// TODO: change data loading to use searchbar
+					data = preprocessData(loadedData);
+					console.log(data);
+
+					components.forEach(function (c) { c.onDataChanged(data); });
+				});
+			}
+
+
+
         </script>
     </body>
 </html>
