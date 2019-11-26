@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0 30px;
     background-color: #212039;
+    /* background: linear-gradient(to bottom, #212039, #111111); */
     /* overflow: hidden; */
     font-family: Helvetica, sans-serif;
     color: #ffffff;
@@ -33,7 +34,7 @@ b, [font-weight="bold"] {
     min-height: 100vh;
 }
 
-svg.vis-stretch {
+.vis-stretch {
     width: 100%;
     flex-grow: 1;
     /* height: 100vh; */
@@ -77,11 +78,6 @@ svg.vis-stretch {
     height: 100vh;
 }
 
-.pulse:hover, .active.pulse {
-    animation: pulse;
-    animation-iteration-count: infinite;
-}
-
 .song {
     transition: 0.3s opacity;
 }
@@ -89,8 +85,18 @@ svg.vis-stretch {
 .song .dot {
     fill: #fff;
     stroke: #fff;
-    stroke-width: 1;
+    stroke-width: 2;
     stroke-opacity: 1;
+}
+
+.song.active .pulse:hover, .song.active .pulse {
+    animation: pulse;
+    animation-iteration-count: infinite;
+}
+
+.song.active .dot {
+    stroke: #fff !important;
+    /* stroke-width: 5; */
 }
 
 .song .song-label {
@@ -112,6 +118,10 @@ text {
     alignment-baseline: central;
     font-weight: normal;
     opacity: 0.3;
+}
+
+.label-radial {
+    opacity: 0.7;
 }
 
 .label-align-bottom {
@@ -147,9 +157,9 @@ text {
 
 .guide-line {
     fill-opacity: 0;
-    stroke-width: 3;
+    stroke-width: 1;
     stroke-opacity: 1;
-    stroke: #ffffff;
+    /* stroke: #ffffff; */
     transition: 0.2s all;
 }
 
@@ -163,8 +173,8 @@ text {
     font-weight: bold;
 }
 
-.fade {
-    opacity: 0.4;
+.fade:not(.similar-highlight) {
+    opacity: 0.2;
 }
 
 @keyframes pulse {
@@ -183,14 +193,14 @@ text {
 }
 
 .rotate-anim {animation-iteration-count: infinite !important;}
-.rotate-anim:hover.rotate-1 { animation: rotate-1; }
-.rotate-anim:hover.rotate-2 { animation: rotate-2; }
-.rotate-anim:hover.rotate-3 { animation: rotate-3; }
-.rotate-anim:hover.rotate-4 { animation: rotate-4; }
-.rotate-anim:hover.rotate-5 { animation: rotate-5; }
-.rotate-anim:hover.rotate-6 { animation: rotate-6; }
-.rotate-anim:hover.rotate-7 { animation: rotate-7; }
-.rotate-anim:hover.rotate-8 { animation: rotate-8; }
+.song.active .rotate-anim.rotate-1, .song:hover .rotate-anim.rotate-1 { animation: rotate-1; }
+.song.active .rotate-anim.rotate-2, .song:hover .rotate-anim.rotate-2 { animation: rotate-2; }
+.song.active .rotate-anim.rotate-3, .song:hover .rotate-anim.rotate-3 { animation: rotate-3; }
+.song.active .rotate-anim.rotate-4, .song:hover .rotate-anim.rotate-4 { animation: rotate-4; }
+.song.active .rotate-anim.rotate-5, .song:hover .rotate-anim.rotate-5 { animation: rotate-5; }
+.song.active .rotate-anim.rotate-6, .song:hover .rotate-anim.rotate-6 { animation: rotate-6; }
+.song.active .rotate-anim.rotate-7, .song:hover .rotate-anim.rotate-7 { animation: rotate-7; }
+.song.active .rotate-anim.rotate-8, .song:hover .rotate-anim.rotate-8 { animation: rotate-8; }
 
 @keyframes rotate-1 {
     0%   { transform: rotate(0deg); }

@@ -1,0 +1,61 @@
+body {
+  margin: auto;
+  font-family: Arial;
+}
+#target {
+  margin: 40px 0;
+}
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+.chart {
+  margin-bottom: 40px;
+}
+.star-title {
+  font-size: 18px;
+  fill: #fff;
+}
+.star-label {
+  font-size: 14px;
+  color: #fff;
+  fill: #fff;
+  fill-opacity: 0.3;
+  pointer-events: none;
+}
+.star-remove {
+  font-size: 18px;
+  fill: #fff;
+  fill-opacity: 0.3;
+}
+.star-origin {
+  fill: #ffffff;
+}
+.star-axis {
+  stroke: #ffffff;
+  stroke-opacity: 0.3;
+  stroke-width: 2px;
+  stroke-dasharray: 4 10;
+}
+.star-path {
+  stroke: #ffffff;
+  stroke-width: 5px;
+  fill: #ffffff;
+  fill-opacity: 0;
+}
+.star-interaction {
+  opacity: 0;
+}
+.interaction {
+  pointer-events: none;
+}
+.interaction.label {
+  position: absolute;
+  font-size: 11px;
+  text-shadow: 0 1px 0 #FFF, 0 -1px 0 #FFF, 1px 0 #FFF, -1px 0 #FFF;
+}
+.interaction.circle {
+  fill: #444;
+  fill-opacity: 0.6;
+  stroke: #444;
+}

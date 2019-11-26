@@ -1,7 +1,7 @@
 function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
 
     const NUM_RADIAL_GRID_LINES = 5;
-    const MID_LABEL_HORIZONTAL_OFFSET = 60;
+    const MID_LABEL_HORIZONTAL_OFFSET = 25;
     const MID_LABEL_VERTICAL_OFFSET = 7;
 
     var minRadialData = scaleRadial.domain()[0];
@@ -59,15 +59,15 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
         radialGrid.exit().remove();
 
         // axis labels
-        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
-            .attr('y', maxRadialDist + 30);
-        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom')
-            .attr('y', minRadialDist - 30);
-        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
-            .attr('y', -maxRadialDist - 30);
-        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top')
-            .attr('y', -minRadialDist + 30);
-        selection.selectAll('text.label.label-axis-radial').text(radialMappingLabel.toUpperCase());
+        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
+        //     .attr('y', maxRadialDist + 30);
+        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom')
+        //     .attr('y', minRadialDist - 30);
+        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
+        //     .attr('y', -maxRadialDist - 30);
+        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top')
+        //     .attr('y', -minRadialDist + 30);
+        // selection.selectAll('text.label.label-axis-radial').text(radialMappingLabel.toUpperCase());
 
         // radial scale labels
         // top
@@ -191,18 +191,21 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
         return axis;
     }
 
-    axis.showGuide = function (angle, radial) {
+    axis.showGuide = function (angle, radial, stroke = '#fff') {
         gridG.select('.guide-line.radial')
             .classed('hidden', false)
-            .attr('r', scaleRadial(radial));
+            .attr('r', scaleRadial(radial))
+            .attr('stroke', stroke);
         gridG.select('.guide-line.angle')
             .classed('hidden', false)
             .attr('x1', angleDistanceToXy(scaleAngle(angle), minRadialDist)[0])
             .attr('y1', angleDistanceToXy(scaleAngle(angle), minRadialDist)[1])
             .attr('x2', angleDistanceToXy(scaleAngle(angle), maxRadialDist)[0])
-            .attr('y2', angleDistanceToXy(scaleAngle(angle), maxRadialDist)[1]);
+            .attr('y2', angleDistanceToXy(scaleAngle(angle), maxRadialDist)[1])
+            .attr('stroke', stroke);
         gridG.selectAll('.label-angle')
             .filter(k => k == angle)
+            .attr('fill', stroke)
             .classed('highlight', true);
     }
 
@@ -211,6 +214,7 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
             .classed('hidden', true)
             .transition();
         gridG.selectAll('.label-angle')
+            .attr('fill', '#fff')
             .classed('highlight', false);
     }
 

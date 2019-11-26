@@ -23,6 +23,8 @@ class RadialView {
         this.data = data;
         this.dispatch = dispatch;
         
+        this.selectedSong = false;
+
         // default config
         this.config = {
             showAlbumArt: true,
@@ -51,7 +53,6 @@ class RadialView {
         this.filteredData = this.data.filter(this.filter);
 
         this.shouldReinitGrid = true;
-        this.redraw();
         
         this.songToolTip = d3.tip()
             .attr("class", "d3-tip song-tooltip")
@@ -72,26 +73,38 @@ class RadialView {
         let _this = this;
         d3.selectAll('button.radial-mapping-select')
             .on('click', function () {
+                d3.selectAll('button.radial-mapping-select')
+                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == this.getAttribute('data-attr'));
                 _this.setConfig({
                     radialMapping: this.getAttribute('data-attr'),
                     scaleRadialType: this.getAttribute('data-scale-type'),
                     scaleMinOverride: this.getAttribute('data-scale-min') || false,
                     scaleMaxOverride: this.getAttribute('data-scale-max') || false
                 });
-                d3.selectAll('button.radial-mapping-select')
-                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == _this.config.radialMapping);
             });
 
-        // // TODO stop music when clicking outside
-        // d3.select('body').on('click', function () {
-        //     var outside = d3.selectAll('.dot.active').filter(function () { this == d3.event.target; }).empty();
-        //     if (outside) {
-        //         console.log('!!!!!');
-        //         _this.resetSelection();
-        //     }
-        // });
+        // handler for clicking outside of a song
+        this.svg.on('click', function () {
+            function equalToEventTarget() {
+                return this == d3.event.target;
+            }
+
+            var outsideDot = d3.selectAll('.song.active .dot').filter(equalToEventTarget).empty();
+            var outsideButton = d3.selectAll('.radial-mapping-select').filter(equalToEventTarget).empty();
+            if (outsideDot && outsideButton) {
+                _this.resetSelection();
+                _this.selectionLocked = false;
+            }
+        });
+
+        this.redraw();
     }
 
+    /**
+     * @desc updates vis according to new data
+     * @param Array newData - new data to be drawn
+     * @return void
+    */
     onDataChanged (newData) {
         let _this = this
 
@@ -105,10 +118,20 @@ class RadialView {
         this.redraw();
     }
 
+    /**
+     * @desc redraws the vis when screen size is changed
+     * @param void
+     * @return void
+    */
     onScreenSizeChanged () {
         this.redraw();
     }
 
+    /**
+     * @desc updates parameters of the vis, then redraw the vis
+     * @param Object config - key-value of config parameters used in this vis
+     * @return void
+    */
     setConfig (config) {
         if (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) {
             this.svg.selectAll('g.grid').remove();
@@ -122,6 +145,11 @@ class RadialView {
         this.redraw();
     }
 
+    /**
+     * @desc draws grid in the back of the vis
+     * @param void
+     * @return void
+    */
     initGrid () {
         this.grids = [];
         this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
@@ -137,6 +165,11 @@ class RadialView {
         }
     }
 
+    /**
+     * @desc draws the whole vis if have not drawn, otherwise updates the vis
+     * @param void
+     * @return void
+    */
     redraw () {
         this.recomputeConsts();
 
@@ -144,6 +177,23 @@ class RadialView {
         if (this.shouldReinitGrid) {
             this.initGrid();
         }
+
+        // IF you want to actually draw a vinyl record...
+        // FIXME z-index issues
+        // d3.selectAll('g.vinyl').remove();
+        // for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+        //     let vinylG = selectAllOrCreateIfNotExist(this.svg, `g.vinyl#vinyl-${i}`)
+        //         .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+        //     let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+        //         .attr('r', this.SCALE_RADIAL.range()[1])
+        //         .style('fill', '#020202');
+        //     let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
+        //         .attr('r', this.SCALE_RADIAL.range()[0])
+        //         .style('fill', this.COLOR_SCHEME[i]);
+        //     let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
+        //         .attr('r', this.SCALE_RADIAL.range()[0] / 20)
+        //         .style('fill', '#212039');
+        // }
         
         // console.log('///', this.SPLITS);
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
@@ -153,19 +203,29 @@ class RadialView {
                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.radialMapping);
             multiGridG.call(this.grids[i]);
+
+            if (this.selectedSong) {
+                this.grids[i].showGuide(
+                    this.getKeyFromKeyId(this.selectedSong.key, this.selectedSong.mode), 
+                    this.selectedSong[this.config.radialMapping], 
+                    this.SCALE_DOT_COLOR(this.config.splitKey(this.selectedSong))
+                    );
+            }
         }
 
+        this.lineLayer = selectAllOrCreateIfNotExist(this.svg, 'g#line-layer')
+
+
         this.drawDataPoints();
-        // if (this.ENABLE_FORCE) {
-            this.initForce();
-        // }
+        this.initForce();
+        
 
         // buttons
         let _this = this;
         let angle = d3.select('.radial-mapping-select.active').attr('data-angle');
         // d3.select('#radial-view-controls')
         //     .attr('data-angle', angle)
-        //     .style('transform', `rotate(-${+angle + 90}deg)`)
+        //     .style('transform', `rotate(-${angle}deg)`)
         d3.selectAll('.radial-mapping-select')
             .style('position', 'absolute')
             .attr('data-angle', function (d, i) {
@@ -174,8 +234,8 @@ class RadialView {
             .style('transform', function (d, i) {
                 let parentAngle = d3.select('#radial-view-controls').attr('data-angle');
                 let angle = i / d3.selectAll('.radial-mapping-select').size() * 360 - 90;
-                let x = (_this.MAX_RADIAL_DIST + 70) * Math.cos(angle* Math.PI / 180);
-                let y = (_this.MAX_RADIAL_DIST + 70) * Math.sin(angle* Math.PI / 180);
+                let x = (_this.MAX_RADIAL_DIST + 65) * Math.cos(angle * Math.PI / 180);
+                let y = (_this.MAX_RADIAL_DIST + 65) * Math.sin(angle * Math.PI / 180);
                 let selfAngle = angle + 90;
                 if (selfAngle > 90 && selfAngle < 270) {
                     selfAngle += 180;
@@ -184,6 +244,11 @@ class RadialView {
             });
     }
 
+    /**
+     * @desc change filter function for data, the data drawn in vis are only those that satisfies the filter
+     * @param function filterFunction - boolean function for the filter
+     * @return void
+    */
     onFilter (filterFunction) {
         this.filter = filterFunction;
         this.filteredData = this.data.filter(filterFunction);
@@ -192,6 +257,11 @@ class RadialView {
         this.drawDataPoints();
     }
 
+    /**
+     * @desc change highlighting function for data, the data that satisfies the function will be highlighted
+     * @param function filterFunction - boolean function for the highlighting function
+     * @return void
+    */
     onHighlight(filterFunction) {
         this.highlight = filterFunction;
         d3.selectAll('.song')
@@ -199,6 +269,11 @@ class RadialView {
         // this.redraw();
     }
 
+    /**
+     * @desc gives a little more flexibiliy in choosing the scale function
+     * @param string type ('linear' | 'log') - type of desired scale
+     * @return d3.scale with the type corresponding to the input
+    */
     scaleSelector (type) {
         if (type == 'linear')
             return d3.scaleLinear()
@@ -206,6 +281,11 @@ class RadialView {
             return d3.scaleLog()
     }
 
+    /**
+     * @desc recompute all computed constants for drawing the vis. The constants may be computed from the data or the screen size or both
+     * @param void
+     * @return void
+    */
     recomputeConsts() {
         this.H = parseInt(this.svg.style("height"), 10);
         this.W = parseInt(this.svg.style("width"), 10);
@@ -278,6 +358,11 @@ class RadialView {
             d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
     }
     
+    /**
+     * @desc initlize or update d3.forceSimulation
+     * @param void
+     * @return void
+    */
     initForce () {
         let _this = this;
         if (!this.force) {
@@ -288,14 +373,23 @@ class RadialView {
                 // // .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
-                    .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+                    // FIXME transition animation is lost after the 1st time
+                    let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
+                        .attr('opacity', s => s.similarity)
+                        .attr('x1', s => s.source.x)
+                        .attr('y1', s => s.source.y)
+                        .transition(d3.transition().duration(70))
+                        .attr('x2', s => s.song.x)
+                        .attr('y2', s => s.song.y)
                 });
         }          
 
         this.force.velocityDecay(0.5);
         this.force.nodes(this.filteredData);
         if (this.config.enableForce)
-            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5);
+            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 2);
         else
             this.force.force('collision').radius(0);
         this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][0] + _this.dataToXy(d)[0]).strength(0.2);
@@ -304,13 +398,35 @@ class RadialView {
        
     }
     
+    /**
+     * @desc draw data points or updates if they already exists
+     * @param void
+     * @return void
+    */
     drawDataPoints () {
         let _this = this;
         var songG = this.svg.selectAll('g.song').data(this.filteredData, d => d.id);
     
         var songGEnter = songG.enter()
             .append('g')
-            .attr('class', 'song');
+            .attr('class', 'song')
+            .attr('id', d => `song-${d.id}`)
+            .call(d3.drag()
+                .on('drag', function (d) {
+                    d.isDragging = true;
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                })
+                .on('end', function (d, i, m) {
+                    d.isDragging = false;
+                    d.fx = null;
+                    d.fy = null;
+                    let targetId = d3.select(document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY)).attr("id");
+                    if (targetId == 'drop-area') {
+                        //alert('TODO: detailed analysis');
+                        new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
+                    }
+                }));
             
         var songGEnterInner = songGEnter.append('g')
             .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
@@ -334,8 +450,7 @@ class RadialView {
             .append('circle')
             .attr('class', 'dot pulse')
             
-        songGEnterInner.selectAll('.dot')
-            .on("mouseover", this.mouseActions('mouseover'))
+        songGEnter.on("mouseover", this.mouseActions('mouseover'))
             .on("click", this.mouseActions('click'))
             .on("mouseout", this.mouseActions('mouseout'));
 
@@ -350,16 +465,19 @@ class RadialView {
             .attr("height", d => 2 * this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]));
 
         songG.merge(songGEnter)
-            .classed('fade', d => !this.highlight(d))
+            .classed('fade', d => !this.highlight(d));
 
         songG.merge(songGEnter)
             .selectAll('.dot')
             .style('animation-duration', d => `${60 / d.tempo}s`)
             .style('stroke', d => this.SCALE_DOT_COLOR(this.config.splitKey(d)))
             .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(this.config.splitKey(d)))
+            .transition()
+            .style('fill-opacity', d => this.config.enableForce ? 1 : 0.2)
+            .style('stroke-opacity', d => this.config.enableForce ? 1 : 0.8)
 
         songG.merge(songGEnter)
-            .selectAll('polygon.dot.pulse')
+            .selectAll('polygon.dot')
             .attr('points', function (d) {
                 // draw regular polygons
                 var points = [];
@@ -382,119 +500,203 @@ class RadialView {
                 }
     
                 return points.map(d => `${d[0]},${d[1]}`).join(' ');
-            })
+           })
 
         songG.merge(songGEnter)
-            .selectAll('circle.dot.pulse')
+            .selectAll('circle.dot')
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
     
         songG.exit().remove();
     }
     
+    /**
+     * @desc mouse action function selector for each data point
+     * @param string action ('mouseover' | 'click' | 'mouseout') - type of event
+     * @return function for handling the specified mouse event
+    */
     mouseActions (action) {
         let _this = this;
         if (action == 'mouseover') {
             return function (d, i) {
-                // if (_this.currentPlayingMusic) {
-                //     _this.currentPlayingMusic.stopFadeOut();
-                //     d3.selectAll('.dot.pulse').classed('active', false);
-                // }
-                if (!d.audio) {
-                    d.audio = new Audio(d.preview_url);
-                    d.audio.loop = true;
-                }
-                d.audio.playFadeIn();
+                if (d.isDragging) return;
                 
-                _this.currentPlayingMusic = d.audio;
+                if (!_this.selectedSong) {
+                    // d = d;
+                    _this.selectSong(d);
+                } else {
+                    _this.dispatch.call('highlight', this, function (k) {
+                        let isTheSong = k.id == d.id;
+                        let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                        return isTheSelectedSong || isTheSong// || isSimilarSong;
+                    });
+                }
+
                 _this.songToolTip.show(d, this);
-                _this.grids.forEach(function (g) {
-                    g.showGuide(_this.getKeyFromKeyId(d.key, d.mode), d[_this.config.radialMapping]);
-                });
-
-                // FIXME compute song similarity
-                let n = 5;
-                let similarSongs = [];
-                for (let i = 0; i < n; i++) {
-                    let index = Math.floor(Math.random() * _this.filteredData.length);
-                    similarSongs.push(_this.filteredData[index]);
-                }
-                let similarityLinks = _this.svg.selectAll('line.similarity-link')
-                    .data(similarSongs)
-                    .enter()
-                    .append('line')
-                    .attr('class', 'similarity-link')
-                    .attr('stroke', '#fff')
-                    .attr('stroke-width', 2)
-                    .attr('pointer-events', 'none')
-                    .attr('opacity', d => Math.random() * 0.7 + 0.3)
-                    .attr('x1', s => d.x)
-                    .attr('y1', s => d.y)
-                    .attr('x2', s => d.x)
-                    .attr('y2', s => d.y)
-                
-                _this.svg.selectAll('line.similarity-link')
-                    .transition()
-                    .attr('x2', s => s.x)
-                    .attr('y2', s => s.y)
-
-                _this.dispatch.call('highlight', this, k => k.id == d.id || similarSongs.filter(x => x.id == k.id).length > 0);
             }
         } else if (action == 'click') {
             return function (d, i, m) {
-                if (!d.audio) {
-                    d.audio = new Audio(d.preview_url);
-                    d.audio.loop = true;
+                if (!_this.selectedSong) {
+                    _this.selectSong(d);
+                    _this.songToolTip.show(d, this);
                 }
-                console.log(_this)
-                if (d.audio.paused)
-                    d.audio.playFadeIn();
-                _this.currentPlayingMusic = d.audio;
-                _this.dispatch.call('highlight', this, k => k.id == d.id);
-                // TODO lock selection when clicked
-                // _this.selectionLocked = true;
-                // m[i].classList.add('active');
+
+                if (_this.selectionLocked) {
+                    if (_this.selectedSong == d) {
+                        _this.resetSelection();
+                        _this.selectionLocked = false;
+                    } else {
+                        _this.resetSelection();
+                        _this.selectSong(d);
+                        _this.songToolTip.show(d, this);
+                        m[i].closest('.song').classList.add('active');
+                        _this.selectedSong = d;
+                    }
+                } else {
+                    _this.selectionLocked = true;
+                    m[i].closest('.song').classList.add('active');
+                    _this.selectedSong = d;
+                }
+                
             }
         } else if (action == 'mouseout') {
             return function (d, i) {
                 if (!_this.selectionLocked) {
-                    
-                    d.audio.stopFadeOut();
-
-                    _this.songToolTip.hide(d, this);
-                    _this.grids.forEach(function (g) {
-                        g.hideGuide();
+                    _this.resetSelection();
+                } else {
+                    _this.songToolTip.hide({}, this);
+                    _this.dispatch.call('highlight', this, function (k) {
+                        let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                        return isTheSelectedSong// || isSimilarSong;
                     });
-        
-                    _this.dispatch.call('highlight', this, k => true);
                 }
-
                 // TODO make it look better
-                _this.svg.selectAll('line.similarity-link').remove();
             }
         }
     }
 
-    resetSelection () {
-        console.log('!', this, this.currentPlayingMusic);
-        if (this.currentPlayingMusic) {
-            this.currentPlayingMusic.stopFadeOut();
-            d3.selectAll('.dot.pulse').classed('active', false);
-            this.songToolTip.hide({}, this);
-            this.grid.hideGuide();
-            this.dispatch.call('highlight', this, k => true);
+    /**
+     * @desc highlight, play, and show similar songs to a song on the vis
+     * @param Object d - data of the selected point
+     * @param int k - number of similar songs to be suggested
+     * @return function for handling the specified mouse event
+    */
+    selectSong (d, k = 5) {
+        console.trace();
+        this.selectedSong = d;
+        if (!this.selectedSong.audio) {
+            this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
+            this.selectedSong.audio.loop = true;
         }
+        this.selectedSong.audio.playFadeIn();
+
+        let similarSongs = this.getSimilarSongs(this.selectedSong, k);
+
+        let _this = this;
+        this.dispatch.call('highlight', this, s => s.id == d.id);
+        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+    
+        _this.grids.forEach(function (g, i) {
+            g.showGuide(
+                _this.getKeyFromKeyId(d.key, d.mode), 
+                d[_this.config.radialMapping], 
+                _this.SCALE_DOT_COLOR(_this.config.splitKey(d)));
+            });
+
+        let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
+            .data(similarSongs)
+            .enter()
+            .append('line')
+            .attr('class', 'similarity-link')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 3)
+            .attr('pointer-events', 'none')
+            .attr('opacity', s => s.similarity)
+            .attr('x1', s => s.source.x)
+            .attr('y1', s => s.source.y)
+            .attr('x2', s => s.source.x)
+            .attr('y2', s => s.source.y)
+        
+        _this.svg.selectAll('line.similarity-link')
+            .transition()
+            .attr('x2', s => s.song.x)
+            .attr('y2', s => s.song.y)
+        
+        _this.svg.selectAll('.song')
+            .filter(d => similarSongs.filter(x => x.song.id == d.id).length > 0)
+            .classed('similar-highlight', true);
+    }
+
+    /**
+     * @desc deselects everything in the vis, stops music playback
+     * @param void
+     * @return void
+    */
+    resetSelection () {
+        let _this = this;
+        
+        if (this.selectedSong) {
+            this.selectedSong.audio.stopFadeOut();
+            this.selectedSong = false;
+        }
+
+        this.svg.selectAll('.song')
+            .classed('active', false)
+            .classed('similar-highlight', false);
+
+        this.songToolTip.hide({}, this);
+        this.grids.forEach(function (g) {
+            g.hideGuide();
+        });
+        this.dispatch.call('highlight', this, k => true);
+
+        this.svg.selectAll('line.similarity-link').remove();
+    }
+
+    /**
+     * @desc suggests songs similar to a song from within the local data
+     * @param Object d - data of the reference song
+     * @param int k - number of similar songs to be suggested
+     * @return array of Objects containing: the source song, suggested song, and similarity score in [0, 1] range
+    */
+    getSimilarSongs (d, k = 5) {
+        // FIXME make this work
+        let similarSongs = [];
+        for (let i = 0; i < k; i++) {
+            let index = Math.floor(Math.random() * this.filteredData.length);
+            // please return in this format
+            similarSongs.push({
+                source: d,
+                song: this.filteredData[index],
+                similarity: Math.random() * 0.8 + 0.2 
+            });
+        }
+        return similarSongs;
     }
     
     
     // helpers
     
+    /**
+     * @desc converts polar coordinates to x,y coordinates
+     * @param float angle - angle in polar coordinates
+     * @param float distance - distance from origin in polar coordinates
+     * @return Array of [x, y] coordinates corresponding to the given polar coordinates
+    */
     angleDistanceToXy (angle, distance) {
         return [
             Math.cos(angle) * distance,
             Math.sin(angle) * distance
         ]
     }
-    
+
+    /**
+     * @desc converts spotify's key and mode attributes to key and mode in musical notation
+     * @param int key - key in range of [0, 11] (C to A)
+     * @param int mode - mode in range of [0, 1] (major/minor)
+     * @return string - musical notation of the key
+    */
     getKeyFromKeyId (key, mode = false) {
         if (mode === false) {
             mode = Math.ceil(key / 12);
@@ -505,15 +707,46 @@ class RadialView {
         // return ALL_KEYS[key * 2 + mode];
     }
     
-    
-    
+    /**
+     * @desc round number to a certain decimal points
+     * @param float value - the number to be rounded
+     * @param int decimal - number of desired decimal points
+     * @return float - rounded number
+    */
     round(value, decimals) {
        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
-    dataToXy (d, distanceOverride) {
-        let angle = SCALE_ANGLE(this.getKeyFromKeyId(d.key, d.mode));
-        let distance = distanceOverride || this.SCALE_RADIAL(d[this.config.radialMapping]);
-        return this.angleDistanceToXy(angle, distance);
+    /**
+     * @desc map a data point to its target x,y position
+     * @param Object d - the data point
+     * @param float distanceOverride (optional) - for radial coordinates: arbitrary distance from the origin
+     * @param boolean isRadial (optional) - 
+     *      true if you want the radial coordinates plot with key/mode as the angle axis
+     *      false if you want x,y coordinates for a given pair of attibutes and scales (unfinished)
+     * @return Array - [x, y] coordinates of the data point
+    */
+    dataToXy (d, distanceOverride, isRadial = true) {
+        if (isRadial) {
+            let angle = SCALE_ANGLE(this.getKeyFromKeyId(d.key, d.mode));
+            let distance = distanceOverride || this.SCALE_RADIAL(d[this.config.radialMapping]);
+            return this.angleDistanceToXy(angle, distance);
+        } else {
+            // temp
+            let s = Math.min(this.W, this.H);
+            let xKey = 'release_year';
+            let xScale = d3.scaleLinear()
+                .domain(d3.extent(this.data, d => d[xKey]))
+                .range([-s / 2 + 100, s / 2 - 100]);
+
+            let yScale = this.scaleSelector(this.config.scaleRadialType)
+                .domain(this.data.length == 0 ? [0, 1] :
+                    this.config.scaleMinOverride !== false ? 
+                        [this.config.scaleMinOverride, this.config.scaleMaxOverride] : 
+                        d3.extent(this.data, d => d[this.config.radialMapping]))
+                .range([s / 2 - 100, -s / 2 + 100]);
+            
+            return [xScale(d[xKey]), yScale(d[this.config.radialMapping])];
+        }
     }
 }
