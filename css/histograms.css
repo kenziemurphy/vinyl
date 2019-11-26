@@ -2,6 +2,14 @@
   fill: #F4F4F4;
 }
 
+.x_axis {
+  opacity: .25;
+}
+
+.y_axis {
+  opacity: .25;
+}
+
 rect {
   /*fill-opacity: .2;*/
   stroke-width: 2;
@@ -9,4 +17,8 @@ rect {
   outline-style: solid;
   outline-width: 3px;
   outline-offset: -3px;*/
+}
+
+.faded {
+    opacity: 0.4;
 }

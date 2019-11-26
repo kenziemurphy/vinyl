@@ -3,6 +3,7 @@ class HistogramView {
         // init here
         this.svg = svg;
         this.data = data;
+console.log(this.data);
 
         //var svg = d3.select('svg');
         this.svgWidth = +this.svg.attr('width');
@@ -10,14 +11,19 @@ class HistogramView {
         this.fileNameArray = []; // the filenames to load data from
         this.jsonDataArray = []; // the raw data as loaded from the json files
 
+        // this.data.forEach(function (d) {
+        //     console.log(d);
+        //     this.fileNameArray.push(d);
+        // });
+
         //adds files to the fileNameArray, eventually this will come from user input
         this.fileNameArray.push('../python_scripts/billboard.json');
         this.fileNameArray.push('../data/radiohead.json')
         this.fileNameArray.push('../data/slotmachine.json')
         this.fileNameArray.push('../data/radiohead.json')
-
         console.log(this.fileNameArray);
-        console.log(this.jsonDataArray);
+        // console.log(this.fileNameArray);
+        // console.log(this.jsonDataArray);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
@@ -90,23 +96,25 @@ drawHistogram(stackedData, i) {
   //obtains max count from last json data group max
   let yMax = d3.max(stackedData[stackedData.length - 1], (d) => d[1]);
 
-  console.log(i*400);
-  console.log(i*400 + 50);
+  // console.log(i*400);
+  // console.log(i*400 + 50);
 
   let range = [i*100 + 50, i*100 + 10];
   let domain = [0, yMax];
 
-  console.log(range);
+  // console.log(range);
 
   let y = d3.scaleLinear()
   .domain(domain)
   .range(range);
 
   let xAxis = (g) => g
+  .attr('class', 'x_axis')
   .attr("transform", 'translate(0,' + (range[0]+1) + ')')
   .call(d3.axisBottom(_this.x));
 
   let yAxis = (g) => g
+  .attr('class', 'y_axis')
   .attr("transform", 'translate(50,0)')
   .call(d3.axisLeft(y)
       .ticks(2));
@@ -121,6 +129,7 @@ drawHistogram(stackedData, i) {
       .selectAll("rect")
       .data(d => d)
       .join("rect")
+        .attr('class', "bin-rectangle")
         .attr("x", (d, i) => _this.x(d.data.bin))
         .attr("y", d => y(d[1]))
         .attr("height", d => y(d[0]) - y(d[1]))
@@ -140,7 +149,7 @@ drawHistogram(stackedData, i) {
       .attr('class', 'x_label')
       .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
       .text(xLabel);
-      console.log(parseInt((range[0] - range[1])/2)+range[1]);
+      //console.log(parseInt((range[0] - range[1])/2)+range[1]);
   // this.svg.append('text')
   //     .attr('class', 'y_label')
   //     .attr("transform","translate(20," + (parseInt((range[0] - range[1])/2)+range[1]+22) + ")rotate(270)")
@@ -148,10 +157,21 @@ drawHistogram(stackedData, i) {
 }
 
 redraw() {
-         var realJsonDataArray = this.jsonDataArray;
-         var realFilenameArray = this.fileNameArray;
-         var realDimensions = this.dimensions;
-         var _this = this;
+
+        var realJsonDataArray = this.jsonDataArray;
+        var realFilenameArray = this.fileNameArray;
+        var realDimensions = this.dimensions;
+        var _this = this;
+
+        // this.fileNameArray.length = 0;
+        // this.jsonDataArray.length = 0;
+        // this.data.forEach(function (d) {
+        // console.log(d);
+        // _this.fileNameArray.push(d);
+        // });
+        // console.log(_this.fileNameArray);
+
+
     // d3 loading of json files linked to get data and put in jsonData array
         d3.json(this.fileNameArray[0]).then(function (data) {
 
@@ -210,7 +230,8 @@ redraw() {
 
     onDataChanged (newData) {
         this.data = newData;
-        console.log('onDataChanged');
+        // this.redraw();
+        console.log('onDataChanged: ' + this.data);
     }
 
     onScreenSizeChanged () {
@@ -225,6 +246,9 @@ redraw() {
 
     onHighlight(filterFunction) {
         this.highlight = filterFunction;
+        console.log(this.highlight);
+        d3.selectAll('.bin-rectangle')
+            .classed('faded', d => console.log("FOR BEN: " + !this.highlight(d)));
         console.log('onHighlight');
     }
 }
