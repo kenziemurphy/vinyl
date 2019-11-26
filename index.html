@@ -70,7 +70,6 @@
         <!-- <script src="js/radialplot.js"></script> -->
         <script src="js/radialplot_with_split.js"></script>
         <script src="js/histograms.js"></script>
-        <script src="js/starGrid.js"></script>
         <script src="js/starplots.js"></script>
 
         <script>
@@ -82,7 +81,7 @@
 			var rv
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
-			components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
+			//components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 
             Promise.all([
                 // d3.json('../../data/Spotify.json'),

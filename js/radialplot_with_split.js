@@ -423,7 +423,8 @@ class RadialView {
                     d.fy = null;
                     let targetId = d3.select(document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY)).attr("id");
                     if (targetId == 'drop-area') {
-                        alert('TODO: detailed analysis');
+                        //alert('TODO: detailed analysis');
+                        new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
                     }
                 }));
             

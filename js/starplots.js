@@ -1,8 +1,8 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
 var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 const starCircleRadius = 50;
-const starRadius = 150;
-const spacing = 30;
+const starRadius = 120;
+const spacing = 100;
 //const labelMargin = 20;
 
 var margin = {
@@ -10,8 +10,10 @@ var margin = {
     left: 50
 };
 
-var center_x = margin.left + starCircleRadius + starRadius;
-var center_y = margin.top + starCircleRadius + starRadius;
+//var center_x = margin.left + starCircleRadius + starRadius;
+//var center_y = margin.top + starCircleRadius + starRadius;
+
+var dataArray = [];
 
 
 class StarView {
@@ -21,31 +23,20 @@ class StarView {
         // init here
         this.svg = svg;
         this.data = data;
-
-
-        //this.redraw(data[1]);
-
-        /*Promise.all([
-            // d3.json('../../data/Spotify.json'),
-            // d3.json('../../data/Spotify_trackinfo.json'),
-            //d3.json('data/slotmachine.json'),
-            //d3.json('data/slotmachine_trackinfo.json'),
-            d3.json('data/radiohead.json'),
-            d3.json('data/radiohead_trackinfo.json'),
-        ]).then(function (loadedData) {
-            data = preprocessData(loadedData);    
-            
-        });
-
-        this.redraw(data[1]);*/     
+        d3.select(this.svg).remove();
+        console.log('init');
 
     }
 
     onDataChanged (newData) {
         this.data = newData;
-        this.dataArray = [this.data[1], this.data[150]];
+        dataArray.push(newData);
+        //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
-        this.redraw();
+        if(dataArray.length >= 1){
+            console.log("dataArray", dataArray);
+            this.redraw();
+        }
 
     }
 
@@ -65,15 +56,11 @@ class StarView {
     }
 
     redraw() {
-        
         this.drawGuideLines();
         this.drawStarPath();
         this.drawLabel();
 
         this.drawCircle();
-
-
-        console.log("eng");
 
     }
 
@@ -82,11 +69,11 @@ class StarView {
         var defs = this.svg.append('defs');
         
         var imgPattern = defs.selectAll('pattern')
-            .data(this.dataArray)
+            .data(dataArray)
             .enter()
             .append('pattern')
             .attr('id', function(d, i){
-                console.log(d);
+                //console.log(d);
                 return "img_" + i;
             })
             .attr("x", 0)
@@ -104,11 +91,17 @@ class StarView {
 
         var circles = this.svg.append("g")
             .selectAll("circle")
-            .data(this.dataArray)
+            .data(dataArray)
             .enter()
             .append("circle")
-            .attr("cx", center_x)
-            .attr("cy", function(d, i){ return (2*i+1) * center_y + spacing; })
+            .attr("cx", function(d, i){ 
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                return center_x; 
+            })
+            .attr("cy", function(d, i){ 
+                var center_y = margin.top + starRadius + starCircleRadius;
+                return center_y; 
+            })
             .attr("r", starCircleRadius)
             //.style("fill", d => `url(#image${d.id})`)
             //.style('fill', d => 'url(#img_' + d.album.images[2].url )
@@ -161,12 +154,14 @@ class StarView {
 
             var lines = this.svg.append('g')
                 .selectAll('line')
-                .data(this.dataArray)
+                .data(dataArray)
                 .enter()
                 .append('line')
                 .attr('class', 'star-axis')
                 .attr('transform', function(d, i){
-                    return 'translate(' + center_x + ',' + ((2*i+1) * center_y + spacing) + ')';
+                    var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                    var center_y = margin.top + starRadius + starCircleRadius;
+                    return 'translate(' + center_x + ',' + center_y + ')';
                 })
                 .attr('x1', x1)
                 .attr('x2', x2)
@@ -192,7 +187,7 @@ class StarView {
 
             var texts = this.svg.append('g')
                 .selectAll('text')
-                .data(this.dataArray)
+                .data(dataArray)
                 .enter()
                 .append('text')
                 .attr('class', 'star-label')
@@ -209,7 +204,9 @@ class StarView {
                         angle += 180;
                     }
                     //console.log("angle", selfAngle);
-                    return 'translate(' + (center_x + x) + ',' + ((2*i+1) * center_y + y + spacing) + ') rotate(' + angle + ')';
+                    var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                    var center_y = margin.top + starRadius + starCircleRadius;
+                    return 'translate(' + (center_x + x) + ',' + (center_y + y) + ') rotate(' + angle + ')';
                 })
                 .text(dimensions[num]);
             r += radians;
@@ -243,18 +240,24 @@ class StarView {
 
         var stars = this.svg.append('g')
             .selectAll('path')
-            .data(this.dataArray)
+            .data(dataArray)
             .enter()
             .append('path')
             .attr('class', 'star-path')
             .attr('transform', function(d, i){
-                return 'translate(' + center_x + ',' + ((2*i+1) * center_y + spacing) + ')';
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                var center_y = margin.top + starRadius + starCircleRadius;
+                return 'translate(' + center_x + ',' + center_y + ')';
             })
             .attr('d', function(d, i){
                 return path(pathCalculate(d)) + 'Z';
             });
 
     }
+
+
+
+    
 
 
 
