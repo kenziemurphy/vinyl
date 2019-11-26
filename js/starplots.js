@@ -6,7 +6,7 @@ const spacing = 100;
 //const labelMargin = 20;
 
 var margin = {
-    top: 20,
+    top: 80,
     left: 50
 };
 
@@ -24,7 +24,7 @@ class StarView {
         this.svg = svg;
         this.data = data;
         d3.select(this.svg).remove();
-        console.log('init');
+        //console.log('init');
 
     }
 
@@ -56,12 +56,30 @@ class StarView {
     }
 
     redraw() {
+        this.drawTitle();
         this.drawGuideLines();
         this.drawStarPath();
         this.drawLabel();
 
         this.drawCircle();
 
+    }
+
+    drawTitle() {
+        var texts = this.svg.append('g')
+            .selectAll('text')
+            .data(dataArray)
+            .enter()
+            .append('text')
+            .attr('class', 'star-title')
+            .attr('transform', function(d, i){
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                var center_y = 20;
+                console.log(d.name);
+                return "translate(" + center_x + "," + center_y + ")";
+            })
+            .attr('text-anchor', 'middle')
+            .text(d => d.name);
     }
 
     drawCircle() {
