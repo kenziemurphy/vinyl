@@ -154,7 +154,16 @@ class StarView {
                 return 'url(#img_' + i;
             })
             .style("stroke", 'white')
-            .on("mouseoever", this.playClip('mouseover'))
+            //.on("click", this.playClip('mouseover'))
+            .on("mouseover", this.playClip('mouseover'))
+                /*for(var num = 0; num <= 360; num ++){
+                    d3.select(this)
+                    .transition()
+                    .duration(2000)
+                    .attr('transform', 'rotate(' + num + ')');
+                }*/
+                
+            //})
             .on("mouseout", this.playClip('mouseout'));
 
     }
@@ -163,8 +172,9 @@ class StarView {
         let _this = this;
         console.log("mouseover");
         if (action == 'mouseover') {
+
             return function (d, i) {
-                console.log("d", d);
+                //console.log("d", d);
                 if (!d.audio) {
 
                     d.audio = new Audio(d.preview_url);
@@ -211,7 +221,7 @@ class StarView {
                 .attr('y1', y1)
                 .attr('y2', y2);
                 /*.on('mouseoever', function(d){
-                    this.svg.
+                    console.log("line mouseover");
                 });*/
 
             r += radians;
