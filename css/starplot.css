@@ -23,6 +23,11 @@ body {
   fill-opacity: 0.3;
   pointer-events: none;
 }
+.star-remove {
+  font-size: 18px;
+  fill: #fff;
+  fill-opacity: 0.3;
+}
 .star-origin {
   fill: #ffffff;
 }

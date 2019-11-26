@@ -15,24 +15,36 @@ var margin = {
 
 var dataArray = [];
 
+var flag = 1;
+
 
 class StarView {
     constructor (svg, data = []) {
         // @Shelly
         
         // init here
+        d3.select('#star-view').selectAll('*').remove();
+        /*d3.select('#star-view').remove();
+        this.svg = d3.select('#star-view')
+            .append('svg');*/
         this.svg = svg;
         this.data = data;
-        d3.select(this.svg).remove();
-        //console.log('init');
+        console.log('init');
 
     }
 
     onDataChanged (newData) {
         this.data = newData;
-        dataArray.push(newData);
+        
+        if (flag)
+            dataArray.push(newData);
+        else{
+            dataArray.pop(newData);
+            flag = 1;
+        }
         //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
+
         if(dataArray.length >= 1){
             console.log("dataArray", dataArray);
             this.redraw();
@@ -66,20 +78,35 @@ class StarView {
     }
 
     drawTitle() {
-        var texts = this.svg.append('g')
+        var titles = this.svg.append('g')
             .selectAll('text')
             .data(dataArray)
-            .enter()
-            .append('text')
+            .enter();
+
+        var titleLabel = titles.append('text')
             .attr('class', 'star-title')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                 var center_y = 20;
-                console.log(d.name);
+                //console.log(d.name);
                 return "translate(" + center_x + "," + center_y + ")";
             })
             .attr('text-anchor', 'middle')
             .text(d => d.name);
+
+        var cross = titles.append('text')
+            .attr('class', 'star-remove')
+            .attr('transform', function(d, i){
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i;
+                var center_y = 20;
+                return "translate(" + center_x + "," + center_y + ")";
+            })
+            .attr('text-anchor', 'end')
+            .text('x')
+            .on('click', function(d, i){
+                flag = 0;
+                new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
+            });
     }
 
     drawCircle() {
@@ -106,7 +133,6 @@ class StarView {
             .attr("height", starCircleRadius)
             .attr("xlink:href", d => d.album.images[2].url)
 
-
         var circles = this.svg.append("g")
             .selectAll("circle")
             .data(dataArray)
@@ -127,9 +153,9 @@ class StarView {
                 //console.log(d.album.images[2].url);
                 return 'url(#img_' + i;
             })
-            .style("stroke", 'white');
-            //.on("mouseoever", this.playClip('mouseover'))
-            //.on("mouseout", this.playClip('mouseout'));
+            .style("stroke", 'white')
+            .on("mouseoever", this.playClip('mouseover'))
+            .on("mouseout", this.playClip('mouseout'));
 
     }
 
@@ -137,7 +163,6 @@ class StarView {
         let _this = this;
         console.log("mouseover");
         if (action == 'mouseover') {
-            
             return function (d, i) {
                 console.log("d", d);
                 if (!d.audio) {
