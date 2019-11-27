@@ -18,6 +18,16 @@
 			<div style="flex-grow: 1; width: 25%;" class="full-height">
 				<h1>MusicOctoRobot</h1>
 				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search artists..." />
+
+				<br>
+
+				<div id="artist-buttons">
+					<!--<div class="artist-btn">Muse<button>&times;</button></div>
+					<div class="artist-btn">Radiohead<button>&times;</button></div>
+					<div class="artist-btn">Slot Machine<button>&times;</button></div>-->
+				</div>
+
+
 				<br>
 				<svg id="..."></svg>
 				<div>
@@ -212,18 +222,53 @@
 					// Append to data array
 					newData.push(data);
 
-					console.log(newData);
+					// redraw artist buttons
+					drawArtistButtons();
+
 				}).catch((error) => console.log(error));
+
 			}
 
 			// Removes the data for the artist at index i from the dataset
 			function removeArtistData(i) {
+
+				// remove data from array
 				newData.splice(i, 1);
+
+				// redraw artist buttons
+				drawArtistButtons();
 			}
 
 			// Clears all selected artist data
 			function clearArtistData() {
 				newData = [];
+			}
+
+			function drawArtistButtons() {
+
+				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef']; // color scheme
+
+				console.log(newData);
+
+				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(newData);
+
+				// enter
+				let selectionEnter = selection.enter()
+						.append("div");
+
+				selectionEnter.attr("class", "artist-btn")
+						.style("border-left", (d, i) => "12px solid " + colors[i])
+						.text((d, i) => i);
+				selectionEnter.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
+						
+
+				// update
+				selection.style("border-left", (d, i) => "12px solid " + colors[i]);
+
+				selection.merge(selectionEnter);
+
+				// exit
+				selection.exit().remove();
 			}
 
 

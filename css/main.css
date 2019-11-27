@@ -1,3 +1,35 @@
+.artist-btn {
+    white-space: nowrap;
+    background-color: transparent;
+    height: 25px;
+    /*border: 1px #fff solid;*/
+  	box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25);
+    color: #ffffff;
+    padding: 10px 15px;
+    margin: 10px;
+    border-radius: 7px;
+    border-left: 12px solid #fca981;
+    line-height: 25px;
+    /*opacity: 0.25;*/
+}
+
+.artist-btn button {
+	float: right;
+	background-color: rgba(255,255,255,0);
+	color: white;
+	border: 0px;
+	font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.artist-btn button:hover {
+	font-weight: 800;
+}
+
 /* Searchbar */
 div.awesomplete { 
 	width: 100%;
@@ -8,12 +40,15 @@ div.awesomplete {
 	width: 100% !important;
 	height: 30px !important;
 	font-size: medium; 
-	color: #222222;
+	color: #fff;
 	font-family: proxima-nova, sans-serif;
     font-style: normal;
     font-weight: 400;
-    border-radius: 5px;
+    border-radius: 7px;
+    border-width: 0px;
     padding-left: 10px;
+    background-color: transparent;
+    box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25);
 }
 
 /* Results list */
