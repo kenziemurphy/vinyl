@@ -190,6 +190,10 @@
 				return abJoined.filter(x => x !== false);
 			}
 
+			/* TODO: after radialplot is adapted for new data -> 
+				delete this function and line 104,
+				change line 228 and 245 to push to all components instead of just the HistogramView
+			*/
 			function loadData(src1, src2) {
 				Promise.all([
 	                // d3.json('../../data/Spotify.json'),
