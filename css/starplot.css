@@ -1,7 +1,36 @@
-body {
-  margin: auto;
-  font-family: Arial;
+#star-view-drawer {
+  position: fixed;
+  padding: 30px 30px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #151515;
+  transition: transform 0.5s;
 }
+
+#star-view-drawer.hide {
+  transform: translateY(100%);
+}
+
+.drawer-tab {
+  padding: 20px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: #151515;
+}
+
+#star-view-drawer .drawer-tab {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -100%) translateY(-29px);
+  transition: width 0.5s;
+  min-width: 50%;
+}
+
+#star-view {
+  height: 450px;
+}
+
 #target {
   margin: 40px 0;
 }

@@ -94,6 +94,7 @@ class StarView {
             .attr('text-anchor', 'middle')
             .text(d => d.name);
 
+        // FIXME bug: if you pick more than one song and click 'x' to remove the first, the second one will be removed instead
         var cross = titles.append('text')
             .attr('class', 'star-remove')
             .attr('transform', function(d, i){

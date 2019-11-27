@@ -1,45 +1,3 @@
-body {
-    margin: 0;
-    padding: 0 30px;
-    background-color: #212039;
-    /* background: linear-gradient(to bottom, #212039, #111111); */
-    /* overflow: hidden; */
-    font-family: Helvetica, sans-serif;
-    color: #ffffff;
-
-    font-family: proxima-nova, sans-serif;
-    font-style: normal;
-    font-weight: 400;
-}
-
-body * { 
-    font-family: proxima-nova, sans-serif;
-    font-style: normal;
-    font-weight: 400;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: proxima-nova, sans-serif;
-    font-style: italic;
-    font-weight: 800;
-}
-
-b, [font-weight="bold"] {
-    font-weight: 800;
-}
-
-.container {
-    display:flex;
-    flex-direction: row;
-    min-height: 100vh;
-}
-
-.vis-stretch {
-    width: 100%;
-    flex-grow: 1;
-    /* height: 100vh; */
-}
-
 #radial-view-controls {
     transition: all 0.5s;
     position: relative;
@@ -48,34 +6,6 @@ b, [font-weight="bold"] {
     top: 50%;
     /* width: auto;
     height: 100vh; */
-}
-
-.btn {
-    white-space: nowrap;
-    background-color: transparent;
-    border: 1px #fff solid;
-    color: #fff;
-    padding: 3px 10px;
-    border-radius: 100px;
-    transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
-    opacity: 0.25;
-}
-
-.btn.btn-block {
-    display: block;
-    width: 100%;
-}
-
-.btn:hover, .btn.active {
-    white-space: nowrap;
-    background-color: #fff;
-    color: #111;
-    opacity: 1;
-    font-weight: 800;
-}
-
-.full-height {
-    height: 100vh;
 }
 
 .song {
@@ -270,8 +200,4 @@ text {
 
 .song-tooltip p {
     margin: 0;
-}
-
-.fixed {
-    position: fixed;
 }

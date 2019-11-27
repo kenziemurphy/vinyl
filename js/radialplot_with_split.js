@@ -37,10 +37,11 @@ class RadialView {
             isSplitting: false,
             splits: 1,
             enableForce: true,
-            splitKey: x => x.artists[0].id
+            splitKey: x => x.collection_id
         }
         
-        this.COLOR_SCHEME = ['#f36293', '#81d0ef', '#fca981', '#6988f2'];
+        this.PADDING = 40;
+        this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
         
         // data-dependent computed consts, will update when data is loaded
@@ -71,20 +72,23 @@ class RadialView {
         this.svg.call(this.songToolTip);
 
         let _this = this;
-        d3.selectAll('button.radial-mapping-select')
-            .on('click', function () {
-                d3.selectAll('button.radial-mapping-select')
-                    .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == this.getAttribute('data-attr'));
+        d3.selectAll('#select-y-axis')
+            .on('change', function () {
+                let selectedOption = this.options[this.selectedIndex];
+                // console.log(this, d3.select(this).property('value'))
+                // d3.selectAll('button.radial-mapping-select')
+                //     .classed('active', (d, i, l) => l[i].getAttribute('data-attr') == this.getAttribute('data-attr'));
                 _this.setConfig({
-                    radialMapping: this.getAttribute('data-attr'),
-                    scaleRadialType: this.getAttribute('data-scale-type'),
-                    scaleMinOverride: this.getAttribute('data-scale-min') || false,
-                    scaleMaxOverride: this.getAttribute('data-scale-max') || false
+                    radialMapping: selectedOption.value,
+                    scaleRadialType: selectedOption.getAttribute('data-scale-type'),
+                    scaleMinOverride: selectedOption.getAttribute('data-scale-min') || false,
+                    scaleMaxOverride: selectedOption.getAttribute('data-scale-max') || false
                 });
             });
 
         // handler for clicking outside of a song
-        this.svg.on('click', function () {
+        // FIXME
+        d3.select('body').on('click', function () {
             function equalToEventTarget() {
                 return this == d3.event.target;
             }
@@ -108,13 +112,37 @@ class RadialView {
     onDataChanged (newData) {
         let _this = this
 
-        this.data = newData;
-        this.data.forEach(function (d) {
-            d.x = _this.W / 2;
-            d.y = _this.H / 2;
+        // update split view
+        if (new Set(this.data.map(d => this.config.splitKey(d))).size != newData.length) {
+            this.svg.selectAll('g.grid').remove();
+            this.shouldReinitGrid = true;
+        }
+
+        // preprocessing
+        let newDataArr = []
+        newData.forEach(function (d) {
+            d.songs.forEach(function (s) {
+                s.collection_id = d.id;
+                s.collection_name = d.name;
+            });
+            newDataArr = newDataArr.concat(d.songs);
         });
+
+        console.log(this.data, newData);
+        this.data = arrayMerge(this.data, newDataArr, 'id');
+        console.log(this.data, newData);
+
+        // this.data = newData;
+        this.data.forEach(function (d) {
+            if (!d.x || !d.y) {
+                d.x = _this.W / 2;
+                d.y = _this.H / 2;
+            }
+        });
+
         this.filteredData = this.data.filter(this.filter)
         this.shouldReinitGrid = true;
+
         this.redraw();
     }
 
@@ -133,6 +161,8 @@ class RadialView {
      * @return void
     */
     setConfig (config) {
+        console.log('set config', config);
+
         if (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) {
             this.svg.selectAll('g.grid').remove();
             this.shouldReinitGrid = true;
@@ -222,26 +252,26 @@ class RadialView {
 
         // buttons
         let _this = this;
-        let angle = d3.select('.radial-mapping-select.active').attr('data-angle');
+        // let angle = d3.select('.radial-mapping-select.active').attr('data-angle');
         // d3.select('#radial-view-controls')
         //     .attr('data-angle', angle)
         //     .style('transform', `rotate(-${angle}deg)`)
-        d3.selectAll('.radial-mapping-select')
-            .style('position', 'absolute')
-            .attr('data-angle', function (d, i) {
-                return i / d3.selectAll('.radial-mapping-select').size() * 360;
-            })
-            .style('transform', function (d, i) {
-                let parentAngle = d3.select('#radial-view-controls').attr('data-angle');
-                let angle = i / d3.selectAll('.radial-mapping-select').size() * 360 - 90;
-                let x = (_this.MAX_RADIAL_DIST + 65) * Math.cos(angle * Math.PI / 180);
-                let y = (_this.MAX_RADIAL_DIST + 65) * Math.sin(angle * Math.PI / 180);
-                let selfAngle = angle + 90;
-                if (selfAngle > 90 && selfAngle < 270) {
-                    selfAngle += 180;
-                }
-                return `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${selfAngle}deg)`
-            });
+        // d3.selectAll('.radial-mapping-select')
+        //     .style('position', 'absolute')
+        //     .attr('data-angle', function (d, i) {
+        //         return i / d3.selectAll('.radial-mapping-select').size() * 360;
+        //     })
+        //     .style('transform', function (d, i) {
+        //         let parentAngle = d3.select('#radial-view-controls').attr('data-angle');
+        //         let angle = i / d3.selectAll('.radial-mapping-select').size() * 360 - 90;
+        //         let x = (_this.MAX_RADIAL_DIST + 65) * Math.cos(angle * Math.PI / 180);
+        //         let y = (_this.MAX_RADIAL_DIST + 65) * Math.sin(angle * Math.PI / 180);
+        //         let selfAngle = angle + 90;
+        //         if (selfAngle > 90 && selfAngle < 270) {
+        //             selfAngle += 180;
+        //         }
+        //         return `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${selfAngle}deg)`
+        //     });
     }
 
     /**
@@ -319,8 +349,8 @@ class RadialView {
             Math.min(this.W, this.H) / 8 : 
             Math.min(this.W, this.H) / 16;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
-            Math.min(this.W, this.H) / 2 - 100 : 
-            Math.min(this.W, this.H) / 4 - 50;
+            Math.min(this.W, this.H) / 2 - this.PADDING:
+            Math.min(this.W, this.H) / 4 - this.PADDING;
 
         this.SCALE_RADIAL = this.scaleSelector(this.config.scaleRadialType)
             .domain(this.data.length == 0 ? [0, 1] :
@@ -421,8 +451,22 @@ class RadialView {
                     d.isDragging = false;
                     d.fx = null;
                     d.fy = null;
-                    let targetId = d3.select(document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY)).attr("id");
-                    if (targetId == 'drop-area') {
+                    let dropTargetEl = document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY);
+                    let dropTargetId = 'drop-area';
+                    console.log(dropTargetEl)
+                    while (dropTargetEl && dropTargetEl.id != dropTargetId) {
+                        console.log(dropTargetEl)
+                        dropTargetEl = dropTargetEl.parentNode;
+                    }
+                    let dropTarget = d3.select(dropTargetEl);
+
+                    if (dropTarget.attr("id") == 'drop-area') {
+                        let starViewDrawer = d3.select(dropTarget.node().parentNode);
+                        starViewDrawer.classed('hide', false);
+                        // if (this.parentNode.classList.contains('hide'))
+                        //     this.parentNode.classList.remove('hide')
+                        // else
+                        //     this.parentNode.classList.add('hide')
                         //alert('TODO: detailed analysis');
                         new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
                     }
@@ -438,7 +482,8 @@ class RadialView {
             .attr('id', d => `image${d.id}`)
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
-            .attr("xlink:href", d => d.album.images[2].url)
+            // FIXME get album art once the api has been fixed
+            .attr("xlink:href", d => d.album) //d.album.images[2].url)
     
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
