@@ -1,29 +1,14 @@
 class HistogramView {
-    constructor (svg, data = []) {
+    constructor (svg, data) {
+
         // init here
         this.svg = svg;
         this.data = data;
-console.log(this.data);
+        console.log(this.data);
 
         //var svg = d3.select('svg');
         this.svgWidth = +this.svg.attr('width');
         this.svgHeight = +this.svg.attr('height');
-        this.fileNameArray = []; // the filenames to load data from
-        this.jsonDataArray = []; // the raw data as loaded from the json files
-
-        // this.data.forEach(function (d) {
-        //     console.log(d);
-        //     this.fileNameArray.push(d);
-        // });
-
-        //adds files to the fileNameArray, eventually this will come from user input
-        this.fileNameArray.push('../python_scripts/billboard.json');
-        this.fileNameArray.push('../data/radiohead.json')
-        this.fileNameArray.push('../data/slotmachine.json')
-        this.fileNameArray.push('../data/radiohead.json')
-        console.log(this.fileNameArray);
-        // console.log(this.fileNameArray);
-        // console.log(this.jsonDataArray);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
@@ -33,233 +18,177 @@ console.log(this.data);
           .domain([0, 1])
           .range([52, 285]);
 
-
         this.redraw();
 
-
-
     }
 
-    // Generates the data for one histogram by stacking the json data of all the files for a single dimension (e.g. energy)
-stackData(dimension) {
+  // Generates the data for one histogram by stacking the json data of all the files for a single dimension (e.g. energy)
+  stackData(dimension) {
 
-  let processedArray = [];
+    let processedArray = [];
 
-  console.log(this.x.domain())
+    // used for forcing histogram bins to have specific values
+    let start = this.x.domain()[0];
+    let end = this.x.domain()[1];
+    let step = (this.x.domain()[1] - this.x.domain()[0])/20;
 
-  // used for forcing histogram bins to have specific values
-  let start = this.x.domain()[0];
-  let end = this.x.domain()[1];
-  let step = (this.x.domain()[1] - this.x.domain()[0])/20;
+    // set the parameters for the histogram
+    var histogram = d3.histogram()
+        .value((d) => d[dimension])   // I need to give the vector of value
+        .domain(this.x.domain())  // then the domain of the graphic
+        .thresholds(d3.range(start, end+step, step));
 
-  // set the parameters for the histogram
-  var histogram = d3.histogram()
-      .value((d) => d[dimension])   // I need to give the vector of value
-      .domain(this.x.domain())  // then the domain of the graphic
-      .thresholds(d3.range(start, end+step, step));
+    // creates bins histogram array that we will use to fill our processedArray with correct format
+    let artist_songs = this.data[0]["songs"];
+    var bins = histogram(artist_songs);
 
-  // creates bins histogram array that we will use to fill our processedArray with correct format
-  data = this.jsonDataArray[0];
-  var bins = histogram(data);
+    console.log("data", this.data);
+    // put correct format from bins into processedArray
+    // creates structure of for example
+    // bin: 0, json0: 4, json1: 7
+    // bin: 1, json0: 0, json1: 2
+    // etc
+    // bin is then followed with counts for each json below
+    for (var i = 0; i < 21; i++) {
+      processedArray.push({"bin": bins[i]['x0']})
+    }
 
-  // put correct format from bins into processedArray
-  // creates structure of for example
-  // bin: 0, json0: 4, json1: 7
-  // bin:1, json0: 0, json1: 2
-  // etc
-  // bin is then followed with counts for each json below
-  for (var i = 0; i < 21; i++) {
-    processedArray.push({"bin": bins[i]['x0']})
-  }
+    // here is where bins are updated from the loaded
+    for(let i = 0; i < this.data.length; i++) {
 
-  // here is where bins are updated from json data
-  for(let i = 0; i < this.jsonDataArray.length; i++) {
+      if (this.data[i] != null) {
 
-    if (this.jsonDataArray[i] != null) {
+        artist_songs = this.data[i]["songs"];
+        var bins = histogram(artist_songs);
 
-      data = this.jsonDataArray[i];
-      var bins = histogram(data);
-
-      for(let j = 0; j < processedArray.length; j++) {
-        processedArray[j]["json" + i] = bins[j].length;
+        for(let j = 0; j < processedArray.length; j++) {
+          processedArray[j]["json" + i] = bins[j].length;
+        }
       }
     }
+
+    //stacks json groups for proper cumulative count formatting
+    var keys = Object.keys(processedArray[0]).slice(1, processedArray[0].length); // [json0, json1, ... , jsonN]
+    var stack = d3.stack().keys(keys);
+    return stack(processedArray);
   }
 
-  //stacks json groups for proper cumulative count formatting
-  var keys = Object.keys(processedArray[0]).slice(1, processedArray[0].length); // [json0, json1, ... , jsonN]
-  var stack = d3.stack().keys(keys);
-  return stack(processedArray);
-}
-
-/* Accepts the stacked data representing a single histogram (as generated by stackData()) and draws it to the screen
-  The parameter i specify that this histogram is the histogram of the dimension at dimensions[i]
-*/
-drawHistogram(stackedData, i) {
+  /* Accepts the stacked data representing a single histogram (as generated by stackData()) and draws it to the screen
+    The parameter i specify that this histogram is the histogram of the dimension at dimensions[i]
+  */
+  drawHistogram(stackedData, i) {
 
     var _this = this;
 
-  //obtains max count from last json data group max
-  let yMax = d3.max(stackedData[stackedData.length - 1], (d) => d[1]);
+    //obtains max count from last json data group max
+    let yMax = d3.max(stackedData[stackedData.length - 1], (d) => d[1]);
 
-  // console.log(i*400);
-  // console.log(i*400 + 50);
+    // console.log(i*400);
+    // console.log(i*400 + 50);
 
-  let range = [i*100 + 50, i*100 + 10];
-  let domain = [0, yMax];
+    let range = [i*100 + 50, i*100 + 10];
+    let domain = [0, yMax];
 
-  // console.log(range);
+    // console.log(range);
 
-  let y = d3.scaleLinear()
-  .domain(domain)
-  .range(range);
+    let y = d3.scaleLinear()
+    .domain(domain)
+    .range(range);
 
-
-  // used for forcing x axis ticks to have specific values
-  let numTicks = 2; // <--- Adjust this value to force a different number of ticks on the axis
-  let start = this.x.domain()[0];
-  let end = this.x.domain()[1];
-  let step = (this.x.domain()[1] - this.x.domain()[0])/numTicks;
-
-  let xAxis = (g) => g
-  .attr('class', 'x_axis')
-  .attr("transform", 'translate(0,' + (range[0]+1) + ')')
-  .call(d3.axisBottom(_this.x).tickValues(d3.range(start, end+step, step)));
-
-  let yAxis = (g) => g
-  .attr('class', 'y_axis')
-  .attr("transform", 'translate(50,0)')
-  .call(d3.axisLeft(y)
-      .ticks(2));
-
-  //adds to histogram to svg
-  this.svg.append("g")
-      .selectAll("g")
-      .data(stackedData)
-      .join("g")
-        .attr("fill", function(d, i) { return _this.colors[i]; })
-        // .style('stroke', function(d, i) { return colors[i]; })
-      .selectAll("rect")
-      .data(d => d)
-      .join("rect")
-        .attr('class', "bin-rectangle")
-        .attr("x", (d, i) => _this.x(d.data.bin))
-        .attr("y", d => y(d[1]))
-        .attr("height", d => y(d[0]) - y(d[1]))
-        .attr("width", 10);
-
-    // .style("opacity", .2)
-
-  // Create axis and their labels
-
-  this.svg.append("g")
-    .call(xAxis)
-  this.svg.append("g")
-      .call(yAxis)
-
-  let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
-  this.svg.append('text')
-      .attr('class', 'x_label')
-      .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
-      .text(xLabel);
-      //console.log(parseInt((range[0] - range[1])/2)+range[1]);
-  // this.svg.append('text')
-  //     .attr('class', 'y_label')
-  //     .attr("transform","translate(20," + (parseInt((range[0] - range[1])/2)+range[1]+22) + ")rotate(270)")
-  //     .text('Count');
-}
-
-redraw() {
-
-        var realJsonDataArray = this.jsonDataArray;
-        var realFilenameArray = this.fileNameArray;
-        var realDimensions = this.dimensions;
-        var _this = this;
-
-        // this.fileNameArray.length = 0;
-        // this.jsonDataArray.length = 0;
-        // this.data.forEach(function (d) {
-        // console.log(d);
-        // _this.fileNameArray.push(d);
-        // });
-        // console.log(_this.fileNameArray);
+    console.log("Stacked Data", stackedData);
 
 
-    // d3 loading of json files linked to get data and put in jsonData array
-        d3.json(this.fileNameArray[0]).then(function (data) {
+    // used for forcing x axis ticks to have specific values
+    let numTicks = 2; // <--- Adjust this value to force a different number of ticks on the axis
+    let start = this.x.domain()[0];
+    let end = this.x.domain()[1];
+    let step = (this.x.domain()[1] - this.x.domain()[0])/numTicks;
 
-        // Data source 1 load completed
+    let xAxis = (g) => g
+    .attr('class', 'x_axis')
+    .attr("transform", 'translate(0,' + (range[0]+1) + ')')
+    .call(d3.axisBottom(_this.x).tickValues(d3.range(start, end+step, step)));
 
-          //console.log(data);
-          realJsonDataArray.push(data);
-          if (realFilenameArray[1]){
-            return d3.json(realFilenameArray[1]);
+    let yAxis = (g) => g
+    .attr('class', 'y_axis')
+    .attr("transform", 'translate(50,0)')
+    .call(d3.axisLeft(y)
+        .ticks(2));
+
+    //adds to histogram to svg
+    this.svg.append("g")
+        .selectAll("g")
+        .data(stackedData)
+        .enter().append("g")
+          .attr("fill", function(d, index) { return _this.colors[index]; })
+          // .style('stroke', function(d, i) { return colors[i]; })
+        .selectAll("rect")
+        .data(d => d)
+        .enter().append("rect")
+          .attr('class', "bin-rectangle")
+          .attr("x", (d, i) => _this.x(d.data.bin))
+          .attr("y", d => y(d[1]))
+          .attr("height", d => y(d[0]) - y(d[1]))
+          .attr("width", 10);
+
+      // .style("opacity", .2)
+
+    // Create axis and their labels
+
+    this.svg.append("g")
+      .call(xAxis)
+    this.svg.append("g")
+        .call(yAxis)
+
+    let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
+    this.svg.append('text')
+        .attr('class', 'x_label')
+        .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
+        .text(xLabel);
+        //console.log(parseInt((range[0] - range[1])/2)+range[1]);
+    // this.svg.append('text')
+    //     .attr('class', 'y_label')
+    //     .attr("transform","translate(20," + (parseInt((range[0] - range[1])/2)+range[1]+22) + ")rotate(270)")
+    //     .text('Count');
+  }
+
+  redraw() {
+
+    this.svg.selectAll("*").remove(); // clear old histograms from canvas
+
+    if(this.data !== null && this.data !== undefined && this.data.length > 0) {
+
+      var realDimensions = this.dimensions;
+      var _this = this;
+
+      let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
+
+      // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
+      for(let i = 0; i < realDimensions.length; i++) {
+
+        if(realDimensions[i] === "tempo") {
+          _this.x = d3.scaleLinear()
+            .domain([0, 240])
+            .range([52, 285]);
+          } else if(realDimensions[i] === "loudness") {
+            _this.x = d3.scaleLinear()
+            .domain([-60, 0])
+            .range([52, 285]);
           } else {
-            return null;
+            _this.x = d3.scaleLinear()
+            .domain([0, 1])
+            .range([52, 285]);
           }
-
-        }).then(function (data) {
-
-          // Data source 2 load completed
-
-          realJsonDataArray.push(data);
-          //stuff
-         if (realFilenameArray[2]){
-            return d3.json(realFilenameArray[2]);
-          } else {
-            return null;
-          }
-
-        }).then(function (data) {
-
-          // Data source 3 load completed
-
-          realJsonDataArray.push(data);
-          //stuff
-         if (realFilenameArray[3]){
-            return d3.json(realFilenameArray[3]);
-          } else {
-            return null;
-          }
-
-        }).then(function (data){
-
-          // Data source 4 load completed
-
-          realJsonDataArray.push(data);
-
-
-          ////////////////////////////// PROCESS DATA INTO STACKED HISTOGRAM FORMAT AND PLOT ///////////////////////////////
-
-          let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
-
-          // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
-          for(let i = 0; i < realDimensions.length; i++) {
-
-            if(realDimensions[i] == "tempo") {
-              _this.x = d3.scaleLinear()
-                .domain([0, 240])
-                .range([52, 285]);
-              } else if(realDimensions[i] === "loudness") {
-                _this.x = d3.scaleLinear()
-                .domain([-60, 0])
-                .range([52, 285]);
-              } else {
-                _this.x = d3.scaleLinear()
-                .domain([0, 1])
-                .range([52, 285]);
-              }
-            
-
-            _this.drawHistogram(_this.stackData(realDimensions[i]), i);
-          }
-
-        });
-}
+        
+        _this.drawHistogram(_this.stackData(realDimensions[i]), i);
+      }
+    
+    }      
+  }
 
     onDataChanged (newData) {
         this.data = newData;
-        // this.redraw();
+        this.redraw();
         console.log('onDataChanged: ' + this.data);
     }
 

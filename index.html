@@ -92,8 +92,6 @@
 			var components = [];
 			var data = [];
 
-			var newData = [];
-
 			var dispatch = d3.dispatch('filter', 'highlight');
 
 			var rv
@@ -205,11 +203,10 @@
 					// d3.json("data/spoegwolf.json"),
 					// d3.json("data/spoegwolf_trackinfo.json")
 	            ]).then(function(loadedData) {
-	            	// TODO: change data loading to use searchbar
-					data = preprocessData(loadedData);
-					console.log(data);
 
-					components.forEach(function (c) { c.onDataChanged(data); });
+					radialPlotData = preprocessData(loadedData);
+
+					components[0].onDataChanged(radialPlotData);
 				});
 			}
 
@@ -217,13 +214,16 @@
 			function appendArtistData(artistID) {
 				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID;
 
-				d3.json(url).then((data) => {
+				d3.json(url).then((loadedData) => {
 					
 					// Append to data array
-					newData.push(data);
+					data.push(loadedData);
 
 					// redraw artist buttons
 					drawArtistButtons();
+
+					// trigger a data change for the histograms
+					components[1].onDataChanged(data);
 
 				}).catch((error) => console.log(error));
 
@@ -233,24 +233,22 @@
 			function removeArtistData(i) {
 
 				// remove data from array
-				newData.splice(i, 1);
+				data.splice(i, 1);
 
 				// redraw artist buttons
 				drawArtistButtons();
-			}
 
-			// Clears all selected artist data
-			function clearArtistData() {
-				newData = [];
+				// trigger a data change for the histograms
+				components[1].onDataChanged(data);
 			}
 
 			function drawArtistButtons() {
 
 				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef']; // color scheme
 
-				console.log(newData);
+				console.log(data);
 
-				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(newData);
+				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(data);
 
 				// enter
 				let selectionEnter = selection.enter()
