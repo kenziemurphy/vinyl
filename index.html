@@ -258,12 +258,13 @@
 
 				selectionEnter.attr("class", "artist-btn")
 						.style("border-left", (d, i) => "12px solid " + colors[i])
-						.text((d, i) => i);
+						.text((d) => d["name"]);
 				selectionEnter.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
 						
 
 				// update
-				selection.style("border-left", (d, i) => "12px solid " + colors[i]);
+				selection.style("border-left", (d, i) => "12px solid " + colors[i]).text((d) => d["name"])
+						.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));;
 
 				selection.merge(selectionEnter);
 
