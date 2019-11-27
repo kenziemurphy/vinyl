@@ -27,11 +27,11 @@ console.log(this.data);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
-        this.dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 
         this.x = d3.scaleLinear()
           .domain([0, 1])
-          .range([52, 300]);
+          .range([52, 285]);
 
 
         this.redraw();
@@ -45,16 +45,22 @@ stackData(dimension) {
 
   let processedArray = [];
 
+  console.log(this.x.domain())
+
+  // used for forcing histogram bins to have specific values
+  let start = this.x.domain()[0];
+  let end = this.x.domain()[1];
+  let step = (this.x.domain()[1] - this.x.domain()[0])/20;
+
   // set the parameters for the histogram
   var histogram = d3.histogram()
       .value((d) => d[dimension])   // I need to give the vector of value
       .domain(this.x.domain())  // then the domain of the graphic
-      .thresholds(this.x.ticks(20)); // then the numbers of bins
+      .thresholds(d3.range(start, end+step, step));
 
   // creates bins histogram array that we will use to fill our processedArray with correct format
   data = this.jsonDataArray[0];
   var bins = histogram(data);
-
 
   // put correct format from bins into processedArray
   // creates structure of for example
@@ -74,7 +80,7 @@ stackData(dimension) {
       data = this.jsonDataArray[i];
       var bins = histogram(data);
 
-      for(let j = 0; j < bins.length; j++) {
+      for(let j = 0; j < processedArray.length; j++) {
         processedArray[j]["json" + i] = bins[j].length;
       }
     }
@@ -108,10 +114,17 @@ drawHistogram(stackedData, i) {
   .domain(domain)
   .range(range);
 
+
+  // used for forcing x axis ticks to have specific values
+  let numTicks = 2; // <--- Adjust this value to force a different number of ticks on the axis
+  let start = this.x.domain()[0];
+  let end = this.x.domain()[1];
+  let step = (this.x.domain()[1] - this.x.domain()[0])/numTicks;
+
   let xAxis = (g) => g
   .attr('class', 'x_axis')
   .attr("transform", 'translate(0,' + (range[0]+1) + ')')
-  .call(d3.axisBottom(_this.x));
+  .call(d3.axisBottom(_this.x).tickValues(d3.range(start, end+step, step)));
 
   let yAxis = (g) => g
   .attr('class', 'y_axis')
@@ -222,6 +235,22 @@ redraw() {
 
           // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
           for(let i = 0; i < realDimensions.length; i++) {
+
+            if(realDimensions[i] == "tempo") {
+              _this.x = d3.scaleLinear()
+                .domain([0, 240])
+                .range([52, 285]);
+              } else if(realDimensions[i] === "loudness") {
+                _this.x = d3.scaleLinear()
+                .domain([-60, 0])
+                .range([52, 285]);
+              } else {
+                _this.x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([52, 285]);
+              }
+            
+
             _this.drawHistogram(_this.stackData(realDimensions[i]), i);
           }
 
