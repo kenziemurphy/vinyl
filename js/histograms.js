@@ -117,10 +117,26 @@ class HistogramView {
 
     // 1. Add histogram to SVG
 
-    // enter
     let temp = [1]; // cheap trick to draw #hist{i} only if it does not exist
     let histogramG = this.svg.selectAll("#hist" + i).data(temp);
-    let histogramGEnter = histogramG.enter().append("g").attr("id", "hist"+i);
+    let xAxisG = this.svg.selectAll("#hist" + i + "X").data(temp);
+    let yAxisG = this.svg.selectAll("#hist" + i + "Y").data(temp);
+
+    // enter
+    let histogramGEnter = histogramG.enter().append("g").attr("id", "hist" + i);
+    let xAxisGEnter = xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(xAxis);
+    let yAxisGEnter = yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(yAxis);
+
+    let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
+    this.svg.append('text')
+        .attr('class', 'x_label')
+        .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
+        .text(xLabel);
+
+    // update
+    xAxisG.transition(d3.transition().duration(750)).call(xAxis);
+    yAxisG.transition(d3.transition().duration(750)).call(yAxis);  
+
     histogramG = histogramG.merge(histogramGEnter);
 
     // exit
@@ -169,16 +185,7 @@ class HistogramView {
 
     // Create axis and their labels
 
-    this.svg.append("g")
-      .call(xAxis)
-    this.svg.append("g")
-        .call(yAxis)
 
-    let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
-    this.svg.append('text')
-        .attr('class', 'x_label')
-        .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
-        .text(xLabel);
         //console.log(parseInt((range[0] - range[1])/2)+range[1]);
     // this.svg.append('text')
     //     .attr('class', 'y_label')
