@@ -118,7 +118,7 @@ class HistogramView {
     // 1. Add histogram to SVG
 
     // enter
-    let temp = [1]; // cheap trick to draw #hist{i} only if it exists
+    let temp = [1]; // cheap trick to draw #hist{i} only if it does not exist
     let histogramG = this.svg.selectAll("#hist" + i).data(temp);
     let histogramGEnter = histogramG.enter().append("g").attr("id", "hist"+i);
     histogramG = histogramG.merge(histogramGEnter);
@@ -134,26 +134,33 @@ class HistogramView {
     let artistG = histogramG.selectAll("g").data(stackedData);
     let artistGEnter = artistG.enter().append("g");
 
-    // update
-    artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
-          // .style('stroke', function(d, i) { return colors[i]; })
+    console.log(artistG);
 
     // exit
     artistG.exit().remove();
+
+    // update
+    artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
+          // .style('stroke', function(d, i) { return colors[i]; })
 
     // 3. Draw the rectangles for the currently selected collection / artist
 
     // enter
     let rectangles = artistG.selectAll("rect").data(d => d);
     let rectanglesEnter = rectangles.enter().append("rect");
-    rectangles = rectangles.merge(rectanglesEnter);
+
+    rectanglesEnter.attr('class', "bin-rectangle")
+          .attr("x", (d, i) => _this.x(d.data.bin))
+          .attr("width", 10)
+          .attr("y", d => y(d[1]))
+          .attr("height", d => y(d[0]) - y(d[1]));
     
     // update
-    rectangles.attr('class', "bin-rectangle")
-          .attr("x", (d, i) => _this.x(d.data.bin))
+    rectangles.transition(d3.transition().duration(750))
           .attr("y", d => y(d[1]))
-          .attr("height", d => y(d[0]) - y(d[1]))
-          .attr("width", 10);
+          .attr("height", d => y(d[0]) - y(d[1]));
+
+    rectangles = rectangles.merge(rectanglesEnter);
 
     // exit
     rectangles.exit().remove();
@@ -188,7 +195,7 @@ class HistogramView {
         this.svg.selectAll("*").remove(); // clear old histograms from canvas
       } else {
 
-        this.svg.selectAll("*").remove(); // clear old histograms from canvas
+        //this.svg.selectAll("*").remove(); // clear old histograms from canvas
 
         var realDimensions = this.dimensions;
         var _this = this;
