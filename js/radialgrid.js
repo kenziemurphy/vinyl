@@ -1,4 +1,4 @@
-function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
+function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialMappingLabel) {
 
     const NUM_RADIAL_GRID_LINES = 5;
     const MID_LABEL_HORIZONTAL_OFFSET = 25;
@@ -15,7 +15,7 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
     
     var radialGridGap = (maxRadialData - minRadialData) / NUM_RADIAL_GRID_LINES;
     var radialGridInterval = d3.range(minRadialData, maxRadialData, radialGridGap);
-    var angularGridInterval = d3.range(0, NUM_KEYS, 1);
+    var angularGridInterval = d3.range(0, scaleAngle.domain().length, 1);
 
     var radialGuide, angleGuide;
     
@@ -59,15 +59,15 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
         radialGrid.exit().remove();
 
         // axis labels
-        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
-        //     .attr('y', maxRadialDist + 30);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
+            .attr('y', maxRadialDist + 30);
         // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom')
         //     .attr('y', minRadialDist - 30);
-        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
-        //     .attr('y', -maxRadialDist - 30);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
+            .attr('y', -maxRadialDist - 30);
         // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top')
         //     .attr('y', -minRadialDist + 30);
-        // selection.selectAll('text.label.label-axis-radial').text(radialMappingLabel.toUpperCase());
+        selection.selectAll('text.label.label-axis-radial').text(radialMappingLabel.toUpperCase());
 
         // radial scale labels
         // top
@@ -183,10 +183,11 @@ function axisRadial (scaleRadial, scaleAngle, center, radialMappingLabel) {
             .attr('y2', angleDistanceToXy(scaleAngle(scaleAngle.domain()[0]), maxRadialDist)[1]);
     }
 
-    axis.update = function (_scaleRadial, _scaleAngle, _center, _radialMappingLabel) {
+    axis.update = function (_scaleRadial, _scaleAngle, _center, _angleMappingLabel, _radialMappingLabel) {
         scaleRadial = _scaleRadial;
         scaleAngle = _scaleAngle;
         center = _center;
+        angleMappingLabel = _angleMappingLabel;
         radialMappingLabel = _radialMappingLabel;
         return axis;
     }

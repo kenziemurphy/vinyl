@@ -43,8 +43,8 @@
 						<div class="text-center grow">
 							X / Angle Axis
 							<br>
-							<select name="" class="btn active" id="select-y-axis" style="width: auto;">
-								<option data-scale-type="linear" value="key" data-radial-scale="true">KEY</option>
+							<select name="" class="btn active" id="select-x-axis" style="width: auto;">
+								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
 								<option data-scale-type="linear" value="tempo">TEMPO</option>
 								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
 								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
@@ -80,7 +80,7 @@
 					</div>
 					<svg id="radial-view" class="grow" overflow="visible"></svg>
 				</div>
-				<div class="text-center cell drawer-tab">
+				<div class="text-center cell drawer-tab" style="margin-top: 30px;">
 					<!-- placeholder -->
 					Drag a song here for more details
 				</div>
@@ -111,6 +111,7 @@
   		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
         <script src="js/utils.js"></script>
         <script src="js/audiohelpers.js"></script>
+        <script src="js/rectangulargrid.js"></script>
         <script src="js/radialgrid.js"></script>
         <!-- <script src="js/radialplot.js"></script> -->
         <script src="js/radialplot_with_split.js"></script>
@@ -229,10 +230,12 @@
 			// helpers
 			function preprocessData (data) {
 				data.forEach(function (d) {
-					d.duration = d.duration_ms / 1000;
-					d.release_year = d.album.release_date.indexOf('-') < 0 ?
-						+d.album.release_date :
-						+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
+					if (d.duration_ms)
+						d.duration = d.duration_ms / 1000;
+					if (d.album && d.album.release_date)
+						d.release_year = d.album.release_date.indexOf('-') < 0 ?
+							+d.album.release_date :
+							+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
 				})
 			}
 
@@ -249,7 +252,10 @@
 
 				return new Promise(function (resolve, reject) {
 					d3.json(url).then((loadedData) => {
-						
+
+						preprocessData(loadedData.songs);
+						// console.log(loadedData);
+
 						// Append to data array
 						data.push(loadedData);
 

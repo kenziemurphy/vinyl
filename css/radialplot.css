@@ -64,13 +64,13 @@ text {
     alignment-baseline: top;
 }
 
-.grid-line {
+.grid-line, .axis-rect .tick line{
     fill-opacity: 0;
     stroke-opacity: 0.15;
     stroke: #ffffff;
 }
 
-.grid-line-clear {
+.grid-line-clear, .grid .domain {
     fill-opacity: 0;
     /* stroke-opacity: 1; */
     stroke-opacity: 0.13;
@@ -78,9 +78,13 @@ text {
     stroke: #ffffff;
 }
 
-.grid-axis-label {
+.grid .domain {
+    stroke-opacity: 0.07;
+}
+
+.grid-axis-label, .axis-rect .tick text {
     font-weight: bold;
-    opacity: 0.7;
+    opacity: 0.5;
     fill: #ffffff;
     font-style: italic;
 }
