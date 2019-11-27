@@ -115,21 +115,48 @@ class HistogramView {
     .call(d3.axisLeft(y)
         .ticks(2));
 
-    //adds to histogram to svg
-    this.svg.append("g")
-        .selectAll("g")
-        .data(stackedData)
-        .enter().append("g")
-          .attr("fill", function(d, index) { return _this.colors[index]; })
+    // 1. Add histogram to SVG
+
+    // enter
+    let temp = [1]; // cheap trick to draw #hist{i} only if it exists
+    let histogramG = this.svg.selectAll("#hist" + i).data(temp);
+    let histogramGEnter = histogramG.enter().append("g").attr("id", "hist"+i);
+    histogramG = histogramG.merge(histogramGEnter);
+
+    // exit
+    histogramG.exit().remove();
+
+    console.log("Stacked Data", stackedData);
+
+    // 2. On the histogram draw a g for each collection / artist
+
+    // enter
+    let artistG = histogramG.selectAll("g").data(stackedData);
+    let artistGEnter = artistG.enter().append("g");
+
+    // update
+    artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
           // .style('stroke', function(d, i) { return colors[i]; })
-        .selectAll("rect")
-        .data(d => d)
-        .enter().append("rect")
-          .attr('class', "bin-rectangle")
+
+    // exit
+    artistG.exit().remove();
+
+    // 3. Draw the rectangles for the currently selected collection / artist
+
+    // enter
+    let rectangles = artistG.selectAll("rect").data(d => d);
+    let rectanglesEnter = rectangles.enter().append("rect");
+    rectangles = rectangles.merge(rectanglesEnter);
+    
+    // update
+    rectangles.attr('class', "bin-rectangle")
           .attr("x", (d, i) => _this.x(d.data.bin))
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
           .attr("width", 10);
+
+    // exit
+    rectangles.exit().remove();
 
       // .style("opacity", .2)
 
@@ -154,35 +181,40 @@ class HistogramView {
 
   redraw() {
 
-    this.svg.selectAll("*").remove(); // clear old histograms from canvas
 
-    if(this.data !== null && this.data !== undefined && this.data.length > 0) {
+    if(this.data !== null && this.data !== undefined) {
 
-      var realDimensions = this.dimensions;
-      var _this = this;
+      if(this.data.length == 0) {
+        this.svg.selectAll("*").remove(); // clear old histograms from canvas
+      } else {
 
-      let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
+        this.svg.selectAll("*").remove(); // clear old histograms from canvas
 
-      // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
-      for(let i = 0; i < realDimensions.length; i++) {
+        var realDimensions = this.dimensions;
+        var _this = this;
 
-        if(realDimensions[i] === "tempo") {
-          _this.x = d3.scaleLinear()
-            .domain([0, 240])
-            .range([52, 285]);
-          } else if(realDimensions[i] === "loudness") {
+        let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
+
+        // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
+        for(let i = 0; i < realDimensions.length; i++) {
+
+          if(realDimensions[i] === "tempo") {
             _this.x = d3.scaleLinear()
-            .domain([-60, 0])
-            .range([52, 285]);
-          } else {
-            _this.x = d3.scaleLinear()
-            .domain([0, 1])
-            .range([52, 285]);
-          }
-        
-        _this.drawHistogram(_this.stackData(realDimensions[i]), i);
+              .domain([0, 240])
+              .range([52, 285]);
+            } else if(realDimensions[i] === "loudness") {
+              _this.x = d3.scaleLinear()
+              .domain([-60, 0])
+              .range([52, 285]);
+            } else {
+              _this.x = d3.scaleLinear()
+              .domain([0, 1])
+              .range([52, 285]);
+            }
+          
+          _this.drawHistogram(_this.stackData(realDimensions[i]), i);
+        }
       }
-    
     }      
   }
 
