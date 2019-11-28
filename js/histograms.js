@@ -80,13 +80,15 @@ class HistogramView {
 
     var _this = this;
 
+    let histHeight = parseInt((screen.height - 250) / this.dimensions.length);
+
     //obtains max count from last json data group max
     let yMax = d3.max(stackedData[stackedData.length - 1], (d) => d[1]);
 
     // console.log(i*400);
     // console.log(i*400 + 50);
 
-    let range = [i*100 + 50, i*100 + 10];
+    let range = [i*histHeight + (histHeight-30), i*histHeight];
     let domain = [0, yMax];
 
     // console.log(range);
@@ -99,7 +101,7 @@ class HistogramView {
 
 
     // used for forcing x axis ticks to have specific values
-    let numTicks = 2; // <--- Adjust this value to force a different number of ticks on the axis
+    let numTicks = 1; // <--- Adjust this value to force a different number of ticks on the axis
     let start = this.x.domain()[0];
     let end = this.x.domain()[1];
     let step = (this.x.domain()[1] - this.x.domain()[0])/numTicks;
@@ -128,9 +130,14 @@ class HistogramView {
     let yAxisGEnter = yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(yAxis);
 
     let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
+
+    // calculate the center location of the histogram
+    let centerPx = parseInt(this.x.range()[0] + (this.x.range()[1] - this.x.range()[0])/2);
+
     this.svg.append('text')
+        .attr("text-anchor", "middle")
         .attr('class', 'x_label')
-        .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
+        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+20) + ')')
         .text(xLabel);
 
     // update
