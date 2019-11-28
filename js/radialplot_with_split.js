@@ -708,13 +708,19 @@ class RadialView {
     getSimilarSongs (d, k = 5) {
         // FIXME make this work
         let similarSongs = [];
-        for (let i = 0; i < k; i++) {
-            let index = Math.floor(Math.random() * this.filteredData.length);
+
+        // sort songs by their distance from song d in ascending rder
+        let nearest = this.filteredData.concat().sort((a, b) => {
+            return this.euclidianDistance(a, d) - this.euclidianDistance(b, d);
+        });
+
+        // return first k (k nearest) songs in the list
+        for (let i = 1; i < k+1; i++) {
             // please return in this format
             similarSongs.push({
                 source: d,
-                song: this.filteredData[index],
-                similarity: Math.random() * 0.8 + 0.2 
+                song: nearest[i],
+                similarity: 1 - this.euclidianDistance(nearest[i], d) 
             });
         }
         return similarSongs;
@@ -734,6 +740,22 @@ class RadialView {
             Math.cos(angle) * distance,
             Math.sin(angle) * distance
         ]
+    }
+
+    /**
+     * @desc calculates the euclidian distance from song a to song b using energy, instrumentalness, acousticness, and the normalized tempo
+     * @param Object a - data of the first song
+     * @param Object b - data of the second song
+     * @return float distance - a measure of the difference between song a and b
+    */
+    euclidianDistance(a, b) {
+        return Math.sqrt(Math.pow(a["energy"] - b["energy"], 2) 
+            + Math.pow(a["instrumentalness"] - b["instrumentalness"], 2) 
+            + Math.pow(a["acousticness"] - b["acousticness"], 2) 
+            + Math.pow(a["valence"] - b["valence"], 2) 
+            + Math.pow(a["danceability"] - b["danceability"], 2)
+            + Math.pow(a["liveness"] - b["liveness"], 2)
+            + Math.pow(a["speechiness"] - b["speechiness"], 2));
     }
 
     /**
