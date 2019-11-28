@@ -140,7 +140,8 @@ class HistogramView {
         .attr("text-anchor", "middle")
         .attr('class', 'x_label')
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+20) + ')')
-        .text(xLabel);
+        .text(xLabel)
+        .call(addHelpTooltip(xLabel.toLowerCase()));;
 
     // update
     xAxisG.transition(d3.transition().duration(750)).call(xAxis);

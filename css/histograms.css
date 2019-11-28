@@ -17,6 +17,7 @@
   outline-style: solid;
   outline-width: 3px;
   outline-offset: -3px;*/
+  transition: opacity 0.2s;
 }
 
 .faded {

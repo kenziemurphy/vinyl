@@ -10,7 +10,9 @@
         <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
         <link rel="stylesheet" href="css/starplot.css" />
-        <link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/main.css" />
+		
+		<script src="https://kit.fontawesome.com/45bc1cc8f8.js" crossorigin="anonymous"></script>
     </head>
     <body>
 		<!-- TODO remove inline CSS -->
@@ -41,7 +43,7 @@
 				<div id="vis-area" class="cell grow container-col">
 					<div class="container-row">
 						<div class="text-center grow">
-							X / Angle Axis
+							X / Angle Axis <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div>
 							<br>
 							<select name="" class="btn active" id="select-x-axis" style="width: auto;">
 								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
@@ -60,7 +62,7 @@
 							</select>
 						</div>
 						<div class="text-center grow">
-							Y / Radial Axis
+							Y / Radial Axis <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div>
 							<br>
 							<select name="" class="btn active" id="select-y-axis" style="width: auto;">
 								<option data-scale-type="linear" value="tempo">TEMPO</option>
@@ -74,7 +76,7 @@
 								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
 								<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 								<option data-scale-type="linear" value="release_year">YEAR</option>
-								<option data-scale-type="linear" value="duration">DURATION</option>
+								<option data-scale-type="linear" value="duration">DURATION</option>	
 							</select>
 						</div>
 					</div>
@@ -105,12 +107,18 @@
 				<svg id="star-view" class="grow" overflow="visible"></svg>
 			<!-- </div> -->
 		</div>
+
+		<div class="help-tooltip hide">
+			<h3 class="help-title">Test Help Tooltip</h3>
+			<p class="help-body">This is a test help message on the help tooltip. This is a test help message on the help tooltip. This is a test help message on the help tooltip.</p>
+		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete.min.js"></script>
   		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
-        <script src="js/utils.js"></script>
-        <script src="js/audiohelpers.js"></script>
+		<script src="js/utils.js"></script>
+		<script src="js/audiohelpers.js"></script>
+		<script src="js/helptooltip.js"></script>
         <script src="js/rectangulargrid.js"></script>
         <script src="js/radialgrid.js"></script>
         <!-- <script src="js/radialplot.js"></script> -->

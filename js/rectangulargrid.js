@@ -48,7 +48,6 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel) {
         let selection = context.selection ? context.selection() : context
         
         gridG = selectAllOrCreateIfNotExist(selection, 'g.grid')
-            .attr('pointer-events', 'none')
             .style('z-index', '-1')
             .attr('transform', `translate(${center[0]}, ${center[1]})`);
         
@@ -110,7 +109,9 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel) {
         selectAllOrCreateIfNotExist(yLabelLeftG, 'text.label.label-axis-y.grid-axis-label.left')
             .attr('transform', 'rotate(-90)');
 
-        selection.selectAll('text.label.label-axis-y').text(yMappingLabel.toUpperCase());
+        selection.selectAll('text.label.label-axis-y')
+            .text(yMappingLabel.toUpperCase())
+            .call(addHelpTooltip(yMappingLabel.toLowerCase()));
 
 
         // // y scale labels
@@ -150,7 +151,9 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel) {
             .attr('y', scaleY.range()[1] - AXIS_LABEL_OFFSET);
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.bottom')
             .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET);
-        selection.selectAll('text.label.label-axis-x').text(xMappingLabel.toUpperCase());
+        selection.selectAll('text.label.label-axis-x')
+            .text(xMappingLabel.toUpperCase())
+            .call(addHelpTooltip(xMappingLabel.toLowerCase()));
         // // axis labels
         // // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.outer-bottom')
         // //     .attr('x', maxYRange + 30);

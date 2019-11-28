@@ -1,3 +1,5 @@
+// FIXME: bug: select a song in blue in split view, click config button, color become swapped
+
 // facts
 const MAX_SPLITS = 4;
 const ALL_KEYS = [
@@ -82,7 +84,9 @@ class RadialView {
                 return `
                     <p>
                         <b>${d.name}</b>
-                        <br>${d.artists ? d.artists.map(a => a.name) : 'Unknown Artist'}
+                        <br>${d.album_name}
+                        <br>${d.artist || 'Unknown Artist'}
+                        <!--<br>${d.artists ? d.artists.map(a => a.name) : 'Unknown Artist'}-->
                         <br><small>Click to lock the selection</small>
                     </p>
                 `;
@@ -145,9 +149,11 @@ class RadialView {
         let _this = this
 
         // update split view
-        if (new Set(this.data.map(d => this.config.splitKey(d))).size != newData.length) {
-            this.svg.selectAll('g.grid').remove();
-            this.shouldReinitGrid = true;
+        if (this.isSplitting) {
+            if (new Set(this.data.map(d => this.config.splitKey(d))).size != newData.length) {
+                this.svg.selectAll('g.grid').remove();
+                this.shouldReinitGrid = true;
+            }
         }
 
         // preprocessing
@@ -192,15 +198,15 @@ class RadialView {
      * @return void
     */
     setConfig (config) {
-        console.log('set config', config);
+        // console.log('set config', config);
 
         let willBeRadial = false;
-        willBeRadial = willBeRadial || config.xMapping !== undefined && config.xMapping.isRadial;
-        willBeRadial = willBeRadial || config.yMapping !== undefined && config.yMapping.isRadial;
-
+        willBeRadial = willBeRadial || (config.xMapping === undefined ? this.config.xMapping.isRadial : config.xMapping.isRadial);
+        willBeRadial = willBeRadial || (config.yMapping === undefined ? this.config.yMapping.isRadial : config.yMapping.isRadial);
+        
         if (
             (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) ||
-            (willBeRadial != this.useRadialScale())
+            (willBeRadial !== undefined && willBeRadial != this.useRadialScale())
             ) {
             this.svg.selectAll('g.grid').remove();
             this.shouldReinitGrid = true;
@@ -231,7 +237,6 @@ class RadialView {
                     this.config.xMapping.key,
                     this.config.yMapping.key));
             else{
-                console.log('asdfasdf', this.SCALE_X.domain())
                 this.grids.push(axisRect(
                     this.SCALE_X, 
                     this.SCALE_Y, 
@@ -277,7 +282,6 @@ class RadialView {
         //         .style('fill', '#212039');
         // }
         
-        console.log('///', this.SPLITS);
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
             this.grids[i].update(this.SCALE_Y, 
@@ -407,7 +411,6 @@ class RadialView {
             Math.min(this.W, this.H) / 2 - this.PADDING:
             Math.min(this.W, this.H) / 4 - this.PADDING;
 
-        console.log('>>>', this.useRadialScale());
         if (this.useRadialScale())
             this.SCALE_X = SCALE_ANGLE;
         else
@@ -483,7 +486,6 @@ class RadialView {
                         .filter(d => d.x && d.y)
                         .attr('transform', d => `translate(${d.x}, ${d.y})`);
 
-                    // FIXME transition animation is lost after the 1st time
                     let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
                         .attr('opacity', s => s.similarity)
                         .attr('x1', s => s.source.x)
@@ -513,7 +515,8 @@ class RadialView {
     */
     drawDataPoints () {
         let _this = this;
-        var songG = this.svg.selectAll('g.song').data(this.filteredData, d => d.id);
+        let dataPointsG = selectAllOrCreateIfNotExist(this.svg, 'g.data-points');
+        var songG = dataPointsG.selectAll('g.song').data(this.filteredData, d => d.id);
     
         var songGEnter = songG.enter()
             .append('g')
@@ -544,7 +547,6 @@ class RadialView {
                         //     this.parentNode.classList.remove('hide')
                         // else
                         //     this.parentNode.classList.add('hide')
-                        //alert('TODO: detailed analysis');
                         new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
                     }
                 }));
@@ -693,7 +695,6 @@ class RadialView {
                         return isTheSelectedSong// || isSimilarSong;
                     });
                 }
-                // TODO make it look better
             }
         }
     }
@@ -782,9 +783,6 @@ class RadialView {
      * @return array of Objects containing: the source song, suggested song, and similarity score in [0, 1] range
     */
     getSimilarSongs (d, k = 5) {
-        // FIXME make this work
-        // @Ben
-        
         let similarSongs = [];
 
         // sort songs by their distance from song d in ascending rder
@@ -792,13 +790,26 @@ class RadialView {
             return this.euclidianDistance(a, d) - this.euclidianDistance(b, d);
         });
 
+        // // find the extent of eucliedean distance values
+        // let distances = []
+        // for (let i in this.filteredData) {
+        //     distances.push(this.euclidianDistance(this.filteredData[i], d));
+        // }
+        // console.log(d3.extent(distances));
+        
+        // scale mapping for similarity score
+        let sacleSimilarityScore = d3.scaleLinear()
+            .domain([0.05, 0.6])
+            .range([1, 0])
+
         // return first k (k nearest) songs in the list
-        for (let i = 1; i < k+1; i++) {
+        for (let i = 1; i < k + 1; i++) {
+            console.log(this.euclidianDistance(nearest[i], d));
             // please return in this format
             similarSongs.push({
                 source: d,
                 song: nearest[i],
-                similarity: 1 - this.euclidianDistance(nearest[i], d) 
+                similarity: sacleSimilarityScore(this.euclidianDistance(nearest[i], d)) 
             });
         }
         return similarSongs;
@@ -877,22 +888,10 @@ class RadialView {
             let distance = distanceOverride || this.SCALE_Y(d[this.config.yMapping.key]);
             return this.angleDistanceToXy(angle, distance);
         } else {
-            // temp
-            
-            let s = Math.min(this.W, this.H);
-            let xScale = d3.scaleLinear()
-                .domain(d3.extent(this.data, d => d[this.config.xMapping.key]))
-                .range([-this.W / 2 + this.PADDING, this.W / 2 - this.PADDING]);
-
-            // let yScale = this.scaleSelector(this.config.yMapping.scale)
-            //     .domain(this.data.length == 0 ? [0, 1] :
-            //         this.config.yMapping.minOverride !== false ? 
-            //             [this.config.yMapping.minOverride, this.config.yMapping.maxOverride] : 
-            //             d3.extent(this.data, d => d[this.config.yMapping.key]))
-            //     .range([this.H / 2 - this.PADDING, -this.H / 2 + this.PADDING]);
-            
-            // xScale(d[this.config.xMapping.key])
-            return [this.SCALE_X(d[this.config.xMapping.key]), this.SCALE_Y(d[this.config.yMapping.key])]
+            return [
+                this.SCALE_X(d[this.config.xMapping.key]), 
+                this.SCALE_Y(d[this.config.yMapping.key])
+            ]
         }
     }
 }

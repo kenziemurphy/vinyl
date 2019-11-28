@@ -95,6 +95,7 @@ text {
     stroke-opacity: 1;
     /* stroke: #ffffff; */
     transition: 0.2s all;
+    pointer-events: none;
 }
 
 .hidden {
