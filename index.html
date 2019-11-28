@@ -34,18 +34,19 @@
 				<!-- <svg id="..."></svg> -->
 				<div>
 					<h2>More Options</h2>
-					<button id="toggle-split-view" class="btn">Toggle split view</button>
-					<br><br><button id="toggle-album-art" class="btn">Toggle album art</button>
-					<br><br><button id="toggle-force" class="btn">Toggle force jittering</button>
+					<button id="toggle-split-view" class="btn vis-control">Toggle split view</button>
+					<br><br><button id="toggle-album-art" class="btn vis-control">Toggle album art</button>
+					<br><br><button id="toggle-force" class="btn vis-control">Toggle force jittering</button>
 				</div>
             </div>
 			<div class="cell grow container-col">
 				<div id="vis-area" class="cell grow container-col">
 					<div class="container-row">
 						<div class="text-center grow">
-							X / Angle Axis <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div>
+							X / Angle Axis
+							<!-- <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div> -->
 							<br>
-							<select name="" class="btn active" id="select-x-axis" style="width: auto;">
+							<select name="" class="btn active vis-control" id="select-x-axis" style="width: auto;">
 								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
 								<option data-scale-type="linear" value="tempo">TEMPO</option>
 								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
@@ -62,9 +63,10 @@
 							</select>
 						</div>
 						<div class="text-center grow">
-							Y / Radial Axis <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div>
+							Y / Radial Axis
+							<!-- <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div> -->
 							<br>
-							<select name="" class="btn active" id="select-y-axis" style="width: auto;">
+							<select name="" class="btn active vis-control" id="select-y-axis" style="width: auto;">
 								<option data-scale-type="linear" value="tempo">TEMPO</option>
 								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
 								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>

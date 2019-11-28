@@ -130,7 +130,7 @@ class RadialView {
             }
 
             var outsideDot = d3.selectAll('.song.active .dot').filter(equalToEventTarget).empty();
-            var outsideButton = d3.selectAll('.radial-mapping-select').filter(equalToEventTarget).empty();
+            var outsideButton = d3.selectAll('.vis-control').filter(equalToEventTarget).empty();
             if (outsideDot && outsideButton) {
                 _this.resetSelection();
                 _this.selectionLocked = false;
@@ -804,7 +804,6 @@ class RadialView {
 
         // return first k (k nearest) songs in the list
         for (let i = 1; i < k + 1; i++) {
-            console.log(this.euclidianDistance(nearest[i], d));
             // please return in this format
             similarSongs.push({
                 source: d,
