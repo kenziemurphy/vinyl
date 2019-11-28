@@ -273,6 +273,7 @@ class HistogramView {
     onHighlight(filterFunction) {
 
         this.highlight = filterFunction;
+        console.log(filterFunction);
 
         let _this = this;
 
@@ -283,14 +284,19 @@ class HistogramView {
                     and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
                 let artistIndex = this.parentNode.id.slice(-1);
 
+                // get the Spotify id of the collection (artist)
+                let collectionId = _this.data[artistIndex].id;
+
                 // get a list of the id's in this bin
                 let idsInBin = d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
 
-                 /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical id we want to highlight. 
-                    Get our id's array from the format [id1, id2, ...] into [{id: id1}, {id, id2}, ...] so that filtering function can operate on it
+                 /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical song id we want to highlight.
+                    Or (d) => d.collection_id == s.id where s.id is the id of a collection we want to highlight all the songs of
+                    Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...] 
+                    so those filtering functions can operate on it.
                 */
                 idsInBin = idsInBin.map((d) => {
-                    return {"id": d};
+                    return {"id": d, collection_id: collectionId};
                 });
 
                 /* check if the filter function evaluates true for at least one id in this bin, i.e. if one id in this bin needs to be highlighted,
