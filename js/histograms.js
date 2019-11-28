@@ -1,9 +1,10 @@
 class HistogramView {
-    constructor (svg, data) {
+    constructor (svg, data, dispatch) {
 
         // init here
         this.svg = svg;
         this.data = data;
+        this.dispatch = dispatch;
 
         //var svg = d3.select('svg');
         this.svgWidth = +this.svg.attr('width');
@@ -154,13 +155,14 @@ class HistogramView {
 
     // enter
     let artistG = histogramG.selectAll("g").data(stackedData);
-    let artistGEnter = artistG.enter().append("g");
+    let artistGEnter = artistG.enter().append("g")
 
     // exit
     artistG.exit().remove();
 
     // update
     artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
+                                        .attr("id", (d,index) => "hist" + i + "artist" + index);
           // .style('stroke', function(d, i) { return colors[i]; })
 
     // 3. Draw the rectangles for the currently selected collection / artist
@@ -173,7 +175,22 @@ class HistogramView {
           .attr("x", (d, i) => _this.x(d.data.bin))
           .attr("width", 10)
           .attr("y", d => y(d[1]))
-          .attr("height", d => y(d[0]) - y(d[1]));
+          .attr("height", d => y(d[0]) - y(d[1]))
+          .on("mouseover", function(d) {
+
+            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+            let artistIndex = this.parentNode.id.slice(-1);
+
+            // get a list of all the id's in this bin
+            let idsInBin = d.data["ids" + artistIndex];
+
+            // send a filtering function out to the other components to highlight the id's in this bin everywhere
+             _this.dispatch.call('highlight', this, (k) => idsInBin.includes(k.id));
+
+          }).on("mouseout", (d) => {
+                _this.dispatch.call('highlight', this, k => true);
+          });
     
     // update
     rectangles.transition(d3.transition().duration(750))
@@ -254,34 +271,37 @@ class HistogramView {
 
     onHighlight(filterFunction) {
 
+        this.highlight = filterFunction;
+
+        let _this = this;
+
         d3.selectAll('.bin-rect')
-            .classed('fade', (d,i) => {
+            .classed('fade', function(d) {
 
-                // from the data associated with this bin-rect, find all the song id's in this bin
+                /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                    and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                let artistIndex = this.parentNode.id.slice(-1);
 
-                let keys = Object.keys(d.data).filter((d) => d.includes("id")); // [ids0, ids1, ... , idsn] for n artists
-                
-                // group all the song id's into one array
-                let idsInBin = [];
-                for(let key of keys) {
-                    idsInBin = idsInBin.concat(d.data[key]);
-                }
+                // get a list of the id's in this bin
+                let idsInBin = d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
 
-                /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical id we want to highlight 
-                Get our id's array from the format [id1, id2, ...] into [{id: id1}, {id, id2}, ...] so that filtering function can operate on it
+                 /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical id we want to highlight. 
+                    Get our id's array from the format [id1, id2, ...] into [{id: id1}, {id, id2}, ...] so that filtering function can operate on it
                 */
                 idsInBin = idsInBin.map((d) => {
                     return {"id": d};
                 });
 
-                /* now filter the id's in this bin with the filter function -> if the result is empty it means the id we need to highlight is not
-                    in this bin -> fade it */
-               if(idsInBin.filter(filterFunction).length === 0) {
-                    return true;
-               }
+                /* check if the filter function evaluates true for at least one id in this bin, i.e. if one id in this bin needs to be highlighted,
+                then highlight the whole bin */
+                for(let id of idsInBin) {
+                    if(_this.highlight(id)) {
+                        return false;
+                    }
+                }
 
-                // otherwise, if the filteredIds is not empty then this bin contains the id we want to highlight -> don't fade it
-                return false;
+                // otherwise, if the filteredIds is not empty then this bin does not contain the id we want to highlight -> fade it
+                return true;
             });
 
         console.log('onHighlight');
