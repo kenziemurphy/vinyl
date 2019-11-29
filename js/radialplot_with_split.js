@@ -1,5 +1,3 @@
-// FIXME: bug: select a song in blue in split view, click config button, color become swapped
-
 // facts
 const MAX_SPLITS = 4;
 const ALL_KEYS = [
@@ -52,7 +50,7 @@ class RadialView {
             isSplitting: false,
             splits: 1,
             enableForce: true,
-            splitKey: x => x.collection_id,
+            splitKey: 'collection_id',
         }
         
         this.PADDING = 50;
@@ -73,6 +71,7 @@ class RadialView {
         this.highlight = x => true;
         this.filteredData = this.data.filter(this.filter);
 
+        this.collection_ids = [];
         this.grids = [];
         this.shouldReinitGrid = true;
         
@@ -150,13 +149,14 @@ class RadialView {
 
         // update split view
         if (this.isSplitting) {
-            if (new Set(this.data.map(d => this.config.splitKey(d))).size != newData.length) {
+            if (new Set(this.data.map(d => d[this.config.splitKey])).size != newData.length) {
                 this.svg.selectAll('g.grid').remove();
                 this.shouldReinitGrid = true;
             }
         }
 
         // preprocessing
+        this.collection_ids = newData.map(d => d.id);
         let newDataArr = []
         newData.forEach(function (d) {
             d.songs.forEach(function (s) {
@@ -292,11 +292,13 @@ class RadialView {
             multiGridG.call(this.grids[i]);
 
             if (this.selectedSong) {
+                console.log(this.collection_ids, this.collection_ids.map(d => this.SCALE_DOT_COLOR))
                 this.grids[i].showGuide(
                     this.selectedSong[this.config.xMapping.key], 
                     this.selectedSong[this.config.yMapping.key], 
-                    this.SCALE_DOT_COLOR(this.config.splitKey(this.selectedSong))
+                    this.SCALE_DOT_COLOR(this.selectedSong[this.config.splitKey])
                     );
+                console.log(this.collection_ids, this.collection_ids.map(d => this.SCALE_DOT_COLOR))
             }
         }
 
@@ -399,7 +401,7 @@ class RadialView {
         }
 
         let nGroups = d3.nest()
-            .key(this.config.splitKey)
+            .key(d => d[this.config.splitKey])
             .entries(this.filteredData)
             .length
         this.SPLITS = this.config.isSplitting ? Math.min(nGroups, MAX_SPLITS) : 1;
@@ -439,6 +441,7 @@ class RadialView {
                     [this.H / 2 - this.PADDING, -this.H / 2 + this.PADDING] :
                     [this.H / 4 - this.PADDING, -this.H / 4 + this.PADDING]);
         
+        // calculate size of data points to draw and normalize
         if (this.filteredData) {
             let tempScale = d3.scalePow()
                 .exponent(0.5)
@@ -447,7 +450,7 @@ class RadialView {
             let dataByKey = d3.nest()
                 .key(d => this.SPLITS == 1 ? 
                     this.getKeyFromKeyId(d.key, d.mode) : 
-                    `${this.getKeyFromKeyId(d.key, d.mode)} - ${this.config.splitKey(d)}` )
+                    `${this.getKeyFromKeyId(d.key, d.mode)} - ${d[this.config.splitKey]}` )
                 .rollup(v => ({
                     sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.config.dotRadiusMapping]) * tempScale(d[this.config.dotRadiusMapping])),
                     count: v.length
@@ -462,7 +465,8 @@ class RadialView {
                 .range([2, drawingArea / (this.SPLITS == 1 ? 700 : 1400) * Math.sqrt(1 / maxSumAreaSpoke)]);
         }
             
-        this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME);
+        this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME)
+            .domain(this.collection_ids);
         this.SCALE_DOT_CHART_INDEX = this.SPLITS == 1 ?
             x => 0 :
             d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
@@ -502,8 +506,20 @@ class RadialView {
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 2);
         else
             this.force.force('collision').radius(0);
-        this.force.force('x').x(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][0] + _this.dataToXy(d, false, _this.useRadialScale())[0]).strength(0.2);
-        this.force.force('y').y(d => _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(this.config.splitKey(d))][1] + _this.dataToXy(d, false, _this.useRadialScale())[1]).strength(0.2);
+        this.force.force('x')
+            .x(function (d) {
+                let center = _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(d[_this.config.splitKey])];
+                let offset = _this.dataToXy(d, false, _this.useRadialScale());
+                return center[0] + offset[0];
+            })
+            .strength(0.2);
+        this.force.force('y')
+            .y(function (d) {
+                let center = _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(d[_this.config.splitKey])];
+                let offset = _this.dataToXy(d, false, _this.useRadialScale());
+                return center[1] + offset[1];
+            })
+            .strength(0.2);
         this.force.alphaTarget(0.7).restart()
        
     }
@@ -534,13 +550,11 @@ class RadialView {
                     d.fy = null;
                     let dropTargetEl = document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY);
                     let dropTargetId = 'drop-area';
-                    console.log(dropTargetEl)
                     while (dropTargetEl && dropTargetEl.id != dropTargetId) {
-                        console.log(dropTargetEl)
                         dropTargetEl = dropTargetEl.parentNode;
                     }
                     let dropTarget = d3.select(dropTargetEl);
-                    if (dropTarget != null && dropTarget.attr("id") == dropTargetId) {
+                    if (dropTarget.size() > 0 && dropTarget.attr("id") == dropTargetId) {
                         let starViewDrawer = d3.select(dropTarget.node().parentNode);
                         starViewDrawer.classed('hide', false);
                         // if (this.parentNode.classList.contains('hide'))
@@ -594,8 +608,8 @@ class RadialView {
         songG.merge(songGEnter)
             .selectAll('.dot')
             .style('animation-duration', d => `${60 / d.tempo}s`)
-            .style('stroke', d => this.SCALE_DOT_COLOR(this.config.splitKey(d)))
-            .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(this.config.splitKey(d)))
+            .style('stroke', d => this.SCALE_DOT_COLOR(d[this.config.splitKey]))
+            .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(d[this.config.splitKey]))
             .transition()
             .style('fill-opacity', d => this.config.enableForce ? 1 : 0.2)
             .style('stroke-opacity', d => this.config.enableForce ? 1 : 0.8)
@@ -723,7 +737,7 @@ class RadialView {
             g.showGuide(
                 d[_this.config.xMapping.key], 
                 d[_this.config.yMapping.key], 
-                _this.SCALE_DOT_COLOR(_this.config.splitKey(d)));
+                _this.SCALE_DOT_COLOR(d[_this.config.splitKey]));
             });
 
         let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
