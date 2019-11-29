@@ -1,0 +1,72 @@
+text.label{
+    text-anchor: middle;
+    alignment-baseline: central;
+    font-weight: normal;
+    opacity: 0.3;
+    font-size: 10pt;
+}
+
+text.label.highlight {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.tick text {
+    opacity: 0.3;
+}
+
+.mini text.label:not(.grid-axis-label) {
+    font-size: 10px;
+}
+
+.label-align-bottom {
+    text-anchor: middle;
+    alignment-baseline: bottom;
+}
+
+.label-align-top {
+    text-anchor: middle;
+    alignment-baseline: top;
+}
+
+.grid-line, .tick line, path.domain{
+    fill-opacity: 0;
+    stroke-opacity: 0.15;
+    stroke: #ffffff;
+}
+
+.grid-line-clear {
+    fill-opacity: 0;
+    /* stroke-opacity: 1; */
+    stroke-opacity: 0.15;
+    stroke-width: 3;
+    stroke: #ffffff;
+}
+
+
+
+.grid .domain {
+    stroke-opacity: 0.07;
+}
+
+.label.grid-axis-label{
+    opacity: 0.8;
+    fill: #ffffff;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: capitalize;
+    /* text-transform: uppercase; */
+}
+
+.mini g.labels-radial text.label-radial:not(:first-child):not(:last-child) {
+    opacity: 0;
+}
+
+.guide-line {
+    fill-opacity: 0;
+    stroke-width: 1;
+    stroke-opacity: 1;
+    /* stroke: #ffffff; */
+    transition: 0.2s all;
+    pointer-events: none;
+}

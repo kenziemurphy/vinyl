@@ -71,7 +71,7 @@ class RadialView {
         this.highlight = x => true;
         this.filteredData = this.data.filter(this.filter);
 
-        this.collection_ids = [];
+        this.collections = [];
         this.grids = [];
         this.shouldReinitGrid = true;
         
@@ -87,6 +87,7 @@ class RadialView {
                         <br>${d.artist || 'Unknown Artist'}
                         <!--<br>${d.artists ? d.artists.map(a => a.name) : 'Unknown Artist'}-->
                         <br><small>Click to lock the selection</small>
+                        ${!d.preview_url ? '<br><small>Song preview not available</small>' : ''}
                     </p>
                 `;
             });
@@ -120,6 +121,15 @@ class RadialView {
                     }
                 });
             });
+        d3.selectAll('#search-highlight')
+            .on('keyup', function () {
+                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
+            })
+            .on('click', function () {
+                this.classList.remove('disabled')
+                this.select();
+                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
+            });
 
         // handler for clicking outside of a song
         // FIXME
@@ -131,6 +141,7 @@ class RadialView {
             var outsideDot = d3.selectAll('.song.active .dot').filter(equalToEventTarget).empty();
             var outsideButton = d3.selectAll('.vis-control').filter(equalToEventTarget).empty();
             if (outsideDot && outsideButton) {
+                d3.select('input#search-highlight').classed('disabled', true);
                 _this.resetSelection();
                 _this.selectionLocked = false;
             }
@@ -156,7 +167,10 @@ class RadialView {
         }
 
         // preprocessing
-        this.collection_ids = newData.map(d => d.id);
+        this.collections = newData.map(d => ({
+            id: d.id,
+            name: d.name
+        }));
         let newDataArr = []
         newData.forEach(function (d) {
             d.songs.forEach(function (s) {
@@ -177,8 +191,11 @@ class RadialView {
             d.key_signature = _this.getKeyFromKeyId(d.key, d.mode);
         });
 
-        this.filteredData = this.data.filter(this.filter)
-        this.shouldReinitGrid = true;
+        this.filteredData = this.data.filter(this.filter);
+        if (this.config.isSplitting) {
+            this.svg.selectAll('g.grid').remove();
+            this.shouldReinitGrid = true;
+        }
 
         this.redraw();
     }
@@ -228,7 +245,8 @@ class RadialView {
         this.grids = [];
         this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
         for (let i = 0 ; i < this.SPLITS; i++) {
-            let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
+            let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g.grid-split#grid-split-${i}`)
+                .classed('mini', this.SPLITS > 1);
             if (this.useRadialScale())
                 this.grids.push(axisRadial(
                     this.SCALE_X, 
@@ -260,20 +278,15 @@ class RadialView {
     redraw () {
         this.recomputeConsts();
 
-        // draw grid
-        if (this.shouldReinitGrid) {
-            this.initGrid();
-        }
-
-        // IF you want to actually draw a vinyl record...
-        // FIXME z-index issues
+        // IF you REALLY want to actually draw a vinyl record...
+        // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         // d3.selectAll('g.vinyl').remove();
         // for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-        //     let vinylG = selectAllOrCreateIfNotExist(this.svg, `g.vinyl#vinyl-${i}`)
+        //     let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
         //         .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
         //     let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
         //         .attr('r', this.SCALE_Y.range()[1])
-        //         .style('fill', '#020202');
+        //         .style('fill', '#111111');
         //     let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
         //         .attr('r', this.SCALE_Y.range()[0])
         //         .style('fill', this.COLOR_SCHEME[i]);
@@ -281,6 +294,11 @@ class RadialView {
         //         .attr('r', this.SCALE_Y.range()[0] / 20)
         //         .style('fill', '#212039');
         // }
+
+        // draw grid
+        if (this.shouldReinitGrid) {
+            this.initGrid();
+        }
         
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
@@ -292,13 +310,11 @@ class RadialView {
             multiGridG.call(this.grids[i]);
 
             if (this.selectedSong) {
-                console.log(this.collection_ids, this.collection_ids.map(d => this.SCALE_DOT_COLOR))
                 this.grids[i].showGuide(
                     this.selectedSong[this.config.xMapping.key], 
                     this.selectedSong[this.config.yMapping.key], 
                     this.SCALE_DOT_COLOR(this.selectedSong[this.config.splitKey])
                     );
-                console.log(this.collection_ids, this.collection_ids.map(d => this.SCALE_DOT_COLOR))
             }
         }
 
@@ -307,6 +323,24 @@ class RadialView {
 
         this.drawDataPoints();
         this.initForce();
+
+        // draw collection labels
+        if (this.config.isSplitting) {
+            d3.selectAll('g.grid .label-split').remove();
+            for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+                console.log('adding label', i, this.collections[i].name)
+                d3.select(`g#grid-split-${i} g.grid`)
+                    .append('text')
+                    .attr('class', 'label-split')
+                    .text(this.collections[i].name)
+                    // .attr('x', this.useRadialScale() ? 
+                    //     -this.SCALE_Y.range()[1] - 50:
+                    //     this.SCALE_Y.range()[0] - 50)
+                    .attr('y', this.useRadialScale() ? 
+                        this.SCALE_Y.range()[1] + 50:
+                        this.SCALE_Y.range()[0] + 40);
+            }
+        }
         
 
         // buttons
@@ -388,15 +422,15 @@ class RadialView {
                 [this.W * 3 / 4, this.H / 2],    
             ],
             3: [
-                [this.W / 4, this.H / 4],
-                [this.W * 3 / 4, this.H / 4],
-                [this.W / 2, this.H * 3 / 4],
+                [this.W / 4, this.H / 4 + 20],
+                [this.W * 3 / 4, this.H / 4 + 20],
+                [this.W / 2, this.H * 3 / 4 - 50],
             ],
             4: [
-                [this.W / 4, this.H / 4],
-                [this.W * 3 / 4, this.H / 4],
-                [this.W / 4, this.H * 3 / 4],
-                [this.W * 3 / 4, this.H * 3 / 4],
+                [this.W / 4, this.H / 4 - 10],
+                [this.W * 3 / 4, this.H / 4 - 10],
+                [this.W / 4, this.H * 3 / 4 - 10],
+                [this.W * 3 / 4, this.H * 3 / 4 - 10],
             ], 
         }
 
@@ -408,7 +442,7 @@ class RadialView {
         
         this.MIN_RADIAL_DIST = this.SPLITS == 1 ? 
             Math.min(this.W, this.H) / 8 : 
-            Math.min(this.W, this.H) / 16;
+            Math.min(this.W, this.H) / 24;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
             Math.min(this.W, this.H) / 2 - this.PADDING:
             Math.min(this.W, this.H) / 4 - this.PADDING;
@@ -466,7 +500,7 @@ class RadialView {
         }
             
         this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME)
-            .domain(this.collection_ids);
+            .domain(this.collections.map(d => d.id));
         this.SCALE_DOT_CHART_INDEX = this.SPLITS == 1 ?
             x => 0 :
             d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
@@ -506,6 +540,7 @@ class RadialView {
             this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 2);
         else
             this.force.force('collision').radius(0);
+
         this.force.force('x')
             .x(function (d) {
                 let center = _this.CENTER_BY_NUM_SPLITS[_this.SPLITS][_this.SCALE_DOT_CHART_INDEX(d[_this.config.splitKey])];
@@ -520,6 +555,7 @@ class RadialView {
                 return center[1] + offset[1];
             })
             .strength(0.2);
+
         this.force.alphaTarget(0.7).restart()
        
     }
@@ -674,7 +710,7 @@ class RadialView {
             }
         } else if (action == 'click') {
             return function (d, i, m) {
-                if (!_this.selectedSong) {
+                if (!_this.selectedSong || !this.selectedSong.audio) {
                     _this.selectSong(d);
                     _this.songToolTip.show(d, this);
                 }
@@ -705,8 +741,11 @@ class RadialView {
                     _this.songToolTip.hide({}, this);
                     _this.dispatch.call('highlight', this, function (k) {
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        let isInFilter = true;
+                        if (!d3.select('input#search-highlight').classed('disabled'))
+                            isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
                         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
-                        return isTheSelectedSong// || isSimilarSong;
+                        return isTheSelectedSong || isInFilter// || isSimilarSong;
                     });
                 }
             }
@@ -722,6 +761,8 @@ class RadialView {
     selectSong (d, k = 5) {
         this.selectedSong = d;
         if (!this.selectedSong.audio) {
+            // FIXME some songs return null for preview-url
+            console.log('loading music', this.selectedSong.preview_url);
             this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
             this.selectedSong.audio.loop = true;
         }
@@ -785,7 +826,15 @@ class RadialView {
         this.grids.forEach(function (g) {
             g.hideGuide();
         });
-        this.dispatch.call('highlight', this, k => true);
+        // this.dispatch.call('highlight', this, k => true);
+        this.dispatch.call('highlight', this, function (k) {
+            if (d3.select('input#search-highlight').classed('disabled'))
+                return true;
+            if (!k.name)
+                return false;
+            return k.name.toLowerCase()
+                .indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+        });
 
         this.svg.selectAll('line.similarity-link').remove();
     }

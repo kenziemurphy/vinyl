@@ -1,14 +1,14 @@
-.x_label, .y_label {
+/* .x_label, .y_label {
   fill: #F4F4F4;
-}
+} */
 
-.x_axis {
+/* .x_axis {
   opacity: .25;
 }
 
 .y_axis {
   opacity: .25;
-}
+} */
 
 .bin-rect {
   /*fill-opacity: .2;*/

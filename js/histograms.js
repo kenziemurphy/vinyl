@@ -7,8 +7,9 @@ class HistogramView {
         this.dispatch = dispatch;
 
         //var svg = d3.select('svg');
-        this.svgWidth = +this.svg.attr('width');
-        this.svgHeight = +this.svg.attr('height');
+        // NOTE: I fixed this svgWidth/Height, it should work now -- Tae
+        this.svgWidth = parseInt(this.svg.style("width"), 10);
+        this.svgHeight = parseInt(this.svg.style("width"), 10);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
@@ -136,10 +137,10 @@ class HistogramView {
     // calculate the center location of the histogram
     let centerPx = parseInt(this.x.range()[0] + (this.x.range()[1] - this.x.range()[0])/2);
 
-    this.svg.append('text')
+    selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
         .attr("text-anchor", "middle")
-        .attr('class', 'x_label')
-        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+20) + ')')
+        .attr('alignment-baseline', 'baseline')
+        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')')
         .text(xLabel)
         .call(addHelpTooltip(xLabel.toLowerCase()));;
 

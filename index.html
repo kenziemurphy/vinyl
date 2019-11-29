@@ -7,6 +7,7 @@
 		<title>MusicOctoRobot</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
 		<link rel="stylesheet" href="https://nico-amsterdam.github.io/awesomplete-util/css/awesomplete.css">
+        <link rel="stylesheet" href="css/grids.css" />
         <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
         <link rel="stylesheet" href="css/starplot.css" />
@@ -34,17 +35,38 @@
 				<!-- <svg id="..."></svg> -->
 				<div>
 					<h2>More Options</h2>
-					<button id="toggle-split-view" class="btn vis-control">Toggle split view</button>
-					<br><br><button id="toggle-album-art" class="btn vis-control">Toggle album art</button>
-					<br><br><button id="toggle-force" class="btn vis-control">Toggle force jittering</button>
+					<div class="container-row">
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-split-view" class="btn vis-control">Toggle&shy; split view</button>
+						</div>
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-album-art" class="btn vis-control">Toggle&shy;  album art</button>
+						</div>
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-force" class="btn vis-control">Toggle&shy;  force jittering</button>
+						</div>
+					</div>
+					<h2>How to read this visualization</h2>
+					<div>
+						<p>
+							[visuals]
+							<ul>
+								<li>Position</li>
+								<li>Size</li>
+								<li>Shape</li>
+								<li>Color</li>
+								<li>Image</li>
+								<li>Image</li>
+							</ul>
+						</p>
+					</div>
 				</div>
             </div>
 			<div class="cell grow container-col">
 				<div id="vis-area" class="cell grow container-col">
-					<div class="container-row">
-						<div class="text-center grow">
-							X / Angle Axis
-							<!-- <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div> -->
+					<div class="container-row" style="margin:auto;">
+						<div class="text-center margin-gutter">
+							<small>X / Angle Axis</small>
 							<br>
 							<select name="" class="btn active vis-control" id="select-x-axis" style="width: auto;">
 								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
@@ -62,9 +84,8 @@
 								<option data-scale-type="linear" value="duration">DURATION</option>
 							</select>
 						</div>
-						<div class="text-center grow">
-							Y / Radial Axis
-							<!-- <div class="help far fa-question-circle" data-help-title="Test" data-help-body="This is a test help message. This is a test help message. This is a test help message. This is a test help message."></div> -->
+						<div class="text-center margin-gutter">
+							<small>Y / Radial Axis</small>
 							<br>
 							<select name="" class="btn active vis-control" id="select-y-axis" style="width: auto;">
 								<option data-scale-type="linear" value="tempo">TEMPO</option>
@@ -81,28 +102,36 @@
 								<option data-scale-type="linear" value="duration">DURATION</option>	
 							</select>
 						</div>
+						<div class="text-center margin-gutter">
+							<small>Find a song in this graphic</small>
+							<br>
+							<input type="text" class="btn vis-control" id="search-highlight">
+						</div>
 					</div>
 					<svg id="radial-view" class="grow" overflow="visible"></svg>
+					<div class="" style="padding-top: 20px; padding-bottom: 20px;">
+						Other songs similar to your selection:
+					</div>
 				</div>
-				<div class="text-center cell drawer-tab" style="margin-top: 30px;">
+				<div class="text-center cell drawer-tab">
 					<!-- placeholder -->
 					Drag a song here for more details
 				</div>
             </div>
 			<div style="width: 25%;" class="cell container-col">
 				<h2>Distribution of songs by song features</h2>
-				<svg id="histogram-view" class="grow"></svg>
+				<svg id="histogram-view" class="grow" overflow="visible"></svg>
             </div>
 		</div>
 		<div id="star-view-drawer" class="container-col hide">
 			<div id="drop-area" class="text-center cell drawer-tab">
 				<!-- <h2>Detailed Analysis</h2> -->
 				<div>
-					Drag a song here for more details
+					Drag a song here for more details / X Songs in Comparison
 				</div>
-				<div>
+				<!-- <div>
 					2 Songs in Comparison [TODO: show number of songs in comparison]
-				</div>
+				</div> -->
 			</div>
 			<!-- <div style="grow"> -->
 				<h2 class="mt-0">Song-by-song Comparison</h2>
@@ -195,16 +224,18 @@
 
 			let urlParams = new URLSearchParams(window.location.search);
 			function loadArtistsFromUrl(array, fn) {
-				var index = 0;
-				function next() {
-					if (index < array.length) {
-						fn(array[index++]).then(next);
-					}
-				}
-				return new Promise(function (resolve, reject) {
-					// FIXME promise doesn't work
-					next();
-				})
+				// FIXME keep ordering consistent
+				return Promise.all(array.map(d => appendArtistData(d)))
+				// var index = 0;
+				// function next() {
+				// 	if (index < array.length) {
+				// 		fn(array[index++]).then(next);
+				// 	}
+				// }
+				// return new Promise(function (resolve, reject) {
+				// 	// FIXME promise doesn't work
+				// 	next();
+				// })
 			}
 
 			window.onpopstate = function () {

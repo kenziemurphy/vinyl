@@ -110,7 +110,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel) {
             .attr('transform', 'rotate(-90)');
 
         selection.selectAll('text.label.label-axis-y')
-            .text(yMappingLabel.toUpperCase())
+            .text(yMappingLabel)
             .call(addHelpTooltip(yMappingLabel.toLowerCase()));
 
 
@@ -152,7 +152,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel) {
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.bottom')
             .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET);
         selection.selectAll('text.label.label-axis-x')
-            .text(xMappingLabel.toUpperCase())
+            .text(xMappingLabel)
             .call(addHelpTooltip(xMappingLabel.toLowerCase()));
         // // axis labels
         // // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.outer-bottom')

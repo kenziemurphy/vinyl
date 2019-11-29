@@ -39,73 +39,9 @@
     opacity: 1;
 }
 
-text {
-    font-size: 10pt;
-}
-
-.label {
-    text-anchor: middle;
-    alignment-baseline: central;
-    font-weight: normal;
-    opacity: 0.3;
-}
-
-.label-radial {
-    opacity: 0.7;
-}
-
-.label-align-bottom {
-    text-anchor: middle;
-    alignment-baseline: bottom;
-}
-
-.label-align-top {
-    text-anchor: middle;
-    alignment-baseline: top;
-}
-
-.grid-line, .axis-rect .tick line{
-    fill-opacity: 0;
-    stroke-opacity: 0.15;
-    stroke: #ffffff;
-}
-
-.grid-line-clear, .grid .domain {
-    fill-opacity: 0;
-    /* stroke-opacity: 1; */
-    stroke-opacity: 0.13;
-    stroke-width: 3;
-    stroke: #ffffff;
-}
-
-.grid .domain {
-    stroke-opacity: 0.07;
-}
-
-.grid-axis-label, .axis-rect .tick text {
-    font-weight: bold;
-    opacity: 0.5;
-    fill: #ffffff;
-    font-style: italic;
-}
-
-.guide-line {
-    fill-opacity: 0;
-    stroke-width: 1;
-    stroke-opacity: 1;
-    /* stroke: #ffffff; */
-    transition: 0.2s all;
-    pointer-events: none;
-}
-
 .hidden {
     fill-opacity: 0;
     stroke-opacity: 0;
-}
-
-.highlight {
-    opacity: 1;
-    font-weight: bold;
 }
 
 .fade:not(.similar-highlight) {
@@ -117,7 +53,7 @@ text {
         transform: scale(1);
     }
     5% {
-        transform: scale(1.4);
+        transform: scale(1.1);
     }
     80% {
         transform: scale(1);
@@ -206,3 +142,18 @@ text {
 .song-tooltip p {
     margin: 0;
 }
+
+.vinyl {
+    z-index: -100;
+}
+
+.label-split {
+    text-anchor: middle;
+    alignment-baseline: central;
+    text-transform: uppercase;
+    fill: #ffffff;
+    font-size: 10pt;
+    font-weight: 900;
+    font-style: italic;
+}
+

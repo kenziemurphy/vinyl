@@ -2,7 +2,7 @@ body {
     margin: 0;
     /* padding: 0 30px; */
     background-color: #212039;
-    /* background: linear-gradient(to bottom, #212039, #111111); */
+    /* background: linear-gradient(to bottom, #212039, #181818); */
     /* overflow: hidden; */
     font-family: Helvetica, sans-serif;
     color: #ffffff;
@@ -76,14 +76,19 @@ b, [font-weight="bold"] {
 }
 
 .btn {
-    white-space: nowrap;
+    /* white-space: nowrap; */
     background-color: transparent;
     border: 1px #fff solid;
     color: #fff;
     padding: 3px 10px;
     border-radius: 100px;
     transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
-    opacity: 0.25;
+    /* opacity: 0.3; */
+    min-height: 18px;
+}
+
+.btn.disabled {
+    opacity: 0.3;
 }
 
 .btn.btn-block {
@@ -91,8 +96,8 @@ b, [font-weight="bold"] {
     width: 100%;
 }
 
-.btn:hover, .btn.active {
-    white-space: nowrap;
+.btn:not(input):hover, .btn.active {
+    /* white-space: nowrap; */
     background-color: #fff;
     color: #111;
     opacity: 1;
@@ -103,16 +108,21 @@ b, [font-weight="bold"] {
     white-space: nowrap;
     background-color: transparent;
     /* height: 25px; */
-    /*border: 1px #fff solid;*/
-  	box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25);
+    /* box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25); */
     color: #ffffff;
     padding: 5px 15px;
     /* margin: 10px; */
     margin-bottom: 10px;
     border-radius: 7px;
+    border: 1px #fff4 solid;
     border-left: 12px solid #fca981;
     line-height: 25px;
     /*opacity: 0.25;*/
+    transition: border 0.2s;
+}
+
+.artist-btn:hover {
+    border: 1px #fff solid;
 }
 
 .artist-btn button {
@@ -231,4 +241,8 @@ div.awesomplete .awe-not-found {
 .help-tooltip p {
     margin-top: 0;
     margin-bottom: 0;
+}
+
+.margin-gutter:not(:first-child) {
+    margin-left: 10px;
 }

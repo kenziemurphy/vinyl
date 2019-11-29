@@ -1,8 +1,9 @@
 function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialMappingLabel) {
 
     const NUM_RADIAL_GRID_LINES = 5;
-    const MID_LABEL_HORIZONTAL_OFFSET = 25;
+    const MID_LABEL_HORIZONTAL_OFFSET = 35;
     const MID_LABEL_VERTICAL_OFFSET = 7;
+    const AXIS_LABELS_OFFSET = 25;
 
     var minRadialData = scaleRadial.domain()[0];
     var maxRadialData = scaleRadial.domain()[1]; 
@@ -61,20 +62,17 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
 
         // axis labels
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
-            .attr('y', maxRadialDist + 30);
-        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom')
-        //     .attr('y', minRadialDist - 30);
+            .attr('y', maxRadialDist + AXIS_LABELS_OFFSET);
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
-            .attr('y', -maxRadialDist - 30);
-        // selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top')
-        //     .attr('y', -minRadialDist + 30);
+            .attr('y', -maxRadialDist - AXIS_LABELS_OFFSET);
         selection.selectAll('text.label.label-axis-radial')
-            .text(radialMappingLabel.toUpperCase())
+            .text(radialMappingLabel)
             .call(addHelpTooltip(radialMappingLabel.toLowerCase()));
 
         // radial scale labels
         // top
-        var radialLabelsTop = gridG.selectAll('text.label.label-radial.top').data(radialGridInterval)
+        var radialLabelsTopG = selectAllOrCreateIfNotExist(gridG, 'g.labels-radial.top')
+        var radialLabelsTop = radialLabelsTopG.selectAll('text.label.label-radial.top').data(radialGridInterval)
         var radialLabelsTopEnter = radialLabelsTop.enter()
             .append('text')
             .attr('class', 'label label-radial top')
@@ -88,7 +86,8 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         radialLabelsTop.exit().remove();
 
         // bottom
-        var radialLabelsBottom = gridG.selectAll('text.label.label-radial.bottom').data(radialGridInterval)
+        var radialLabelsBottomG = selectAllOrCreateIfNotExist(gridG, 'g.labels-radial.bottom')
+        var radialLabelsBottom = radialLabelsBottomG.selectAll('text.label.label-radial.bottom').data(radialGridInterval)
         var radialLabelsBottomEnter = radialLabelsBottom.enter()
             .append('text')
             .attr('class', 'label label-radial bottom')
@@ -125,55 +124,55 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         
         angleLabel.merge(angleLabelEnter)
             .text(d => d)
-            .attr('x', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 20)[0])
-            .attr('y', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 20)[1])
+            .attr('x', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[0])
+            .attr('y', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[1])
             .attr('fill', '#ffffff')
         angleLabel.exit().remove();
         
     
         // major/minor line        
-        var majorMinorLinRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-right.grid-line-clear.grid-axis-label')
+        var majorMinorLineRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-right.grid-line-clear.grid-axis-label')
             .attr('x1', -minRadialDist)
             .attr('y1', 0)
             .attr('x2', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y2', 0)
     
-        var majorMinorLinRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-left.grid-line-clear.grid-axis-label')
+        var majorMinorLineLeft = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-left.grid-line-clear.grid-axis-label')
             .attr('x1', minRadialDist)
             .attr('y1', 0)
             .attr('x2', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y2', 0)
     
-        var majorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-top-left.grid-axis-label')
-            .text('MAJOR')
+        var majorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-left.grid-axis-label')
+            .text('Major')
             .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y', -MID_LABEL_VERTICAL_OFFSET)
-            .attr('aligment-baseline', 'baseline')
-            .attr('text-anchor', 'start')
+            .style('aligment-baseline', 'baseline')
+            .style('text-anchor', 'start')
             .call(addHelpTooltip('major'))
         
-        var minorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-bottom-left.grid-axis-label')
-            .text('MINOR')
+        var minorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-left.grid-axis-label')
+            .text('Minor')
             .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y', MID_LABEL_VERTICAL_OFFSET)
-            .attr('alignment-baseline', 'hanging')
-            .attr('text-anchor', 'start')
+            .style('alignment-baseline', 'hanging')
+            .style('text-anchor', 'start')
             .call(addHelpTooltip('minor'))
         
-        var majorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-top-right.grid-axis-label')
-            .text('MAJOR')
+        var majorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-right.grid-axis-label')
+            .text('Major')
             .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y', -MID_LABEL_VERTICAL_OFFSET)
-            .attr('aligment-baseline', 'baseline')
-            .attr('text-anchor', 'end')
+            .style('aligment-baseline', 'baseline')
+            .style('text-anchor', 'end')
             .call(addHelpTooltip('major'));
         
-        var minorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text#mid-label-bottom-right.grid-axis-label')
-            .text('MINOR')
+        var minorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-right.grid-axis-label')
+            .text('Minor')
             .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
             .attr('y', MID_LABEL_VERTICAL_OFFSET)
-            .attr('alignment-baseline', 'hanging')
-            .attr('text-anchor', 'end')
+            .style('alignment-baseline', 'hanging')
+            .style('text-anchor', 'end')
             .call(addHelpTooltip('minor'));
 
         // guides only show up when an item is hovers to help deal with offset position from force-directed chart
