@@ -1,19 +1,21 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
 var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
-const starCircleRadius = 50;
-const starRadius = 120;
+//const starCircleRadius = 50;
+//const starRadius = 120;
 const spacing = 100;
 //const labelMargin = 20;
 
 var margin = {
     top: 80,
-    left: 50
+    left: 50,
+    right: 50
 };
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
 
 var dataArray = [];
+var starCircleRadius, starRadius;
 
 var flag = 1;
 
@@ -30,11 +32,15 @@ class StarView {
         this.svg = svg;
         this.data = data;
         console.log('init');
+        
 
     }
 
     onDataChanged (newData) {
         this.data = newData;
+        this.radiusCal(window.innerWidth);
+        console.log("starRadius", starRadius);
+        console.log("starCircleRadius", starCircleRadius);
         
         if (flag)
             dataArray.push(newData);
@@ -65,6 +71,13 @@ class StarView {
     onHighlight(filterFunction) {
         this.highlight = filterFunction;
         console.log('onHighlight');
+    }
+
+    radiusCal (width){
+        console.log(width);
+        starCircleRadius = (width - margin.left - margin.right * 2 - spacing * 3) / (8 * 3);
+        starRadius = starCircleRadius * 2;
+
     }
 
     redraw() {
@@ -132,7 +145,7 @@ class StarView {
             .attr("y", 0)
             .attr("width", starCircleRadius)
             .attr("height", starCircleRadius)
-            .attr("xlink:href", d => d.album.images[2].url)
+            .attr("xlink:href", d => d.images[2].url)
 
         var circles = this.svg.append("g")
             .selectAll("circle")
@@ -235,7 +248,7 @@ class StarView {
 
         for(var num =0; num < dimensions.length; num ++){
             var l, x, y;
-            l = starCircleRadius + starRadius;
+            l = starCircleRadius + starRadius + 20;
             x = l * Math.cos(r);
             y = l * Math.sin(r);
 
