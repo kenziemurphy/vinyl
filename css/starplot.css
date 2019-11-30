@@ -43,10 +43,12 @@
 }
 .star-title {
   font-size: 18px;
+  font-family: proxima-nova, sans-serif;
   fill: #fff;
 }
 .star-label {
   font-size: 14px;
+  font-family: proxima-nova, sans-serif;
   color: #fff;
   fill: #fff;
   fill-opacity: 0.3;
@@ -54,8 +56,14 @@
 }
 .star-remove {
   font-size: 18px;
+  font-family: proxima-nova, sans-serif;
   fill: #fff;
   fill-opacity: 0.3;
+}
+.star-categories {
+  font-size: 14px;
+  font-family: proxima-nova, sans-serif;
+  fill: #fff;
 }
 .star-origin {
   fill: #ffffff;

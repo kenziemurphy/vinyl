@@ -1,5 +1,6 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
-var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "popularity"]; // Edit this for more histograms
+var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 //const starCircleRadius = 50;
 //const starRadius = 120;
 const spacing = 100;
@@ -21,7 +22,7 @@ var flag = 1;
 
 
 class StarView {
-    constructor (svg, data = []) {
+    constructor (svg, data, dispatch) {
         // @Shelly
         
         // init here
@@ -31,6 +32,7 @@ class StarView {
             .append('svg');*/
         this.svg = svg;
         this.data = data;
+        this.dispatch = dispatch;
         console.log('init');
         
 
@@ -39,8 +41,8 @@ class StarView {
     onDataChanged (newData) {
         this.data = newData;
         this.radiusCal(window.innerWidth);
-        console.log("starRadius", starRadius);
-        console.log("starCircleRadius", starCircleRadius);
+        // console.log("starRadius", starRadius);
+        // console.log("starCircleRadius", starCircleRadius);
         
         if (flag)
             dataArray.push(newData);
@@ -74,29 +76,37 @@ class StarView {
     }
 
     radiusCal (width){
-        console.log(width);
+        //console.log(width);
         starCircleRadius = (width - margin.left - margin.right * 2 - spacing * 3) / (8 * 3);
         starRadius = starCircleRadius * 2;
 
     }
 
     redraw() {
+        this.preprocess();
         this.drawTitle();
         this.drawGuideLines();
         this.drawStarPath();
         this.drawLabel();
-
         this.drawCircle();
+
+        //this.drawCategories();
 
     }
 
+    preprocess() {
+        dataArray.forEach(function(d, i){
+            d.popularity = d.popularity / 100;
+        })
+    }
+
     drawTitle() {
-        var titles = this.svg.append('g')
+        var texts = this.svg.append('g')
             .selectAll('text')
             .data(dataArray)
             .enter();
 
-        var titleLabel = titles.append('text')
+        var titleLabel = texts.append('text')
             .attr('class', 'star-title')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
@@ -108,7 +118,7 @@ class StarView {
             .text(d => d.name);
 
         // FIXME bug: if you pick more than one song and click 'x' to remove the first, the second one will be removed instead
-        var cross = titles.append('text')
+        var cross = texts.append('text')
             .attr('class', 'star-remove')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i;
@@ -121,6 +131,27 @@ class StarView {
                 flag = 0;
                 new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
             });
+
+        var category = texts.append('text')
+            .attr('class', 'star-categories')
+            .attr('transform', function(d, i){
+                var center_x = margin.left + (starCircleRadius + starRadius) *2*i + spacing * i;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 50;
+                //console.log(d.name);
+                return "translate(" + center_x + "," + center_y + ")";
+            });
+
+        for (var num = 0; num < categories.length; num++){
+            //console.log(num);
+            category.append('svg:tspan')
+                .attr('x', 0)
+                .attr('dy', 20)
+                .text(function(d){
+                    console.log(d[categories[num]]);
+                    return categories[num] + ': ' + d[categories[num]];
+                });
+        }
+            
     }
 
     drawCircle() {
@@ -276,6 +307,7 @@ class StarView {
                     return 'translate(' + (center_x + x) + ',' + (center_y + y) + ') rotate(' + angle + ')';
                 })
                 .text(dimensions[num]);
+
             r += radians;
         }
         
@@ -321,9 +353,6 @@ class StarView {
             });
 
     }
-
-
-
     
 
 
