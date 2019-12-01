@@ -3,7 +3,6 @@ class HistogramView {
         // init here
         this.svg = svg;
         this.data = data;
-console.log(this.data);
 
         //var svg = d3.select('svg');
         this.svgWidth = +this.svg.attr('width');
@@ -27,7 +26,8 @@ console.log(this.data);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
-        this.dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+        this.dimensions = ["energy", "danceability", "valence", "speechiness", "instrumentalness", 'tempo', 'loudness'];
+        //["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", 'tempo', 'loudness']; // Edit this for more histograms
 
         this.x = d3.scaleLinear()
           .domain([0, 1])
@@ -45,15 +45,27 @@ stackData(dimension) {
 
   let processedArray = [];
 
+   let thresholdArray = [ 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180, 192, 204, 216, 228, 240];
+
   // set the parameters for the histogram
   var histogram = d3.histogram()
-      .value((d) => d[dimension])   // I need to give the vector of value
-      .domain(this.x.domain())  // then the domain of the graphic
-      .thresholds(this.x.ticks(20)); // then the numbers of bins
+      .value((d) => +d[dimension])   // I need to give the vector of value
+      .domain(this.x.domain())
+      //.thresholds(d3.thresholdFreedmanDiaconis(thresholdArray, 0, 60)); // then the domain of the graphic
+      .thresholds(20); // then the numbers of bins
 
   // creates bins histogram array that we will use to fill our processedArray with correct format
   data = this.jsonDataArray[0];
+  // console.log("DATA: " + this.jsonDataArray[0]);
   var bins = histogram(data);
+  console.log(data);
+  console.log(bins);
+  //console.log(processedArray);
+
+        // bins.forEach(function (d) {
+        //     console.log("bin" + d['x0'].toString());
+
+        // });
 
 
   // put correct format from bins into processedArray
@@ -62,9 +74,10 @@ stackData(dimension) {
   // bin:1, json0: 0, json1: 2
   // etc
   // bin is then followed with counts for each json below
-  for (var i = 0; i < 21; i++) {
+  for (var i = 0; i < 20; i++) {
     processedArray.push({"bin": bins[i]['x0']})
   }
+  //console.log(processedArray);
 
   // here is where bins are updated from json data
   for(let i = 0; i < this.jsonDataArray.length; i++) {
@@ -74,11 +87,14 @@ stackData(dimension) {
       data = this.jsonDataArray[i];
       var bins = histogram(data);
 
-      for(let j = 0; j < bins.length; j++) {
+      for(let j = 0; j < processedArray.length; j++) {
+        //console.log(processedArray[j]);
         processedArray[j]["json" + i] = bins[j].length;
       }
     }
   }
+
+  //console.log(processedArray);
 
   //stacks json groups for proper cumulative count formatting
   var keys = Object.keys(processedArray[0]).slice(1, processedArray[0].length); // [json0, json1, ... , jsonN]
@@ -111,7 +127,8 @@ drawHistogram(stackedData, i) {
   let xAxis = (g) => g
   .attr('class', 'x_axis')
   .attr("transform", 'translate(0,' + (range[0]+1) + ')')
-  .call(d3.axisBottom(_this.x));
+  .call(d3.axisBottom(_this.x)
+    .ticks(1));
 
   let yAxis = (g) => g
   .attr('class', 'y_axis')
@@ -147,7 +164,8 @@ drawHistogram(stackedData, i) {
   let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
   this.svg.append('text')
       .attr('class', 'x_label')
-      .attr('transform', 'translate(150,' + parseInt(range[0]+35) + ')')
+      .attr('transform', 'translate(150,' + parseInt(range[0]+20) + ')')
+      // .attr('text-anchor', "middle")
       .text(xLabel);
       //console.log(parseInt((range[0] - range[1])/2)+range[1]);
   // this.svg.append('text')
@@ -174,7 +192,7 @@ redraw() {
 
     // d3 loading of json files linked to get data and put in jsonData array
         d3.json(this.fileNameArray[0]).then(function (data) {
-
+        //console.log("LOUDNESS: " + data.map((d)=>d.loudness));
         // Data source 1 load completed
 
           //console.log(data);
@@ -215,13 +233,25 @@ redraw() {
 
           realJsonDataArray.push(data);
 
-
           ////////////////////////////// PROCESS DATA INTO STACKED HISTOGRAM FORMAT AND PLOT ///////////////////////////////
 
           let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
 
           // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
           for(let i = 0; i < realDimensions.length; i++) {
+            if (realDimensions[i] === 'loudness') {
+            _this.x = d3.scaleLinear()
+                .domain([-40, 0])
+                .range([52, 300]);
+            } else if (realDimensions[i] === 'tempo') {
+                _this.x = d3.scaleLinear()
+                .domain([0, 200])
+                .range([52, 300]);
+            } else {
+                _this.x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([52, 300]);
+            }
             _this.drawHistogram(_this.stackData(realDimensions[i]), i);
           }
 
@@ -231,7 +261,7 @@ redraw() {
     onDataChanged (newData) {
         this.data = newData;
         // this.redraw();
-        console.log('onDataChanged: ' + this.data);
+        console.log('onDataChanged');
     }
 
     onScreenSizeChanged () {
@@ -248,7 +278,7 @@ redraw() {
         this.highlight = filterFunction;
         console.log(this.highlight);
         d3.selectAll('.bin-rectangle')
-            .classed('faded', d => console.log("FOR BEN: " + !this.highlight(d)));
+            .classed('faded', d =>!this.highlight(d));
         console.log('onHighlight');
     }
 }
