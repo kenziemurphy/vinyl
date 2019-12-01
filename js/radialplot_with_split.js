@@ -278,7 +278,7 @@ class RadialView {
     redraw () {
         this.recomputeConsts();
 
-        // IF you REALLY want to actually draw a vinyl record...
+        //IF you REALLY want to actually draw a vinyl record...
         // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         // d3.selectAll('g.vinyl').remove();
         // for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
