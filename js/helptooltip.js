@@ -67,13 +67,13 @@ function addHelpTooltip (helpContent) {
                 body: ''
             }
         }
-        console.log("addHelp", helpContent);
+        // console.log("addHelp", helpContent);
     }
 
     var onCall = function (context) {
-        console.log("onCall");
+        // console.log("onCall");
         let selection = context.selection ? context.selection() : context;
-        console.log(selection);
+        // console.log(selection);
         if (selection.node().tagName == 'text') {
             selection = selection.append('tspan')
                 .html(' &#xf059;')
