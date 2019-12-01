@@ -3,22 +3,23 @@ var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence
 var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 //const starCircleRadius = 50;
 //const starRadius = 120;
-const spacing = 100;
+//const spacing = 100;
 //const labelMargin = 20;
 
 var margin = {
     top: 80,
-    left: 50,
-    right: 50
+    left: 150,
+    right: 150
 };
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
 
 var dataArray = [];
-var starCircleRadius, starRadius;
+var starCircleRadius, starRadius, spacing;
 
 var flag = 1;
+var removeIndex;
 
 
 class StarView {
@@ -44,17 +45,25 @@ class StarView {
         // console.log("starRadius", starRadius);
         // console.log("starCircleRadius", starCircleRadius);
         
-        if (flag)
-            dataArray.push(newData);
+        if (flag){
+            if(dataArray.length < 4)
+                dataArray.push(newData);
+            else
+                alert("4 songs is the maximum for comparison");
+        }
+            
+            
         else{
-            dataArray.pop(newData);
+            //dataArray.pop(newData);
+            dataArray.splice(removeIndex, 1);
             flag = 1;
         }
         //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
+        this.titleUpdate();
 
         if(dataArray.length >= 1){
-            console.log("dataArray", dataArray);
+            console.log("dataArray", dataArray);       
             this.redraw();
         }
 
@@ -75,10 +84,19 @@ class StarView {
         console.log('onHighlight');
     }
 
+    titleUpdate (){
+        if(dataArray.length == 0)
+            document.getElementById("star-titleLabel").innerHTML = "Drag a song here for more details";
+        else if(dataArray.length >= 1 && dataArray.length <= 4)
+            document.getElementById("star-titleLabel").innerHTML = dataArray.length + " Songs in Comparison. Drag more songs here for more details";
+        
+    }
+
     radiusCal (width){
         //console.log(width);
-        starCircleRadius = (width - margin.left - margin.right * 2 - spacing * 3) / (8 * 3);
+        starCircleRadius = (width - margin.left - margin.right - 60) / 36;
         starRadius = starCircleRadius * 2;
+        spacing = starCircleRadius * 4;
 
     }
 
@@ -117,11 +135,10 @@ class StarView {
             .attr('text-anchor', 'middle')
             .text(d => d.name);
 
-        // FIXME bug: if you pick more than one song and click 'x' to remove the first, the second one will be removed instead
         var cross = texts.append('text')
             .attr('class', 'star-remove')
             .attr('transform', function(d, i){
-                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i;
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i + 30;
                 var center_y = 20;
                 return "translate(" + center_x + "," + center_y + ")";
             })
@@ -129,17 +146,20 @@ class StarView {
             .text('x')
             .on('click', function(d, i){
                 flag = 0;
+                removeIndex = i;
+                console.log("remove", i);
                 new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
             });
 
         var category = texts.append('text')
             .attr('class', 'star-categories')
             .attr('transform', function(d, i){
-                var center_x = margin.left + (starCircleRadius + starRadius) *2*i + spacing * i;
+                var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
                 var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 50;
                 //console.log(d.name);
                 return "translate(" + center_x + "," + center_y + ")";
-            });
+            })
+            .attr('text-anchor', 'middle');
 
         for (var num = 0; num < categories.length; num++){
             //console.log(num);
@@ -147,7 +167,7 @@ class StarView {
                 .attr('x', 0)
                 .attr('dy', 20)
                 .text(function(d){
-                    console.log(d[categories[num]]);
+                    //console.log(d[categories[num]]);
                     return categories[num] + ': ' + d[categories[num]];
                 });
         }
