@@ -142,7 +142,7 @@ class HistogramView {
         .attr('alignment-baseline', 'baseline')
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')')
         .text(xLabel)
-        .call(addHelpTooltip(xLabel.toLowerCase()));;
+        .call(addHelpTooltip(xLabel.toLowerCase()));
 
     // update
     xAxisG.transition(d3.transition().duration(750)).call(xAxis);

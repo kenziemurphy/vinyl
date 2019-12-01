@@ -107,10 +107,11 @@ class StarView {
         this.preprocess();
         //this.initGrid();
         this.drawTitle();
-        this.drawGuideLines();
-        this.drawStarPath();
+        
         this.drawLabel();
         this.drawCircle();
+        this.drawStarPath();
+        this.drawGuideLines();
 
         //this.drawCategories();
 
@@ -123,8 +124,7 @@ class StarView {
     }
 
     drawTitle() {
-        var texts = this.svg.append('g')
-            .selectAll('text')
+        var texts = this.svg.selectAll('text')
             .data(dataArray)
             .enter();
 
@@ -207,8 +207,7 @@ class StarView {
             .attr("height", starCircleRadius)
             .attr("xlink:href", d => d.images[2].url)
 
-        var circles = this.svg.append("g")
-            .selectAll("circle")
+        var circles = this.svg.selectAll("circle")
             .data(dataArray)
             .enter();
 
@@ -259,7 +258,7 @@ class StarView {
 
     playClip(action) {
         let _this = this;
-        console.log("mouseover");
+        //console.log("play");
         if (action == 'mouseover') {
 
             return function (d, i) {
@@ -287,70 +286,107 @@ class StarView {
         var radians = 2 * Math.PI / dimensions.length;
 
         //dimensions.forEach(function(d, i){
-        for(var i = 0; i < dimensions.length; i ++){
+        for(var num = 0; num < dimensions.length; num ++){
             var x1, x2, y1, y2;
             x1 = starCircleRadius * Math.cos(r);
             x2 = (starRadius + starCircleRadius) * Math.cos(r);
             y1 = starCircleRadius * Math.sin(r);
             y2 = (starRadius + starCircleRadius) * Math.sin(r);
 
-            var lines = this.svg.append('g')
-                .selectAll('line')
+            var lines = this.svg.selectAll('line')
                 .data(dataArray)
                 .enter()
                 .append('line')
+                .attr('id', function(d, i){
+                    return 'grid_' + i + '_' + num;
+                })
                 .attr('class', 'star-axis')
                 .attr('transform', function(d, i){
                     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                     var center_y = margin.top + starRadius + starCircleRadius;
                     return 'translate(' + center_x + ',' + center_y + ')';
                 })
+                .attr('stroke-opacity', 0.1)
                 .attr('x1', x1)
                 .attr('x2', x2)
                 .attr('y1', y1)
                 .attr('y2', y2);
-                /*.on('mouseoever', function(d){
-                    console.log("line mouseover");
-                });*/
+                // .on('mouseover',function(d, i){
+                //     console.log("mouseover", d);
+                //     // console.log(dimensions[num]);
+                //     d3.select(this)
+                //         .attr("stroke-opacity", 1);
+                //     // d3.select('#grid_' + i + '_' + num)
+                //     //     .attr({stroke-opacity: 1});
+                //         //.style('stroke-opacity', 1);
+                //     //d3.select(this).attr({'stroke-opacity': 1});
+
+                //     // d3.select('.star-label')
+                //     // // d3.select('#label_' + i + '_' + num)
+                //     //     .attr('fill-opacity', 1)
+                //     //     .text(dimensions[num] + ": " + d[dimensions[num]]);
+
+
+                // })
+                // .on('mouseout', function(d, i){
+                //     // d3.select(this).attr({
+                //     //     stroke-opacity: 0.1;
+                //     // })
+                //     // d3.select('#grid_' + i + '_' + num)
+                //     //     .style('stroke-opacity', 0.1);
+                //     d3.select(this)
+                //         .attr('stroke-opacity', 0.1);
+                // });
+
+                // var interaction = wrapper.selectAll('.interaction')
+                //     .style('display', 'none');
+
+                //   svg.selectAll('.star-interaction')
+                //     .on('mouseover', function(d) {
+                //       svg.selectAll('.star-label')
+                //         .style('display', 'none')
+
+                //       interaction
+                //         .style('display', 'block')
+
+                //       circle
+                //         .attr('cx', d.x)
+                //         .attr('cy', d.y)
+
+                //       $interactionLabel = $(interactionLabel.node());
+                //       interactionLabel
+                //         .text(d.key + ': ' + d.datum[d.key])
+                //         .style('left', d.xExtent - ($interactionLabel.width() / 2))
+                //         .style('top', d.yExtent - ($interactionLabel.height() / 2))
+                //     })
+                //     .on('mouseout', function(d) {
+                //       interaction
+                //         .style('display', 'none')
+
+                //       svg.selectAll('.star-label')
+                //         .style('display', 'block')
+                //     })
 
             r += radians;
         }
     }
 
+    // handleMouseOver() {
+    //     console.log("mouseover", d);
+    //     //d3.select(#)
+    // }
+
+
+
+    /*
+    TODO: Fix the tooltip bug
+    */
     drawLabel() {
         var r = 0;
         var radians = 2 * Math.PI / dimensions.length;
 
         for(var num =0; num < dimensions.length; num ++){
             var l, x, y;
-            // l = starCircleRadius + starRadius + 20;
-            // x = l * Math.cos(r);
-            // y = l * Math.sin(r);
-
-            // var texts = this.svg.append('g')
-            //     .selectAll('text')
-            //     .data(dataArray)
-            //     .enter()
-            //     .append('text')
-            //     .attr('class', 'star-label')
-            //     /*.attr('transform', function(d, i){
-            //         return 'translate(' + center_x + ',' + (2*i+1) * center_y + ')';
-            //     })*/
-            //     .attr('transform', function(d, i){
-            //         let angle = num / dimensions.length * 360 - 90;
-            //         let selfAngle = angle + 90;
-            //         if(selfAngle > 90 && selfAngle < 270){
-            //             selfAngle += 180;
-            //         }
-            //         if(angle > 90 && angle < 270) {
-            //             angle += 180;
-            //         }
-            //         //console.log("angle", selfAngle);
-            //         var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
-            //         var center_y = margin.top + starRadius + starCircleRadius;
-            //         return 'translate(' + (center_x + x) + ',' + (center_y + y) + ') rotate(' + angle + ')';
-            //     })
-            //     .text(dimensions[num]);
 
             l = starCircleRadius + starRadius;
             x = (l + labelMargin) * Math.cos(r);
@@ -379,9 +415,28 @@ class StarView {
                     var center_y = margin.top + starRadius + starCircleRadius;
                     return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
                 })
+                .attr('id', function(d, i){
+                    return "label_" + i + "_" + num;
+                })
+                .attr('fill-opacity', 0.3)
                 .text(dimensions[num])
                 .style('text-anchor', 'middle')
-                .style('dominant-baseline', 'central');
+                .attr('alignment-baseline', 'baseline')
+                //.style('dominant-baseline', 'central')
+                .call(addHelpTooltip(dimensions[num]));
+            // console.log("something", `text.label.grid-axis-label.${dimensions[num]}#axis-label-${num}`);
+
+            // selectAllOrCreateIfNotExist(this.svg.data(dataArray).enter(), `text.label.grid-axis-label.dimensions[num]#axis-label-${num}`)
+            //     .attr('text-anchor', 'middle')
+            //     .attr('alignment-baseline', 'baseline')
+            //     .attr('dominant-baseline', 'central')
+            //     .attr('transform', function(d, i){
+            //         var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+            //         var center_y = margin.top + starRadius + starCircleRadius;
+            //         return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
+            //     })
+            //     .text(dimensions[num])
+            //     .call(addHelpTooltip(dimensions[num]));
 
             r += radians;
         }
@@ -412,8 +467,7 @@ class StarView {
             return pathData;
         }
 
-        var stars = this.svg.append('g')
-            .selectAll('path')
+        var stars = this.svg.selectAll('path')
             .data(dataArray)
             .enter()
             .append('path')
