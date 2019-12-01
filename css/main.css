@@ -1,19 +1,167 @@
-/* Searchbar */
-div.awesomplete { 
-	width: 100%;
-	display: block; 
+body {
+    margin: 0;
+    /* padding: 0 30px; */
+    background-color: #212039;
+    /* background: linear-gradient(to bottom, #212039, #181818); */
+    /* overflow: hidden; */
+    font-family: Helvetica, sans-serif;
+    color: #F4F4F4;
+
+    font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+
+    overflow: hidden;
 }
 
-#search-artist {
-	width: 100% !important;
-	height: 30px !important;
-	font-size: medium; 
-	color: #222222;
+body * { 
+    font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: proxima-nova, sans-serif;
+    font-style: italic;
+    font-weight: 800;
+}
+
+h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
+    margin-top: 0;
+}
+
+h2 { font-size: 18pt; font-style: normal; }
+h3 { font-size: 12pt; font-style: normal; }
+
+b, [font-weight="bold"] {
+    font-weight: 800;
+}
+
+.container-main {
+    height: 100vh;
+    padding-top: 30px;
+    /* padding-bottom: 30px; */
+    width: 100vw;
+}
+
+.container-row {
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: row;
+}
+
+.container-col {
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: column;
+}
+
+.container-row > .cell {
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.container-row > .cell:first-child {
+    padding-left: 30px;
+}
+
+.container-row > .cell:last-child {
+    padding-right: 30px;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.btn {
+    /* white-space: nowrap; */
+    background-color: transparent;
+    border: 1px #fff solid;
+    color: #F4F4F4;
+    padding: 3px 10px;
+    border-radius: 100px;
+    transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
+    /* opacity: 0.3; */
+    min-height: 18px;
+}
+
+.btn.disabled {
+    opacity: 0.3;
+}
+
+.btn.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.btn:not(input):hover, .btn.active {
+    /* white-space: nowrap; */
+    background-color: #F4F4F4;
+    color: #111;
+    opacity: 1;
+    font-weight: 800;
+}
+
+.artist-btn {
+    white-space: nowrap;
+    background-color: transparent;
+    /* height: 25px; */
+    /* box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25); */
+    color: #F4F4F4;
+    padding: 5px 15px;
+    /* margin: 10px; */
+    margin-bottom: 10px;
+    border-radius: 7px;
+    border: 1px #fff4 solid;
+    border-left: 12px solid #fca981;
+    line-height: 25px;
+    /*opacity: 0.25;*/
+    transition: border 0.2s;
+}
+
+.artist-btn:hover {
+    border: 1px #fff solid;
+}
+
+.artist-btn button {
+	float: right;
+	background-color: rgba(255,255,255,0);
+	color: white;
+	border: 0px;
 	font-family: proxima-nova, sans-serif;
     font-style: normal;
     font-weight: 400;
-    border-radius: 5px;
+    font-size: 25px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.artist-btn button:hover {
+	font-weight: 800;
+}
+
+/* Searchbar */
+div.awesomplete { 
+    display: block; 
+    margin-bottom: 10px;
+}
+
+#search-artist {
+    box-sizing: border-box;
+	width: 100% !important;
+	height: 40px !important;
+	font-size: medium; 
+	color: #fff;
+	font-family: proxima-nova, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    border-radius: 7px;
+    border-width: 0px;
     padding-left: 10px;
+    background-color: transparent;
+    box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25);
 }
 
 /* Results list */
@@ -40,4 +188,61 @@ div.awesomplete .awe-found {
 
 div.awesomplete .awe-not-found {
 	border: 3px solid #FE0000FF
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+
+.help {
+    display: inline-block;
+    opacity: 0.4;
+}
+
+.help:hover {
+    opacity: 1;
+}
+
+.help-tooltip {
+    opacity: 1;
+    pointer-events: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, calc(15px));
+    background-color: #333c;
+    color: #fff;
+    border-radius: 4px;
+    border: 1px #444 solid;
+    padding: 5px 10px;
+    font-size: 10pt;
+    text-align: left;
+    max-width: 240px;
+    transition: opacity 0.2s;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.help-tooltip.hide {
+    opacity: 0;
+}
+
+.help-tooltip h3.help-title {
+    font-size: 10pt;
+    margin-bottom: 5pt;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.help-tooltip p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.margin-gutter:not(:first-child) {
+    margin-left: 5px;
 }

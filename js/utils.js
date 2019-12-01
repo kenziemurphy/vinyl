@@ -1,3 +1,35 @@
+function arrayJoin (a, b, key) {
+    var bKeys = b.map(y => y[key]);
+    var abJoined = a.map(function (x) {
+        var bIndex = bKeys.indexOf(x[key])
+        if (bIndex >= 0) {
+            return {...x, ...b[bIndex]};
+        } else {
+            return false;
+        }
+    });
+
+    return abJoined.filter(x => x !== false);
+}
+
+function arrayOuterJoin (a, b, key) {
+    let aIds = a.map(d => d.id);
+    let bIds = b.map(d => d.id);
+    let aOutsideB = a.filter(n => !bIds.includes(n.id));
+    let bOutsideA = b.filter(n => !aIds.includes(n.id));
+
+    return arrayJoin(a, b, key).concat(aOutsideB).concat(bOutsideA);
+}
+
+function arrayMerge (a, b, key) {
+    let aIds = a.map(d => d.id);
+    let bIds = b.map(d => d.id);
+    let aOutsideB = a.filter(n => !bIds.includes(n.id));
+    let bOutsideA = b.filter(n => !aIds.includes(n.id));
+
+    return arrayJoin(a, b, key).filter(n => bIds.includes(n.id)).concat(bOutsideA);
+}
+
 function selectAllOrCreateIfNotExist (d3selection, selector) {
     var s = selector;
     var elem = '';

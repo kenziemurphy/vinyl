@@ -1,45 +1,3 @@
-body {
-    margin: 0;
-    padding: 0 30px;
-    background-color: #212039;
-    /* background: linear-gradient(to bottom, #212039, #111111); */
-    /* overflow: hidden; */
-    font-family: Helvetica, sans-serif;
-    color: #ffffff;
-
-    font-family: proxima-nova, sans-serif;
-    font-style: normal;
-    font-weight: 400;
-}
-
-body * { 
-    font-family: proxima-nova, sans-serif;
-    font-style: normal;
-    font-weight: 400;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: proxima-nova, sans-serif;
-    font-style: italic;
-    font-weight: 800;
-}
-
-b, [font-weight="bold"] {
-    font-weight: 800;
-}
-
-.container {
-    display:flex;
-    flex-direction: row;
-    min-height: 100vh;
-}
-
-.vis-stretch {
-    width: 100%;
-    flex-grow: 1;
-    /* height: 100vh; */
-}
-
 #radial-view-controls {
     transition: all 0.5s;
     position: relative;
@@ -48,34 +6,6 @@ b, [font-weight="bold"] {
     top: 50%;
     /* width: auto;
     height: 100vh; */
-}
-
-.btn {
-    white-space: nowrap;
-    background-color: transparent;
-    border: 1px #fff solid;
-    color: #fff;
-    padding: 3px 10px;
-    border-radius: 100px;
-    transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
-    opacity: 0.25;
-}
-
-.btn.btn-block {
-    display: block;
-    width: 100%;
-}
-
-.btn:hover, .btn.active {
-    white-space: nowrap;
-    background-color: #fff;
-    color: #111;
-    opacity: 1;
-    font-weight: 800;
-}
-
-.full-height {
-    height: 100vh;
 }
 
 .song {
@@ -109,68 +39,9 @@ b, [font-weight="bold"] {
     opacity: 1;
 }
 
-text {
-    font-size: 10pt;
-}
-
-.label {
-    text-anchor: middle;
-    alignment-baseline: central;
-    font-weight: normal;
-    opacity: 0.3;
-}
-
-.label-radial {
-    opacity: 0.7;
-}
-
-.label-align-bottom {
-    text-anchor: middle;
-    alignment-baseline: bottom;
-}
-
-.label-align-top {
-    text-anchor: middle;
-    alignment-baseline: top;
-}
-
-.grid-line {
-    fill-opacity: 0;
-    stroke-opacity: 0.15;
-    stroke: #ffffff;
-}
-
-.grid-line-clear {
-    fill-opacity: 0;
-    /* stroke-opacity: 1; */
-    stroke-opacity: 0.13;
-    stroke-width: 3;
-    stroke: #ffffff;
-}
-
-.grid-axis-label {
-    font-weight: bold;
-    opacity: 0.7;
-    fill: #ffffff;
-    font-style: italic;
-}
-
-.guide-line {
-    fill-opacity: 0;
-    stroke-width: 1;
-    stroke-opacity: 1;
-    /* stroke: #ffffff; */
-    transition: 0.2s all;
-}
-
 .hidden {
     fill-opacity: 0;
     stroke-opacity: 0;
-}
-
-.highlight {
-    opacity: 1;
-    font-weight: bold;
 }
 
 .fade:not(.similar-highlight) {
@@ -182,7 +53,7 @@ text {
         transform: scale(1);
     }
     5% {
-        transform: scale(1.4);
+        transform: scale(1.1);
     }
     80% {
         transform: scale(1);
@@ -272,6 +143,17 @@ text {
     margin: 0;
 }
 
-.fixed {
-    position: fixed;
+.vinyl {
+    z-index: -100;
 }
+
+.label-split {
+    text-anchor: middle;
+    alignment-baseline: central;
+    text-transform: uppercase;
+    fill: #ffffff;
+    font-size: 10pt;
+    font-weight: 900;
+    font-style: italic;
+}
+

@@ -7,71 +7,150 @@
 		<title>MusicOctoRobot</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
 		<link rel="stylesheet" href="https://nico-amsterdam.github.io/awesomplete-util/css/awesomplete.css">
+        <link rel="stylesheet" href="css/grids.css" />
         <link rel="stylesheet" href="css/histograms.css" />
         <link rel="stylesheet" href="css/radialplot.css" />
         <link rel="stylesheet" href="css/starplot.css" />
-        <link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/main.css" />
+		
+		<script src="https://kit.fontawesome.com/45bc1cc8f8.js" crossorigin="anonymous"></script>
     </head>
     <body>
 		<!-- TODO remove inline CSS -->
-        <div class="container">
-			<div style="flex-grow: 1; width: 25%;" class="full-height">
+        <div class="container-main container-row">
+			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
 				<h1>MusicOctoRobot</h1>
-				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search artists..." />
+				<h2>I'm interested in...</h2>
+				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search an artist / album / playlist..." />
+
 				<br>
-				<svg id="..."></svg>
+
+				<div id="artist-buttons">
+					<!--<div class="artist-btn">Muse<button>&times;</button></div>
+					<div class="artist-btn">Radiohead<button>&times;</button></div>
+					<div class="artist-btn">Slot Machine<button>&times;</button></div>-->
+				</div>
+
+
+				<br>
+				<!-- <svg id="..."></svg> -->
 				<div>
-					<button id="toggle-split-view" class="btn">Toggle split view</button>
-					<br><br><button id="toggle-album-art" class="btn">Toggle album art</button>
-					<br><br><button id="toggle-force" class="btn">Toggle force jittering</button>
-				</div>
-            </div>
-			<div style="flex-grow: 2; min-width: 50%; display: flex; flex-direction: column;" class="full-height">
-				<div id="vis-area" class="vis-stretch" style="display: flex; flex-direction: column;">
-					<div id="radial-view-controls" class="controls" style="flex-grow: 0; height: 0;">
-						<button class="btn radial-mapping-select active" data-scale-type="linear" data-attr="tempo">TEMPO</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear"    data-attr="loudness">LOUDNESS</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="danceability">DANCEABILITY</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="acousticness">ACOUSTICNESS</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="instrumentalness">INSTRUMENTALNESS</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="liveness">LIVENESS</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="speechiness">SPEECHINESS</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="energy">ENERGY</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="1" data-attr="valence">VALENCE</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-scale-min="0" data-scale-max="100" data-attr="popularity">POPULARITY</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-attr="release_year">YEAR</button>
-						<button class="btn radial-mapping-select" data-scale-type="linear" data-attr="duration">DURATION</button>
-	
-						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="track_number">Track Number</button> -->
-						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="key">Key</button> -->
-						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="mode">Mode</button> -->
-						<!-- <button class="btn radial-mapping-select" data-scale-type="linear" data-attr="time_signature">Time Signature</button> -->
+					<h2>More Options</h2>
+					<div class="container-row">
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-split-view" class="btn vis-control">Toggle&shy; split view</button>
+						</div>
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-album-art" class="btn vis-control">Toggle&shy;  album art</button>
+						</div>
+						<div class="grow margin-gutter" style="width: 33.33%">
+							<button id="toggle-force" class="btn vis-control">Toggle&shy;  force jittering</button>
+						</div>
 					</div>
-					<svg id="radial-view" class="vis-stretch" overflow="visible"></svg>
-				</div>
-					<h2 style="text-align:center; margin-top:50px;">Detailed Analysis</h2>
-				<div id="drop-area" style="height: 7vh; display: flex; flex-direction: column; justify-content:center; align-items:center;">
-					Drag a song here for more details
+					<h2>How to read this visualization</h2>
+					<div>
+						<p>
+							[visuals]
+							<ul>
+								<li>Position</li>
+								<li>Size</li>
+								<li>Shape</li>
+								<li>Color</li>
+								<li>Image</li>
+								<li>Image</li>
+							</ul>
+						</p>
+					</div>
 				</div>
             </div>
-			<div style="flex-grow: 1; width: 25%; display: flex; flex-direction: column;" class="full-height">
-				<!-- <h2>Distribution</h2> -->
-        <br/>
-				<svg id="histogram-view" class="vis-stretch"></svg>
+			<div class="cell grow container-col">
+				<div id="vis-area" class="cell grow container-col">
+					<div class="container-row" style="margin:auto;">
+						<div class="text-center margin-gutter">
+							<small>X / Angle Axis</small>
+							<br>
+							<select name="" class="btn active vis-control" id="select-x-axis" style="width: auto;">
+								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
+								<option data-scale-type="linear" value="tempo">TEMPO</option>
+								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+								<option data-scale-type="linear" value="release_year">YEAR</option>
+								<option data-scale-type="linear" value="duration">DURATION</option>
+							</select>
+						</div>
+						<div class="text-center margin-gutter">
+							<small>Y / Radial Axis</small>
+							<br>
+							<select name="" class="btn active vis-control" id="select-y-axis" style="width: auto;">
+								<option data-scale-type="linear" value="tempo">TEMPO</option>
+								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+								<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+								<option data-scale-type="linear" value="release_year">YEAR</option>
+								<option data-scale-type="linear" value="duration">DURATION</option>	
+							</select>
+						</div>
+						<div class="text-center margin-gutter">
+							<small>Find a song in this graphic</small>
+							<br>
+							<input type="text" class="btn vis-control" id="search-highlight">
+						</div>
+					</div>
+					<svg id="radial-view" class="grow" overflow="visible"></svg>
+					<div class="" style="padding-top: 20px; padding-bottom: 20px;">
+						Other songs similar to your selection:
+					</div>
+				</div>
+				<!--<div class="text-center cell drawer-tab">
+					Drag a song here for more details
+				</div>-->
+            </div>
+			<div style="width: 25%;" class="cell container-col">
+				<h2>Song features</h2>
+				<svg id="histogram-view" class="grow" overflow="visible"></svg>
             </div>
 		</div>
-		<div class="container">
-			<div style="flex-grow: 1;">
-				<!--<h2>Detailed Analysis</h2>-->
-				<svg id="star-view" class="vis-stretch" overflow="visible"></svg>
+		<div id="star-view-drawer" class="container-col hide">
+			<div id="drop-area" class="text-center cell drawer-tab">
+				<!-- <h2>Detailed Analysis</h2> -->
+				<div id="starTitleLabel">
+					Drag a song here for more details
+				</div>
+				<!--<div>
+					2 Songs in Comparison [TODO: show number of songs in comparison]
+				</div>-->
 			</div>
+		    <div class="grow">
+				<!--<h2 class="mt-0">Song-by-song Comparison</h2>-->
+				<svg id="star-view" class="grow" overflow="visible"></svg>
+			</div>
+		</div>
+
+		<div class="help-tooltip hide">
+			<h3 class="help-title">Test Help Tooltip</h3>
+			<p class="help-body">This is a test help message on the help tooltip. This is a test help message on the help tooltip. This is a test help message on the help tooltip.</p>
 		</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete.min.js"></script>
   		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
-        <script src="js/utils.js"></script>
-        <script src="js/audiohelpers.js"></script>
+		<script src="js/utils.js"></script>
+		<script src="js/audiohelpers.js"></script>
+		<script src="js/helptooltip.js"></script>
+        <script src="js/rectangulargrid.js"></script>
         <script src="js/radialgrid.js"></script>
         <!-- <script src="js/radialplot.js"></script> -->
         <script src="js/radialplot_with_split.js"></script>
@@ -82,19 +161,14 @@
 			var components = [];
 			var data = [];
 
-			var newData = [];
-
 			var dispatch = d3.dispatch('filter', 'highlight');
 
 			var rv
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
-			//components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
+			// components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 
             // Load data and call onDataChanged for components once load is complete
-            // TODO: remove this and just call appendArtistData instead each time the user adds an artist using the search bar
-            loadData("data/merged.json", "data/merged_trackinfo.json");
-            
 
 			dispatch.on("filter", function (filterFunc) {
 				components.forEach(function (c) { c.onFilter(filterFunc); });
@@ -124,106 +198,177 @@
 					rv.setConfig({enableForce: !rv.config.enableForce});
 				}, false);
 
+			document.querySelector('#star-view-drawer .drawer-tab')
+				.addEventListener('click', function (e) {
+					if (this.parentNode.classList.contains('hide'))
+						this.parentNode.classList.remove('hide')
+					else
+						this.parentNode.classList.add('hide')
+				}, false);
+
 			// Searchbar
 			AwesompleteUtil.start('#search-artist',
-				 {  /* util options */
+				{  /* util options */
 				   url:    "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot/search?searchString=",
 				   urlEnd: "*",
 				   limit: 1
-				 }, 
-				 {  /* awesomplete options */
+				}, 
+				{  /* awesomplete options */
 				   minChars: 1,
-				   data: (rec, input) => {
-
-				   	return { 
+				   data: (rec, input) => ({ 
 			         label: rec['name'], 
 			         value: rec['id']
-			       };
-
-				  }
-				 }
+			       })
+				}
 			);
 
+			let urlParams = new URLSearchParams(window.location.search);
+			function loadArtistsFromUrl(array, fn) {
+				// FIXME keep ordering consistent
+				return Promise.all(array.map(d => appendArtistData(d)))
+				// var index = 0;
+				// function next() {
+				// 	if (index < array.length) {
+				// 		fn(array[index++]).then(next);
+				// 	}
+				// }
+				// return new Promise(function (resolve, reject) {
+				// 	// FIXME promise doesn't work
+				// 	next();
+				// })
+			}
+
+			window.onpopstate = function () {
+				let urlParams = new URLSearchParams(window.location.search);
+				let artistsInUrl = urlParams.getAll('q');
+				let artistsInDataset = data.map(d => d.id);
+				let artistsEnter = artistsInUrl.filter(n => !artistsInDataset.includes(n));
+				let artistsExit = artistsInDataset.filter(n => !artistsInUrl.includes(n));
+
+				loadArtistsFromUrl(artistsEnter, appendArtistData);
+				artistsExit.forEach(removeArtistDataById);
+			}
+
+			loadArtistsFromUrl(urlParams.getAll('q'), appendArtistData).then(function () { console.log('done') });
+
 			// Listen to searchbar selection
+			// TODO: If more than 4 selections, provide an alert
 			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
 
 			    // Clear the searchbar to be ready for a new search
 			    document.getElementById('search-artist').value = "";
 
 			    // Retrieve songs for this artist from our API
-			    var artistID = event.text.value;
-			    appendArtistData(artistID);
+				var artistID = event.text.value;
+				console.log(artistID);
+				
+				appendArtistData(artistID).then(function () {
+					document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
+					history.pushState({}, 'MusicOctoRobot - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
+				});
 			});
 
 			// helpers
-			function preprocessData (files) {
-				// inner join
-				var data = arrayJoin(files[0], files[1].tracks, 'id');
+			function preprocessData (data) {
 				data.forEach(function (d) {
-					d.duration = d.duration_ms / 1000;
-					d.release_year = d.album.release_date.indexOf('-') < 0 ?
-						+d.album.release_date :
-						+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
+					if (d.duration_ms)
+						d.duration = d.duration_ms / 1000;
+					if (d.album && d.album.release_date)
+						d.release_year = d.album.release_date.indexOf('-') < 0 ?
+							+d.album.release_date :
+							+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
 				})
-				return data;
 			}
 
-			function arrayJoin (a, b, key) {
-				var bKeys = b.map(y => y[key]);
-				var abJoined = a.map(function (x) {
-					var bIndex = bKeys.indexOf(x[key])
-					if (bIndex >= 0) {
-						return {...x, ...b[bIndex]};
-					} else {
-						return false;
-					}
-				});
-
-				return abJoined.filter(x => x !== false);
-			}
-
-			function loadData(src1, src2) {
-				Promise.all([
-	                // d3.json('../../data/Spotify.json'),
-	                // d3.json('../../data/Spotify_trackinfo.json'),
-	                // d3.json('data/slotmachine.json'),
-	                // d3.json('data/slotmachine_trackinfo.json'),
-	                //d3.json("data/radiohead.json"),
-					//d3.json("data/radiohead_trackinfo.json"),
-					d3.json(src1),
-					d3.json(src2)
-					// d3.json("data/spoegwolf.json"),
-					// d3.json("data/spoegwolf_trackinfo.json")
-	            ]).then(function(loadedData) {
-	            	// TODO: change data loading to use searchbar
-					data = preprocessData(loadedData);
-					console.log(data);
-
-					components.forEach(function (c) { c.onDataChanged(data); });
-				});
-			}
+			// NOTE arrayJoin was moved to utils.js
 
 			// Loads an array of song data for the given artistID and append that to our dataset
 			function appendArtistData(artistID) {
+				// FIXME limit number of collections
+
+				if (artistID.indexOf('spotify:artist:') >= 0)
+					artistID = artistID.substring('spotify:artist:'.length)
+				
 				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID;
 
-				d3.json(url).then((data) => {
-					
-					// Append to data array
-					newData.push(data);
+				return new Promise(function (resolve, reject) {
+					d3.json(url).then((loadedData) => {
 
-					console.log(newData);
-				}).catch((error) => console.log(error));
+						preprocessData(loadedData.songs);
+						// console.log(loadedData);
+
+						// Append to data array
+						data.push(loadedData);
+
+						// redraw artist buttons
+						drawArtistButtons();
+
+						// trigger a data change for the histograms
+						components.forEach(function (c) { c.onDataChanged(data); });
+						resolve();
+
+					})//.catch((error) => console.error(error));
+				});
 			}
 
 			// Removes the data for the artist at index i from the dataset
 			function removeArtistData(i) {
-				newData.splice(i, 1);
+
+				// remove data from array
+				data.splice(i, 1);
+
+				// redraw artist buttons
+				drawArtistButtons();
+
+				// trigger a data change for the histograms
+				components.forEach(function (c) { c.onDataChanged(data); });
+				document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
+				history.pushState({}, 'MusicOctoRobot - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
 			}
 
-			// Clears all selected artist data
-			function clearArtistData() {
-				newData = [];
+			// Removes the data for the artist from the dataset by artist id
+			function removeArtistDataById(id) {
+				let removeIndex = data.map(d => d.id).indexOf(id);
+				if (removeIndex>= 0)
+					removeArtistData(removeIndex);
+			}
+
+			function drawArtistButtons() {
+				// TODO @Ben, can we draw the artist button 
+				// immediately after the artist is selected and have like a spinner to show loading instead?
+				// the current behavior that the feedback for artist loading is not immediate can make it a little confusing
+
+				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef']; // color scheme
+
+				console.log(data);
+
+				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(data);
+
+				// enter
+				let selectionEnter = selection.enter()
+						.append("div");
+
+				selectionEnter.attr("class", "artist-btn")
+						.attr("data-id", d => d.id)
+						.style("border-left", (d, i) => "12px solid " + colors[i])
+						.text((d) => d["name"])
+						.on('mouseover', function (d, i) {
+							dispatch.call('highlight', this, k => k.collection_id == d.id);
+						})
+						.on('mouseout', function (d, i) {
+							dispatch.call('highlight', this, k => true);
+						});;
+				selectionEnter.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
+						
+
+				// update
+				selection.style("border-left", (d, i) => "12px solid " + colors[i]).text((d) => d["name"])
+						.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));;
+
+				selection.merge(selectionEnter);
+
+				// exit
+				selection.exit().remove();
 			}
 
 
