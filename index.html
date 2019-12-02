@@ -18,9 +18,10 @@
     <body>
 		<!-- TODO remove inline CSS -->
         <div class="container-main container-row">
-			<div style="width: 25%;" class="cell container-col">
+			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
 				<h1>MusicOctoRobot</h1>
-				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search artists..." />
+				<h2>I'm interested in...</h2>
+				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search an artist / album / playlist..." />
 
 				<br>
 
@@ -113,30 +114,29 @@
 						Other songs similar to your selection:
 					</div>
 				</div>
-				<div class="text-center cell drawer-tab">
-					<!-- placeholder -->
+				<!--<div class="text-center cell drawer-tab">
 					Drag a song here for more details
-				</div>
+				</div>-->
             </div>
 			<div style="width: 25%;" class="cell container-col">
-				<h2>Distribution of songs by song features</h2>
+				<h2>Song features</h2>
 				<svg id="histogram-view" class="grow" overflow="visible"></svg>
             </div>
 		</div>
 		<div id="star-view-drawer" class="container-col hide">
 			<div id="drop-area" class="text-center cell drawer-tab">
 				<!-- <h2>Detailed Analysis</h2> -->
-				<div>
-					Drag a song here for more details / X Songs in Comparison
+				<div id="starTitleLabel">
+					Drag a song here for more details
 				</div>
-				<!-- <div>
+				<!--<div>
 					2 Songs in Comparison [TODO: show number of songs in comparison]
-				</div> -->
+				</div>-->
 			</div>
-			<!-- <div style="grow"> -->
-				<h2 class="mt-0">Song-by-song Comparison</h2>
+		    <div class="grow">
+				<!--<h2 class="mt-0">Song-by-song Comparison</h2>-->
 				<svg id="star-view" class="grow" overflow="visible"></svg>
-			<!-- </div> -->
+			</div>
 		</div>
 
 		<div class="help-tooltip hide">
@@ -166,7 +166,7 @@
 			var rv
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
-			//components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
+			// components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
 
             // Load data and call onDataChanged for components once load is complete
 
@@ -252,6 +252,7 @@
 			loadArtistsFromUrl(urlParams.getAll('q'), appendArtistData).then(function () { console.log('done') });
 
 			// Listen to searchbar selection
+			// TODO: If more than 4 selections, provide an alert
 			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
 
 			    // Clear the searchbar to be ready for a new search

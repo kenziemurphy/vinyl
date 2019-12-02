@@ -29,6 +29,7 @@
 
 #star-view {
   height: 450px;
+  /*pointer-events: none;*/
 }
 
 #target {
@@ -43,33 +44,46 @@
 }
 .star-title {
   font-size: 18px;
-  fill: #fff;
+  font-family: proxima-nova, sans-serif;
+  fill: #f4f4f4;
 }
 .star-label {
   font-size: 14px;
-  color: #fff;
-  fill: #fff;
-  fill-opacity: 0.3;
+  font-family: proxima-nova, sans-serif;
+  color: #f4f4f4;
+  fill: #f4f4f4;
+  /*fill-opacity: 0.3;*/
   pointer-events: none;
 }
 .star-remove {
   font-size: 18px;
-  fill: #fff;
+  font-family: proxima-nova, sans-serif;
+  fill: #f4f4f4;
   fill-opacity: 0.3;
 }
+.star-categories {
+  font-size: 14px;
+  font-family: proxima-nova, sans-serif;
+  fill: #f4f4f4;
+}
 .star-origin {
-  fill: #ffffff;
+  fill: #f4f4f4;
 }
 .star-axis {
-  stroke: #ffffff;
-  stroke-opacity: 0.3;
-  stroke-width: 2px;
-  stroke-dasharray: 4 10;
+  stroke: #f4f4f4;
+  /*stroke-opacity: 0.1;*/
+  stroke-width: 1px;
 }
 .star-path {
-  stroke: #ffffff;
+  stroke: #f4f4f4;
   stroke-width: 5px;
-  fill: #ffffff;
+  fill: #f4f4f4;
+  fill-opacity: 0;
+}
+.star-grid {
+  stroke: #f4f4f4;
+  stroke-opacity: 0.1;
+  stroke-width: 1px;
   fill-opacity: 0;
 }
 .star-interaction {
@@ -80,11 +94,11 @@
 }
 .interaction.label {
   position: absolute;
-  font-size: 11px;
+  font-size: 14px;
   text-shadow: 0 1px 0 #FFF, 0 -1px 0 #FFF, 1px 0 #FFF, -1px 0 #FFF;
 }
-.interaction.circle {
+/*.interaction.circle {
   fill: #444;
   fill-opacity: 0.6;
   stroke: #444;
-}
+}*/

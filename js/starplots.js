@@ -1,27 +1,30 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
-var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "popularity"]; // Edit this for more histograms
+var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 //const starCircleRadius = 50;
 //const starRadius = 120;
-const spacing = 100;
+//const spacing = 100;
 //const labelMargin = 20;
 
 var margin = {
     top: 80,
-    left: 50,
-    right: 50
+    left: 150,
+    right: 150
 };
+const labelMargin = 20;
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
 
 var dataArray = [];
-var starCircleRadius, starRadius;
+var starCircleRadius, starRadius, spacing;
 
 var flag = 1;
+var removeIndex;
 
 
 class StarView {
-    constructor (svg, data = []) {
+    constructor (svg, data, dispatch) {
         // @Shelly
         
         // init here
@@ -31,6 +34,7 @@ class StarView {
             .append('svg');*/
         this.svg = svg;
         this.data = data;
+        this.dispatch = dispatch;
         console.log('init');
         
 
@@ -39,20 +43,28 @@ class StarView {
     onDataChanged (newData) {
         this.data = newData;
         this.radiusCal(window.innerWidth);
-        console.log("starRadius", starRadius);
-        console.log("starCircleRadius", starCircleRadius);
+        // console.log("starRadius", starRadius);
+        // console.log("starCircleRadius", starCircleRadius);
         
-        if (flag)
-            dataArray.push(newData);
+        if (flag){
+            if(dataArray.length < 4)
+                dataArray.push(newData);
+            else
+                alert("4 songs is the maximum for comparison");
+        }
+            
+            
         else{
-            dataArray.pop(newData);
+            //dataArray.pop(newData);
+            dataArray.splice(removeIndex, 1);
             flag = 1;
         }
         //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
+        this.titleUpdate();
 
         if(dataArray.length >= 1){
-            console.log("dataArray", dataArray);
+            console.log("dataArray", dataArray);       
             this.redraw();
         }
 
@@ -73,30 +85,50 @@ class StarView {
         console.log('onHighlight');
     }
 
+    titleUpdate (){
+        if(dataArray.length == 0)
+            document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details";
+        else if(dataArray.length >= 1 && dataArray.length < 4)
+            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison. Drag more songs here for more details";
+        else
+            document.getElementById("starTitleLabel").innerHTML = "4 Songs in Comparison";
+        
+    }
+
     radiusCal (width){
-        console.log(width);
-        starCircleRadius = (width - margin.left - margin.right * 2 - spacing * 3) / (8 * 3);
+        //console.log(width);
+        starCircleRadius = (width - margin.left - margin.right - 60) / 36;
         starRadius = starCircleRadius * 2;
+        spacing = starCircleRadius * 4;
 
     }
 
     redraw() {
+        this.preprocess();
+        //this.initGrid();
         this.drawTitle();
-        this.drawGuideLines();
-        this.drawStarPath();
+        
         this.drawLabel();
-
         this.drawCircle();
+        this.drawStarPath();
+        this.drawGuideLines();
+
+        //this.drawCategories();
 
     }
 
+    preprocess() {
+        dataArray.forEach(function(d, i){
+            d.popularity = d.popularity / 100;
+        })
+    }
+
     drawTitle() {
-        var titles = this.svg.append('g')
-            .selectAll('text')
+        var texts = this.svg.selectAll('text')
             .data(dataArray)
             .enter();
 
-        var titleLabel = titles.append('text')
+        var titleLabel = texts.append('text')
             .attr('class', 'star-title')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
@@ -105,13 +137,17 @@ class StarView {
                 return "translate(" + center_x + "," + center_y + ")";
             })
             .attr('text-anchor', 'middle')
-            .text(d => d.name);
+            .text(function(d){
+                if(d.name.length > 25)
+                    return d.name.substring(0,25) + "...";
+                else
+                    return d.name;
+            });
 
-        // FIXME bug: if you pick more than one song and click 'x' to remove the first, the second one will be removed instead
-        var cross = titles.append('text')
+        var cross = texts.append('text')
             .attr('class', 'star-remove')
             .attr('transform', function(d, i){
-                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i;
+                var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i + 30;
                 var center_y = 20;
                 return "translate(" + center_x + "," + center_y + ")";
             })
@@ -119,8 +155,32 @@ class StarView {
             .text('x')
             .on('click', function(d, i){
                 flag = 0;
+                removeIndex = i;
+                console.log("remove", i);
                 new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
             });
+
+        var category = texts.append('text')
+            .attr('class', 'star-categories')
+            .attr('transform', function(d, i){
+                var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 30;
+                //console.log(d.name);
+                return "translate(" + center_x + "," + center_y + ")";
+            })
+            .attr('text-anchor', 'middle');
+
+        for (var num = 0; num < categories.length; num++){
+            //console.log(num);
+            category.append('svg:tspan')
+                .attr('x', 0)
+                .attr('dy', 20)
+                .text(function(d){
+                    //console.log(d[categories[num]]);
+                    return categories[num] + ': ' + d[categories[num]];
+                });
+        }
+            
     }
 
     drawCircle() {
@@ -147,11 +207,11 @@ class StarView {
             .attr("height", starCircleRadius)
             .attr("xlink:href", d => d.images[2].url)
 
-        var circles = this.svg.append("g")
-            .selectAll("circle")
+        var circles = this.svg.selectAll("circle")
             .data(dataArray)
-            .enter()
-            .append("circle")
+            .enter();
+
+        var circle_image = circles.append("circle")
             .attr("cx", function(d, i){ 
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                 return center_x; 
@@ -180,11 +240,25 @@ class StarView {
             //})
             .on("mouseout", this.playClip('mouseout'));
 
+        for(var num = 0; num < 5; num ++){
+            circles.append("circle")
+                .attr('class', 'star-grid')
+                .attr("cx", function(d, i){ 
+                    var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+                    return center_x; 
+                })
+                .attr("cy", function(d, i){ 
+                    var center_y = margin.top + starRadius + starCircleRadius;
+                    return center_y; 
+                })
+                .attr("r", 7/5*starCircleRadius + 2*num*starCircleRadius/5);
+        }
+
     }
 
     playClip(action) {
         let _this = this;
-        console.log("mouseover");
+        //console.log("play");
         if (action == 'mouseover') {
 
             return function (d, i) {
@@ -212,45 +286,111 @@ class StarView {
         var radians = 2 * Math.PI / dimensions.length;
 
         //dimensions.forEach(function(d, i){
-        for(var i = 0; i < dimensions.length; i ++){
+        for(var num = 0; num < dimensions.length; num ++){
             var x1, x2, y1, y2;
             x1 = starCircleRadius * Math.cos(r);
             x2 = (starRadius + starCircleRadius) * Math.cos(r);
             y1 = starCircleRadius * Math.sin(r);
             y2 = (starRadius + starCircleRadius) * Math.sin(r);
 
-            var lines = this.svg.append('g')
-                .selectAll('line')
+            var lines = this.svg.selectAll('line')
                 .data(dataArray)
                 .enter()
                 .append('line')
+                .attr('id', function(d, i){
+                    return 'grid_' + i + '_' + num;
+                })
                 .attr('class', 'star-axis')
                 .attr('transform', function(d, i){
                     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                     var center_y = margin.top + starRadius + starCircleRadius;
                     return 'translate(' + center_x + ',' + center_y + ')';
                 })
+                .attr('stroke-opacity', 0.1)
                 .attr('x1', x1)
                 .attr('x2', x2)
                 .attr('y1', y1)
                 .attr('y2', y2);
-                /*.on('mouseoever', function(d){
-                    console.log("line mouseover");
-                });*/
+                // .on('mouseover',function(d, i){
+                //     console.log("mouseover", d);
+                //     // console.log(dimensions[num]);
+                //     d3.select(this)
+                //         .attr("stroke-opacity", 1);
+                //     // d3.select('#grid_' + i + '_' + num)
+                //     //     .attr({stroke-opacity: 1});
+                //         //.style('stroke-opacity', 1);
+                //     //d3.select(this).attr({'stroke-opacity': 1});
+
+                //     // d3.select('.star-label')
+                //     // // d3.select('#label_' + i + '_' + num)
+                //     //     .attr('fill-opacity', 1)
+                //     //     .text(dimensions[num] + ": " + d[dimensions[num]]);
+
+
+                // })
+                // .on('mouseout', function(d, i){
+                //     // d3.select(this).attr({
+                //     //     stroke-opacity: 0.1;
+                //     // })
+                //     // d3.select('#grid_' + i + '_' + num)
+                //     //     .style('stroke-opacity', 0.1);
+                //     d3.select(this)
+                //         .attr('stroke-opacity', 0.1);
+                // });
+
+                // var interaction = wrapper.selectAll('.interaction')
+                //     .style('display', 'none');
+
+                //   svg.selectAll('.star-interaction')
+                //     .on('mouseover', function(d) {
+                //       svg.selectAll('.star-label')
+                //         .style('display', 'none')
+
+                //       interaction
+                //         .style('display', 'block')
+
+                //       circle
+                //         .attr('cx', d.x)
+                //         .attr('cy', d.y)
+
+                //       $interactionLabel = $(interactionLabel.node());
+                //       interactionLabel
+                //         .text(d.key + ': ' + d.datum[d.key])
+                //         .style('left', d.xExtent - ($interactionLabel.width() / 2))
+                //         .style('top', d.yExtent - ($interactionLabel.height() / 2))
+                //     })
+                //     .on('mouseout', function(d) {
+                //       interaction
+                //         .style('display', 'none')
+
+                //       svg.selectAll('.star-label')
+                //         .style('display', 'block')
+                //     })
 
             r += radians;
         }
     }
 
+    // handleMouseOver() {
+    //     console.log("mouseover", d);
+    //     //d3.select(#)
+    // }
+
+
+
+    /*
+    TODO: Fix the tooltip bug
+    */
     drawLabel() {
         var r = 0;
         var radians = 2 * Math.PI / dimensions.length;
 
         for(var num =0; num < dimensions.length; num ++){
             var l, x, y;
-            l = starCircleRadius + starRadius + 20;
-            x = l * Math.cos(r);
-            y = l * Math.sin(r);
+
+            l = starCircleRadius + starRadius;
+            x = (l + labelMargin) * Math.cos(r);
+            y = (l + labelMargin) * Math.sin(r);
 
             var texts = this.svg.append('g')
                 .selectAll('text')
@@ -262,20 +402,42 @@ class StarView {
                     return 'translate(' + center_x + ',' + (2*i+1) * center_y + ')';
                 })*/
                 .attr('transform', function(d, i){
-                    let angle = num / dimensions.length * 360 - 90;
+                    // let angle = num / dimensions.length * 360 - 90;
                     /*let selfAngle = angle + 90;
                     if(selfAngle > 90 && selfAngle < 270){
                         selfAngle += 180;
                     }*/
-                    if(angle > 90 && angle < 270) {
-                        angle += 180;
-                    }
+                    // if(angle > 90 && angle < 270) {
+                    //     angle += 180;
+                    // }
                     //console.log("angle", selfAngle);
                     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                     var center_y = margin.top + starRadius + starCircleRadius;
-                    return 'translate(' + (center_x + x) + ',' + (center_y + y) + ') rotate(' + angle + ')';
+                    return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
                 })
-                .text(dimensions[num]);
+                .attr('id', function(d, i){
+                    return "label_" + i + "_" + num;
+                })
+                .attr('fill-opacity', 0.3)
+                .text(dimensions[num])
+                .style('text-anchor', 'middle')
+                .attr('alignment-baseline', 'baseline')
+                //.style('dominant-baseline', 'central')
+                .call(addHelpTooltip(dimensions[num]));
+            // console.log("something", `text.label.grid-axis-label.${dimensions[num]}#axis-label-${num}`);
+
+            // selectAllOrCreateIfNotExist(this.svg.data(dataArray).enter(), `text.label.grid-axis-label.dimensions[num]#axis-label-${num}`)
+            //     .attr('text-anchor', 'middle')
+            //     .attr('alignment-baseline', 'baseline')
+            //     .attr('dominant-baseline', 'central')
+            //     .attr('transform', function(d, i){
+            //         var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+            //         var center_y = margin.top + starRadius + starCircleRadius;
+            //         return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
+            //     })
+            //     .text(dimensions[num])
+            //     .call(addHelpTooltip(dimensions[num]));
+
             r += radians;
         }
         
@@ -305,8 +467,7 @@ class StarView {
             return pathData;
         }
 
-        var stars = this.svg.append('g')
-            .selectAll('path')
+        var stars = this.svg.selectAll('path')
             .data(dataArray)
             .enter()
             .append('path')
@@ -321,9 +482,6 @@ class StarView {
             });
 
     }
-
-
-
     
 
 

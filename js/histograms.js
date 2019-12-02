@@ -142,11 +142,11 @@ class HistogramView {
         .attr('alignment-baseline', 'baseline')
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')')
         .text(xLabel)
-        .call(addHelpTooltip(xLabel.toLowerCase()));;
+        .call(addHelpTooltip(xLabel.toLowerCase()));
 
     // update
     xAxisG.transition(d3.transition().duration(750)).call(xAxis);
-    yAxisG.transition(d3.transition().duration(750)).call(yAxis);  
+    yAxisG.transition(d3.transition().duration(750)).call(yAxis);
 
     histogramG = histogramG.merge(histogramGEnter);
 
@@ -193,7 +193,7 @@ class HistogramView {
           }).on("mouseout", (d) => {
                 _this.dispatch.call('highlight', this, k => true);
           });
-    
+
     // update
     rectangles.transition(d3.transition().duration(750))
           .attr("y", d => y(d[1]))
@@ -248,11 +248,11 @@ class HistogramView {
               .domain([0, 1])
               .range([52, 285]);
             }
-          
+
           _this.drawHistogram(_this.stackData(realDimensions[i]), i);
         }
       }
-    }      
+    }
   }
 
     onDataChanged (newData) {
@@ -293,7 +293,7 @@ class HistogramView {
 
                  /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical song id we want to highlight.
                     Or (d) => d.collection_id == s.id where s.id is the id of a collection we want to highlight all the songs of
-                    Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...] 
+                    Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...]
                     so those filtering functions can operate on it.
                 */
                 idsInBin = idsInBin.map((d) => {
