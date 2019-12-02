@@ -157,6 +157,7 @@ class RadialView {
     */
     onDataChanged (newData) {
         let _this = this
+        console.log('new data', newData);
 
         // update split view
         if (this.isSplitting) {
@@ -612,7 +613,7 @@ class RadialView {
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
             // FIXME get album art once the api has been fixed
-            .attr("xlink:href", d => d.album) //d.album.images[2].url)
+            .attr("xlink:href", d => d.images[2].url)
     
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
@@ -710,7 +711,7 @@ class RadialView {
             }
         } else if (action == 'click') {
             return function (d, i, m) {
-                if (!_this.selectedSong || !this.selectedSong.audio) {
+                if (!_this.selectedSong || !_this.selectedSong.audio) {
                     _this.selectSong(d);
                     _this.songToolTip.show(d, this);
                 }
@@ -742,8 +743,12 @@ class RadialView {
                     _this.dispatch.call('highlight', this, function (k) {
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
                         let isInFilter = true;
-                        if (!d3.select('input#search-highlight').classed('disabled'))
-                            isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                        if (!d3.select('input#search-highlight').classed('disabled')) {
+                            if (k.name)
+                                isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                            else
+                                isInFilter = false;
+                        }
                         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
                         return isTheSelectedSong || isInFilter// || isSimilarSong;
                     });
