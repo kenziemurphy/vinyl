@@ -95,44 +95,6 @@ class RadialView {
         this.svg.call(this.songToolTip);
 
         let _this = this;
-        d3.selectAll('#select-x-axis')
-            .on('change', function () {
-                let selectedOption = this.options[this.selectedIndex];
-                _this.setConfig({
-                    xMapping: {
-                        key: selectedOption.value,
-                        scaleType: selectedOption.getAttribute('data-scale-type'),
-                        minOverride: selectedOption.getAttribute('data-scale-min') || false,
-                        maxOverride: selectedOption.getAttribute('data-scale-max') || false,
-                        isRadial: selectedOption.getAttribute('data-radial') || false
-                    }
-                });
-            });
-        d3.selectAll('#select-y-axis')
-            .on('change', function () {
-                let selectedOption = this.options[this.selectedIndex];
-                _this.setConfig({
-                    yMapping: {
-                        key: selectedOption.value,
-                        scaleType: selectedOption.getAttribute('data-scale-type'),
-                        minOverride: selectedOption.getAttribute('data-scale-min') || false,
-                        maxOverride: selectedOption.getAttribute('data-scale-max') || false,
-                        isRadial: selectedOption.getAttribute('data-radial') || false
-                    }
-                });
-            });
-        d3.selectAll('#search-highlight')
-            .on('keyup', function () {
-                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
-            })
-            .on('click', function () {
-                this.classList.remove('disabled')
-                this.select();
-                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
-            });
-
-        // handler for clicking outside of a song
-        // FIXME
         d3.select('body').on('click', function () {
             function equalToEventTarget() {
                 return this == d3.event.target;
@@ -241,6 +203,10 @@ class RadialView {
         }
 
         this.redraw();
+    }
+
+    getConfig () {
+        return this.config;
     }
 
     /**
@@ -433,7 +399,7 @@ class RadialView {
             3: [
                 [this.W / 4, this.H / 4 + 20],
                 [this.W * 3 / 4, this.H / 4 + 20],
-                [this.W / 2, this.H * 3 / 4 - 50],
+                [this.W / 2, this.H * 3 / 4 - 20],
             ],
             4: [
                 [this.W / 4, this.H / 4 - 10],
