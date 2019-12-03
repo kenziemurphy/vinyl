@@ -138,7 +138,7 @@ class RadialView {
                 return this == d3.event.target;
             }
 
-            var outsideDot = d3.selectAll('.song.active .dot').filter(equalToEventTarget).empty();
+            var outsideDot = d3.selectAll('.song.active *').filter(equalToEventTarget).empty();
             var outsideButton = d3.selectAll('.vis-control').filter(equalToEventTarget).empty();
             if (outsideDot && outsideButton) {
                 d3.select('input#search-highlight').classed('disabled', true);
@@ -279,21 +279,23 @@ class RadialView {
     redraw () {
         this.recomputeConsts();
 
-        //IF you REALLY want to actually draw a vinyl record...
+        // //IF you REALLY want to actually draw a vinyl record...
         // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         // d3.selectAll('g.vinyl').remove();
-        // for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-        //     let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
-        //         .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
-        //     let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
-        //         .attr('r', this.SCALE_Y.range()[1])
-        //         .style('fill', '#111111');
-        //     let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
-        //         .attr('r', this.SCALE_Y.range()[0])
-        //         .style('fill', this.COLOR_SCHEME[i]);
-        //     let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
-        //         .attr('r', this.SCALE_Y.range()[0] / 20)
-        //         .style('fill', '#212039');
+        // if (this.useRadialScale()) {
+        //     for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+        //         let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
+        //             .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+        //         let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+        //             .attr('r', this.SCALE_Y.range()[1])
+        //             .style('fill', '#111111');
+        //         let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
+        //             .attr('r', this.SCALE_Y.range()[0])
+        //             .style('fill', this.COLOR_SCHEME[i]);
+        //         let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
+        //             .attr('r', this.SCALE_Y.range()[0] / 20)
+        //             .style('fill', '#212039');
+        //     }
         // }
 
         // draw grid
@@ -529,7 +531,7 @@ class RadialView {
                         .attr('opacity', s => s.similarity)
                         .attr('x1', s => s.source.x)
                         .attr('y1', s => s.source.y)
-                        .transition(d3.transition().duration(70))
+                        // .transition(d3.transition().duration(70))
                         .attr('x2', s => s.song.x)
                         .attr('y2', s => s.song.y)
                 });
@@ -594,6 +596,7 @@ class RadialView {
                     if (dropTarget.size() > 0 && dropTarget.attr("id") == dropTargetId) {
                         let starViewDrawer = d3.select(dropTarget.node().parentNode);
                         starViewDrawer.classed('hide', false);
+                        d3.select('#veil').classed('hide', false);
                         // if (this.parentNode.classList.contains('hide'))
                         //     this.parentNode.classList.remove('hide')
                         // else
@@ -625,7 +628,11 @@ class RadialView {
             .append('circle')
             .attr('class', 'dot pulse')
             
-        songGEnter.on("mouseover", this.mouseActions('mouseover'))
+        var dotHoverArea = songGEnterInner.append('circle')
+            .attr('class', 'hover-area')
+            // .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+
+        dotHoverArea.on("mouseover", this.mouseActions('mouseover'))
             .on("click", this.mouseActions('click'))
             .on("mouseout", this.mouseActions('mouseout'));
 
@@ -680,6 +687,10 @@ class RadialView {
         songG.merge(songGEnter)
             .selectAll('circle.dot')
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
+
+        songG.merge(songGEnter)
+            .selectAll('.hover-area')
+            .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
     
         songG.exit().remove();
     }
@@ -692,7 +703,8 @@ class RadialView {
     mouseActions (action) {
         let _this = this;
         if (action == 'mouseover') {
-            return function (d, i) {
+            return function (d, i, m) {
+                d3.select(m[i].closest('.song')).classed('hover', true);
                 if (d.isDragging) return;
                 
                 if (!_this.selectedSong) {
@@ -707,13 +719,13 @@ class RadialView {
                     });
                 }
 
-                _this.songToolTip.show(d, this);
+                _this.songToolTip.show(d, this.parentNode);
             }
         } else if (action == 'click') {
             return function (d, i, m) {
                 if (!_this.selectedSong || !_this.selectedSong.audio) {
                     _this.selectSong(d);
-                    _this.songToolTip.show(d, this);
+                    _this.songToolTip.show(d, this.parentNode);
                 }
 
                 if (_this.selectionLocked) {
@@ -723,35 +735,37 @@ class RadialView {
                     } else {
                         _this.resetSelection();
                         _this.selectSong(d);
-                        _this.songToolTip.show(d, this);
-                        m[i].closest('.song').classList.add('active');
+                        _this.songToolTip.show(d, this.parentNode);
+                        d3.select(m[i].closest('.song')).classed('active', true)
                         _this.selectedSong = d;
                     }
                 } else {
                     _this.selectionLocked = true;
-                    m[i].closest('.song').classList.add('active');
+                    // d3.select(this).classed('active', true);
+                    d3.select(m[i].closest('.song')).classed('active', true)
                     _this.selectedSong = d;
                 }
                 
             }
         } else if (action == 'mouseout') {
-            return function (d, i) {
+            return function (d, i, m) {
+                d3.select(m[i].closest('.song')).classed('hover', false);
                 if (!_this.selectionLocked) {
                     _this.resetSelection();
                 } else {
-                    _this.songToolTip.hide({}, this);
-                    _this.dispatch.call('highlight', this, function (k) {
-                        let isTheSelectedSong = k.id == _this.selectedSong.id;
-                        let isInFilter = true;
-                        if (!d3.select('input#search-highlight').classed('disabled')) {
-                            if (k.name)
-                                isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
-                            else
-                                isInFilter = false;
-                        }
-                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
-                        return isTheSelectedSong || isInFilter// || isSimilarSong;
-                    });
+                    _this.songToolTip.hide({}, this.parentNode);
+                    // _this.dispatch.call('highlight', this, function (k) {
+                    //     let isTheSelectedSong = k.id == _this.selectedSong.id;
+                    //     let isInFilter = true;
+                    //     if (!d3.select('input#search-highlight').classed('disabled')) {
+                    //         if (k.name)
+                    //             isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                    //         else
+                    //             isInFilter = false;
+                    //     }
+                    //     // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                    //     return isTheSelectedSong || isInFilter// || isSimilarSong;
+                    // });
                 }
             }
         }

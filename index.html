@@ -114,15 +114,18 @@
 						Other songs similar to your selection:
 					</div>
 				</div>
-				<!--<div class="text-center cell drawer-tab">
+				<!-- <div class="text-center cell drawer-tab">
 					Drag a song here for more details
-				</div>-->
+				</div> -->
             </div>
 			<div style="width: 25%;" class="cell container-col">
 				<h2>Song features</h2>
 				<svg id="histogram-view" class="grow" overflow="visible"></svg>
             </div>
 		</div>
+		
+		<div id="veil" class="veil hide"></div>
+
 		<div id="star-view-drawer" class="container-col hide">
 			<div id="drop-area" class="text-center cell drawer-tab">
 				<!-- <h2>Detailed Analysis</h2> -->
@@ -139,6 +142,7 @@
 			</div>
 		</div>
 
+		
 		<div class="help-tooltip hide">
 			<h3 class="help-title">Test Help Tooltip</h3>
 			<p class="help-body">This is a test help message on the help tooltip. This is a test help message on the help tooltip. This is a test help message on the help tooltip.</p>
@@ -198,13 +202,46 @@
 					rv.setConfig({enableForce: !rv.config.enableForce});
 				}, false);
 
-			document.querySelector('#star-view-drawer .drawer-tab')
-				.addEventListener('click', function (e) {
-					if (this.parentNode.classList.contains('hide'))
-						this.parentNode.classList.remove('hide')
-					else
-						this.parentNode.classList.add('hide')
+			d3.select('#star-view-drawer .drawer-tab')
+				.on('click', function (e) {
+					let drawer = this.parentNode;
+					d3.select(drawer).classed('hide', !d3.select(drawer).classed('hide'));
+					d3.select('#veil').classed('hide', d3.select(drawer).classed('hide'))
+						.on('click', function () {
+							d3.select(drawer).classed('hide', true);
+							d3.select('#veil').classed('hide', true);
+							d3.select('#veil').on('click', null);
+						});
 				}, false);
+
+
+			// d3.selectAll('#star-view-drawer .drawer-tab')
+			// 	.data([{}])
+			// 	.call(d3.drag()
+			// 		.on('start', function(d) {
+			// 			d.startX = d3.event.x;
+			// 			d.startY = d3.event.y;
+			// 		})
+			// 		.on('drag', function (d) {
+			// 			console.log(d.startY, d3.event.y);
+			// 			this.parentNode.style.bottom = (d.startY - d3.event.y) + 'px';
+			// 		})
+			// 		.on('end', function () {
+			// 			console.log(this.parentNode.style.bottom);
+			// 			let offsetBottom = parseInt(this.parentNode.style.bottom, 10);
+			// 			if (offsetBottom > -80) {
+			// 				d3.select(this.parentNode)
+			// 					.transition()
+			// 					.style('bottom', '');
+			// 				this.parentNode.classList.remove('hide');
+			// 			} else {
+			// 				d3.select(this.parentNode)
+			// 					.transition()
+			// 					.style('bottom', '');
+			// 				this.parentNode.classList.add('hide');
+			// 			}
+			// 		})
+			// 	)
 
 			// Searchbar
 			AwesompleteUtil.start('#search-artist',

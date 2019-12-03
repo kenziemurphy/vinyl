@@ -54,6 +54,10 @@ var HELP_PRESETS = {
     'valence': {
         title: 'Valence',
         body: `A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).`
+    },
+    'popularity': {
+        title: 'Popularity',
+        body: 'A measure from 0 to 100 calculated by Spotify\'s algorithm which signifies how much the track has been played and how recent the plays are.'
     }
 };
 
@@ -92,16 +96,40 @@ function addHelpTooltip (helpContent) {
                 }
             })
             .on('mouseover', function (d) {
-                console.log('!!')
                 let tooltip = d3.select('.help-tooltip')
-                    .classed('hide', false)
-                    .style('left', d3.event.pageX + 'px')
-                    .style('top', d3.event.pageY + 'px')
-                    tooltip.select('.help-title')
-                    .text(d.helpTitle)
-                    tooltip.select('.help-body')
-                    .text(d.helpBody)
-                })
+        
+                tooltip.select('.help-title')
+                .text(d.helpTitle)
+                tooltip.select('.help-body')
+                .text(d.helpBody)
+        
+                
+                tooltip.classed('hide', false)
+                    .style('left', function () {
+                        if (d3.event.pageX + this.clientWidth > document.body.clientWidth)
+                            return 'auto'
+                        else
+                            return d3.event.pageX + 'px'
+                    })
+                    .style('right', function () {
+                        if (d3.event.pageX + this.clientWidth > document.body.clientWidth)
+                            return -this.clientWidth / 2 + 'px'
+                        else
+                            return 'auto'
+                    })
+                    .style('top', function () {
+                        if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
+                            return 'auto'
+                        else
+                            return d3.event.pageY + 'px'
+                    })
+                    .style('bottom', function () {
+                        if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
+                            return '15px'
+                        else
+                            return 'auto'
+                    })
+            })
             .on('mouseout', function (d) {
                 d3.select('.help-tooltip')
                     .classed('hide', true)
@@ -121,14 +149,27 @@ d3.selectAll(".help")
     .on('mouseover', function (d) {
         console.log('!!')
         let tooltip = d3.select('.help-tooltip')
-            .classed('hide', false)
-            .style('left', d3.event.pageX + 'px')
-            .style('top', d3.event.pageY + 'px')
-            tooltip.select('.help-title')
-            .text(d.helpTitle)
-            tooltip.select('.help-body')
-            .text(d.helpBody)
-        })
+        
+        tooltip.select('.help-title')
+        .text(d.helpTitle)
+        tooltip.select('.help-body')
+        .text(d.helpBody)
+
+        tooltip.classed('hide', false)
+            .style(function (d) {
+                console.log(d3.event.pageY + this.clientHeight, document.body.clientHeight);
+                if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
+                    return {
+                        'left': d3.event.pageX + 'px',
+                        'bottom': '15px'
+                    }
+                else
+                    return {
+                        'left': d3.event.pageX + 'px',
+                        'top': d3.event.pageY + 'px'
+                    }
+            })
+    })
     .on('mouseout', function (d) {
         d3.select('.help-tooltip')
             .classed('hide', true)

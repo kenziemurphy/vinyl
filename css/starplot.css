@@ -53,7 +53,7 @@
   color: #f4f4f4;
   fill: #f4f4f4;
   /*fill-opacity: 0.3;*/
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 .star-remove {
   font-size: 18px;
@@ -102,3 +102,8 @@
   fill-opacity: 0.6;
   stroke: #444;
 }*/
+
+
+.hover-area {
+  fill-opacity: 0;
+}

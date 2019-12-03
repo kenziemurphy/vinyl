@@ -221,7 +221,7 @@ div.awesomplete .awe-not-found {
     padding: 5px 10px;
     font-size: 10pt;
     text-align: left;
-    max-width: 240px;
+    width: 240px;
     transition: opacity 0.2s;
     padding-top: 5px;
     padding-bottom: 5px;
@@ -245,4 +245,19 @@ div.awesomplete .awe-not-found {
 
 .margin-gutter:not(:first-child) {
     margin-left: 5px;
+}
+
+.veil {
+    width: 100vw;
+    height: 100vh;
+    background-color: #0008;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: opacity 0.5s;
+}
+
+.veil.hide {
+    pointer-events: none;
+    opacity: 0;
 }
