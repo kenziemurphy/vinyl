@@ -198,6 +198,12 @@ class RadialView {
             this.shouldReinitGrid = true;
         }
 
+        let pcaProjection = this.computePca(this.filteredData);
+        for (let i in this.filteredData) {
+            this.filteredData[i].pca1 = pcaProjection.adjustedData[0][i];
+            this.filteredData[i].pca2 = pcaProjection.adjustedData[1][i];
+        }
+
         this.redraw();
     }
 
@@ -887,6 +893,7 @@ class RadialView {
         // return first k (k nearest) songs in the list
         for (let i = 1; i < k + 1; i++) {
             // please return in this format
+            // console.log(d.x);
             similarSongs.push({
                 source: d,
                 song: nearest[i],
@@ -974,5 +981,31 @@ class RadialView {
                 this.SCALE_Y(d[this.config.yMapping.key])
             ]
         }
+    }
+
+    computePca (data) {
+        let formattedData = this.preformatDataForPca(data);
+        console.log(formattedData)
+        let vectors = PCA.getEigenVectors(formattedData);
+        console.log(vectors);
+        var adData = PCA.computeAdjustedData(formattedData,vectors[0], vectors[1]);
+        console.log(adData);
+        return adData;
+    }
+
+    preformatDataForPca (data) {
+        let formattedData = []
+        for (let i in data) {
+            formattedData.push([
+                data[i].energy,
+                data[i].instrumentalness,
+                data[i].acousticness,
+                data[i].valence,
+                data[i].danceability,
+                data[i].liveness,
+                data[i].speechiness
+            ])
+        }
+        return formattedData;
     }
 }
