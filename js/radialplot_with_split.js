@@ -527,7 +527,7 @@ class RadialView {
                 .force('collision', d3.forceCollide())
                 .force('x', d3.forceX())
                 .force('y', d3.forceY())
-                // // .alphaTarget(1)
+                // .alphaTarget(1)
                 .on("tick", function tick(e) {
                     _this.svg.selectAll('g.song')
                         .filter(d => d.x && d.y)
@@ -535,9 +535,12 @@ class RadialView {
 
                     let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
                         .attr('opacity', s => s.similarity)
-                        .attr('x1', s => s.source.x)
+                        .attr('x1', s => {
+                            // console.log(s.source.x, s.source.y)
+                            return s.source.x
+                        })
                         .attr('y1', s => s.source.y)
-                        // .transition(d3.transition().duration(70))
+                        .transition(d3.transition().duration(70))
                         .attr('x2', s => s.song.x)
                         .attr('y2', s => s.song.y)
                 });
@@ -760,18 +763,18 @@ class RadialView {
                     _this.resetSelection();
                 } else {
                     _this.songToolTip.hide({}, this.parentNode);
-                    // _this.dispatch.call('highlight', this, function (k) {
-                    //     let isTheSelectedSong = k.id == _this.selectedSong.id;
-                    //     let isInFilter = true;
-                    //     if (!d3.select('input#search-highlight').classed('disabled')) {
-                    //         if (k.name)
-                    //             isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
-                    //         else
-                    //             isInFilter = false;
-                    //     }
-                    //     // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
-                    //     return isTheSelectedSong || isInFilter// || isSimilarSong;
-                    // });
+                    _this.dispatch.call('highlight', this, function (k) {
+                        let isTheSelectedSong = k.id == _this.selectedSong.id;
+                        // let isInFilter = true;
+                        // if (!d3.select('input#search-highlight').classed('disabled')) {
+                        //     if (k.name)
+                        //         isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                        //     else
+                        //         isInFilter = false;
+                        // }
+                        // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
+                        return isTheSelectedSong// || isInFilter// || isSimilarSong;
+                    });
                 }
             }
         }
@@ -891,9 +894,9 @@ class RadialView {
             .range([1, 0])
 
         // return first k (k nearest) songs in the list
+        console.log('xzzzzz', d, d.x, d.name, nearest.slice(0, k).map(d=>d.name));
         for (let i = 1; i < k + 1; i++) {
             // please return in this format
-            // console.log(d.x);
             similarSongs.push({
                 source: d,
                 song: nearest[i],
@@ -985,11 +988,8 @@ class RadialView {
 
     computePca (data) {
         let formattedData = this.preformatDataForPca(data);
-        console.log(formattedData)
         let vectors = PCA.getEigenVectors(formattedData);
-        console.log(vectors);
         var adData = PCA.computeAdjustedData(formattedData,vectors[0], vectors[1]);
-        console.log(adData);
         return adData;
     }
 
