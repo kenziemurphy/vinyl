@@ -31,7 +31,7 @@ h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, 
     margin-top: 0;
 }
 
-h2 { font-size: 18pt; font-style: normal; }
+h2 { font-size: 16pt; font-style: normal; }
 h3 { font-size: 12pt; font-style: normal; }
 
 b, [font-weight="bold"] {
