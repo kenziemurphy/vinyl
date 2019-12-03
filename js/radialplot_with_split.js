@@ -95,44 +95,6 @@ class RadialView {
         this.svg.call(this.songToolTip);
 
         let _this = this;
-        d3.selectAll('#select-x-axis')
-            .on('change', function () {
-                let selectedOption = this.options[this.selectedIndex];
-                _this.setConfig({
-                    xMapping: {
-                        key: selectedOption.value,
-                        scaleType: selectedOption.getAttribute('data-scale-type'),
-                        minOverride: selectedOption.getAttribute('data-scale-min') || false,
-                        maxOverride: selectedOption.getAttribute('data-scale-max') || false,
-                        isRadial: selectedOption.getAttribute('data-radial') || false
-                    }
-                });
-            });
-        d3.selectAll('#select-y-axis')
-            .on('change', function () {
-                let selectedOption = this.options[this.selectedIndex];
-                _this.setConfig({
-                    yMapping: {
-                        key: selectedOption.value,
-                        scaleType: selectedOption.getAttribute('data-scale-type'),
-                        minOverride: selectedOption.getAttribute('data-scale-min') || false,
-                        maxOverride: selectedOption.getAttribute('data-scale-max') || false,
-                        isRadial: selectedOption.getAttribute('data-radial') || false
-                    }
-                });
-            });
-        d3.selectAll('#search-highlight')
-            .on('keyup', function () {
-                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
-            })
-            .on('click', function () {
-                this.classList.remove('disabled')
-                this.select();
-                _this.dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
-            });
-
-        // handler for clicking outside of a song
-        // FIXME
         d3.select('body').on('click', function () {
             function equalToEventTarget() {
                 return this == d3.event.target;
@@ -241,6 +203,10 @@ class RadialView {
         }
 
         this.redraw();
+    }
+
+    getConfig () {
+        return this.config;
     }
 
     /**
@@ -433,7 +399,7 @@ class RadialView {
             3: [
                 [this.W / 4, this.H / 4 + 20],
                 [this.W * 3 / 4, this.H / 4 + 20],
-                [this.W / 2, this.H * 3 / 4 - 50],
+                [this.W / 2, this.H * 3 / 4 - 20],
             ],
             4: [
                 [this.W / 4, this.H / 4 - 10],
@@ -535,12 +501,9 @@ class RadialView {
 
                     let similarityLinks = _this.lineLayer.selectAll('line.similarity-link')
                         .attr('opacity', s => s.similarity)
-                        .attr('x1', s => {
-                            // console.log(s.source.x, s.source.y)
-                            return s.source.x
-                        })
+                        .attr('x1', s => s.source.x)
                         .attr('y1', s => s.source.y)
-                        .transition(d3.transition().duration(70))
+                        // .transition(d3.transition().duration(70))
                         .attr('x2', s => s.song.x)
                         .attr('y2', s => s.song.y)
                 });
@@ -713,46 +676,50 @@ class RadialView {
         let _this = this;
         if (action == 'mouseover') {
             return function (d, i, m) {
-                d3.select(m[i].closest('.song')).classed('hover', true);
-                if (d.isDragging) return;
+                let songParent = d3.select(m[i].closest('.song'));
+                let songParentData = songParent.datum();
+                songParent.classed('hover', true);
+                if (songParentData.isDragging) return;
                 
                 if (!_this.selectedSong) {
                     // d = d;
-                    _this.selectSong(d);
+                    _this.selectSong(songParentData, songParent.node());
                 } else {
-                    _this.dispatch.call('highlight', this, function (k) {
-                        let isTheSong = k.id == d.id;
+                    _this.dispatch.call('highlight', songParent.node(), function (k) {
+                        let isTheSong = k.id == songParentData.id;
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
                         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
                         return isTheSelectedSong || isTheSong// || isSimilarSong;
                     });
                 }
 
-                _this.songToolTip.show(d, this.parentNode);
+                _this.songToolTip.show(songParentData, songParent.node());
             }
         } else if (action == 'click') {
             return function (d, i, m) {
+                let songParent = d3.select(m[i].closest('.song'));
+                let songParentData = songParent.datum();
                 if (!_this.selectedSong || !_this.selectedSong.audio) {
-                    _this.selectSong(d);
-                    _this.songToolTip.show(d, this.parentNode);
+                    _this.selectSong(songParentData, songParent.node());
+                    _this.songToolTip.show(songParentData, this.parentNode);
                 }
 
                 if (_this.selectionLocked) {
-                    if (_this.selectedSong == d) {
+                    if (_this.selectedSong == songParentData) {
                         _this.resetSelection();
                         _this.selectionLocked = false;
                     } else {
                         _this.resetSelection();
-                        _this.selectSong(d);
-                        _this.songToolTip.show(d, this.parentNode);
+                        _this.selectSong(songParentData, songParent.node());
+                        _this.songToolTip.show(songParentData, this.parentNode);
                         d3.select(m[i].closest('.song')).classed('active', true)
-                        _this.selectedSong = d;
+                        _this.selectedSong = songParentData;
                     }
                 } else {
                     _this.selectionLocked = true;
                     // d3.select(this).classed('active', true);
                     d3.select(m[i].closest('.song')).classed('active', true)
-                    _this.selectedSong = d;
+                    _this.selectedSong = songParentData;
                 }
                 
             }
@@ -786,10 +753,9 @@ class RadialView {
      * @param int k - number of similar songs to be suggested
      * @return function for handling the specified mouse event
     */
-    selectSong (d, k = 5) {
+    selectSong (d, elem, k = 5) {
         this.selectedSong = d;
         if (!this.selectedSong.audio) {
-            // FIXME some songs return null for preview-url
             console.log('loading music', this.selectedSong.preview_url);
             this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
             this.selectedSong.audio.loop = true;
@@ -799,7 +765,7 @@ class RadialView {
         let similarSongs = this.getSimilarSongs(this.selectedSong, k);
 
         let _this = this;
-        this.dispatch.call('highlight', this, s => s.id == d.id);
+        this.dispatch.call('highlight', elem, s => s.id == d.id);
         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
     
         _this.grids.forEach(function (g, i) {

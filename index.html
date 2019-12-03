@@ -36,7 +36,59 @@
 				<!-- <svg id="..."></svg> -->
 				<div>
 					<h2>More Options</h2>
-					<div class="container-row">
+					<div class="container-column" style="margin:auto;">
+						<div class="cell mb-xs">
+							<div class="margin-gutter">
+								<small>Find a song on this chart</small>
+								<br>
+								<input type="text" class="btn vis-control" id="search-highlight" style="width: 100%;">
+							</div>
+						</div>
+						<div class="cell mb-xs">
+							<div class="margin-gutter">
+								<small>X / Angle Axis</small>
+								<br>
+								<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
+									<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>
+									<option data-scale-type="linear" value="pca1">PCA1</option>	
+								</select>
+							</div>
+						</div>
+						<div class="cell mb-xs" style="margin-bottom: 10px;">
+							<div class="margin-gutter">
+								<small>Y / Radial Axis</small>
+								<br>
+								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>	
+									<option data-scale-type="linear" value="pca2">PCA2</option>	
+								</select>
+							</div>
+						</div>
+					<!-- </div> -->
+					<!-- <div class="container-row">
 						<div class="grow margin-gutter" style="width: 33.33%">
 							<button id="toggle-split-view" class="btn vis-control">Toggle&shy; split view</button>
 						</div>
@@ -45,6 +97,44 @@
 						</div>
 						<div class="grow margin-gutter" style="width: 33.33%">
 							<button id="toggle-force" class="btn vis-control">Toggle&shy;  force jittering</button>
+						</div>
+					</div> -->
+					<!-- <div class="container-col"> -->
+						<div class="grow container-row mb-xs">
+							<div class="grow">
+								<small>Just cluster similar songs</small>
+							</div>
+							<label class="switch">
+								<input type="checkbox" id="toggle-pca">
+								<span class="slider round"></span>
+							</label>
+						</div>
+						<div class="grow container-row mb-xs">
+							<div class="grow">
+								<small>Split View</small>
+							</div>
+							<label class="switch">
+								<input type="checkbox" id="toggle-split-view">
+								<span class="slider round"></span>
+							</label>
+						</div>
+						<div class="grow container-row mb-xs">
+							<div class="grow">
+								<small>Show Album Cover</small>
+							</div>
+							<label class="switch">
+								<input type="checkbox" id="toggle-album-art">
+								<span class="slider round"></span>
+							</label>
+						</div>
+						<div class="grow container-row mb-xs">
+							<div class="grow">
+								<small>Avoid Overlapping</small>
+							</div>
+							<label class="switch">
+								<input type="checkbox" id="toggle-force">
+								<span class="slider round"></span>
+							</label>
 						</div>
 					</div>
 					<h2>How to read this visualization</h2>
@@ -65,7 +155,7 @@
             </div>
 			<div class="cell grow container-col">
 				<div id="vis-area" class="cell grow container-col">
-					<div class="container-row" style="margin:auto;">
+					<!-- <div class="container-row" style="margin:auto;">
 						<div class="text-center margin-gutter">
 							<small>X / Angle Axis</small>
 							<br>
@@ -110,7 +200,7 @@
 							<br>
 							<input type="text" class="btn vis-control" id="search-highlight">
 						</div>
-					</div>
+					</div> -->
 					<svg id="radial-view" class="grow" overflow="visible"></svg>
 					<div class="" style="padding-top: 20px; padding-bottom: 20px;">
 						Other songs similar to your selection:
@@ -189,21 +279,111 @@
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
+			// UI initialization from vis's config
+			let rvConfig = rv.getConfig();
+			document.getElementById('select-x-axis').value = rvConfig.xMapping.key;
+			document.getElementById('select-y-axis').value = rvConfig.yMapping.key;
+			document.getElementById('toggle-split-view').checked = rvConfig.isSplitting;
+			document.getElementById('toggle-album-art').checked = rvConfig.showAlbumArt;
+			document.getElementById('toggle-force').checked = rvConfig.enableForce;
+			document.getElementById('toggle-pca').checked = rvConfig.isPca;
+
 			// UI events
-			document.getElementById('toggle-split-view')
-				.addEventListener('click', function (e) {
-					rv.setConfig({isSplitting: !rv.config.isSplitting});
-				}, false);
+			d3.selectAll('#toggle-pca')
+				.on('change', function () {
+					console.log(this.checked)
+					if (this.checked) {
+						rv.setConfig({
+							xMapping: {
+								key: 'pca1',
+								scaleType: 'linear',
+								minOverride: false,
+								maxOverride: false,
+								isRadial: false
+							},
+							yMapping: {
+								key: 'pca2',
+								scaleType: 'linear',
+								minOverride: false,
+								maxOverride: false,
+								isRadial: false
+							}
+						});
+						d3.select('#select-x-axis').attr('disabled', 'disabled');
+						d3.select('#select-y-axis').attr('disabled', 'disabled');
+					} else {
+						let xSelect = d3.select('#select-x-axis').node();
+						let ySelect = d3.select('#select-y-axis').node();
+						let xSelectedOption = xSelect.options[xSelect.selectedIndex];
+						let ySelectedOption = ySelect.options[ySelect.selectedIndex];
+						rv.setConfig({
+							xMapping: {
+								key: xSelectedOption.value,
+								scaleType: xSelectedOption.getAttribute('data-scale-type'),
+								minOverride: xSelectedOption.getAttribute('data-scale-min') || false,
+								maxOverride: xSelectedOption.getAttribute('data-scale-max') || false,
+								isRadial: xSelectedOption.getAttribute('data-radial') || false
+							},
+							yMapping: {
+								key: ySelectedOption.value,
+								scaleType: ySelectedOption.getAttribute('data-scale-type'),
+								minOverride: ySelectedOption.getAttribute('data-scale-min') || false,
+								maxOverride: ySelectedOption.getAttribute('data-scale-max') || false,
+								isRadial: ySelectedOption.getAttribute('data-radial') || false
+							}
+						});
+						d3.select('#select-x-axis').attr('disabled', null);
+						d3.select('#select-y-axis').attr('disabled', null);
+					}
+				});
 
-			document.getElementById('toggle-album-art')
-				.addEventListener('click', function (e) {
-					rv.setConfig({showAlbumArt: !rv.config.showAlbumArt});
-				}, false);
+			d3.selectAll('#toggle-split-view').on('change', function (e) {
+				rv.setConfig({isSplitting: this.checked});
+			});
+			
+			d3.selectAll('#toggle-album-art').on('change', function (e) {
+				rv.setConfig({showAlbumArt: this.checked});
+			});
 
-			document.getElementById('toggle-force')
-				.addEventListener('click', function (e) {
-					rv.setConfig({enableForce: !rv.config.enableForce});
-				}, false);
+			d3.selectAll('#toggle-force').on('change', function (e) {
+				rv.setConfig({enableForce: this.checked});
+			});
+
+			d3.selectAll('#select-x-axis')
+				.on('change', function () {
+					let selectedOption = this.options[this.selectedIndex];
+					rv.setConfig({
+						xMapping: {
+							key: selectedOption.value,
+							scaleType: selectedOption.getAttribute('data-scale-type'),
+							minOverride: selectedOption.getAttribute('data-scale-min') || false,
+							maxOverride: selectedOption.getAttribute('data-scale-max') || false,
+							isRadial: selectedOption.getAttribute('data-radial') || false
+						}
+					});
+				});
+			d3.selectAll('#select-y-axis')
+				.on('change', function () {
+					let selectedOption = this.options[this.selectedIndex];
+					rv.setConfig({
+						yMapping: {
+							key: selectedOption.value,
+							scaleType: selectedOption.getAttribute('data-scale-type'),
+							minOverride: selectedOption.getAttribute('data-scale-min') || false,
+							maxOverride: selectedOption.getAttribute('data-scale-max') || false,
+							isRadial: selectedOption.getAttribute('data-radial') || false
+						}
+					});
+				});
+			d3.selectAll('#search-highlight')
+				.on('keyup', function () {
+					dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
+				})
+				.on('click', function () {
+					this.classList.remove('disabled')
+					this.select();
+					dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
+				});
 
 			d3.select('#star-view-drawer .drawer-tab')
 				.on('click', function (e) {
