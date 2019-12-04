@@ -1,4 +1,4 @@
-function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxes) {
+function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxes = true) {
 
     console.log('!!!!')
     const NUM_GRID_LINES = 5;
@@ -117,7 +117,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
             .attr('y2', scaleY.range()[1]);
     }
 
-    axis.update = function (_scaleY, _scaleX, _center, _xMappingLabel, _yMappingLabel, _showAxes) {
+    axis.update = function (_scaleY, _scaleX, _center, _xMappingLabel, _yMappingLabel, _showAxes = true) {
         scaleY = _scaleY;
         scaleX = _scaleX;
         center = _center;

@@ -866,7 +866,7 @@ class RadialView {
             .range([1, 0])
 
         // return first k (k nearest) songs in the list
-        for (let i = 1; i < k + 1; i++) {
+        for (let i = 1; i < Math.min(k + 1, nearest.length); i++) {
             // please return in this format
             similarSongs.push({
                 source: d,
