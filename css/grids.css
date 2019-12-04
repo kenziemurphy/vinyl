@@ -31,14 +31,14 @@ text.label.highlight {
 
 .grid-line, .tick line, path.domain{
     fill-opacity: 0;
-    stroke-opacity: 0.25;
+    stroke-opacity: 0.15;
     stroke: #ffffff;
 }
 
 .grid-line-clear {
     fill-opacity: 0;
     /* stroke-opacity: 1; */
-    stroke-opacity: 0.25;
+    stroke-opacity: 0.15;
     stroke-width: 3;
     stroke: #ffffff;
 }
