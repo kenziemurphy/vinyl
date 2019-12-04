@@ -63,8 +63,12 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         // axis labels
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-bottom')
             .attr('y', maxRadialDist + AXIS_LABELS_OFFSET);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-bottom.hide-on-mini')
+            .attr('y', minRadialDist - AXIS_LABELS_OFFSET);
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.outer-top')
             .attr('y', -maxRadialDist - AXIS_LABELS_OFFSET);
+        selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top.hide-on-mini')
+            .attr('y', -minRadialDist + AXIS_LABELS_OFFSET);
         selection.selectAll('text.label.label-axis-radial')
             .text(radialMappingLabel)
             .call(addHelpTooltip(radialMappingLabel.toLowerCase()));

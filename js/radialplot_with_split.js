@@ -51,6 +51,7 @@ class RadialView {
             splits: 1,
             enableForce: true,
             splitKey: 'collection_id',
+            showAxes: true
         }
         
         this.PADDING = 50;
@@ -101,7 +102,8 @@ class RadialView {
             }
 
             var outsideDot = d3.selectAll('.song.active *').filter(equalToEventTarget).empty();
-            var outsideButton = d3.selectAll('.vis-control').filter(equalToEventTarget).empty();
+            var outsideButton = d3.selectAll('.vis-control, .vis-control *').filter(equalToEventTarget).empty();
+            
             if (outsideDot && outsideButton) {
                 d3.select('input#search-highlight').classed('disabled', true);
                 _this.resetSelection();
@@ -160,10 +162,12 @@ class RadialView {
             this.shouldReinitGrid = true;
         }
 
-        let pcaProjection = this.computePca(this.filteredData);
-        for (let i in this.filteredData) {
-            this.filteredData[i].pca1 = pcaProjection.adjustedData[0][i];
-            this.filteredData[i].pca2 = pcaProjection.adjustedData[1][i];
+        if (this.filteredData.length) {
+            let pcaProjection = this.computePca(this.filteredData);
+            for (let i in this.filteredData) {
+                this.filteredData[i].pca1 = pcaProjection.adjustedData[0][i];
+                this.filteredData[i].pca2 = pcaProjection.adjustedData[1][i];
+            }
         }
 
         this.redraw();
@@ -274,14 +278,16 @@ class RadialView {
         if (this.shouldReinitGrid) {
             this.initGrid();
         }
-        
+
+        // if (this.config.showAxes) {
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
             this.grids[i].update(this.SCALE_Y, 
                 this.SCALE_X, 
                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.xMapping.key,
-                this.config.yMapping.key);
+                this.config.yMapping.key,
+                this.config.showAxes);
             multiGridG.call(this.grids[i]);
 
             if (this.selectedSong) {
@@ -292,6 +298,7 @@ class RadialView {
                     );
             }
         }
+        // }
 
         this.lineLayer = selectAllOrCreateIfNotExist(this.svg, 'g#line-layer')
 
@@ -756,7 +763,6 @@ class RadialView {
     selectSong (d, elem, k = 5) {
         this.selectedSong = d;
         if (!this.selectedSong.audio) {
-            console.log('loading music', this.selectedSong.preview_url);
             this.selectedSong.audio = new Audio(this.selectedSong.preview_url);
             this.selectedSong.audio.loop = true;
         }
@@ -860,7 +866,6 @@ class RadialView {
             .range([1, 0])
 
         // return first k (k nearest) songs in the list
-        console.log('xzzzzz', d, d.x, d.name, nearest.slice(0, k).map(d=>d.name));
         for (let i = 1; i < k + 1; i++) {
             // please return in this format
             similarSongs.push({

@@ -58,6 +58,14 @@ var HELP_PRESETS = {
     'popularity': {
         title: 'Popularity',
         body: 'A measure from 0 to 100 calculated by Spotify\'s algorithm which signifies how much the track has been played and how recent the plays are.'
+    },
+    'split-view': {
+        title: 'Split View',
+        body: 'Only available when two or more artists are loaded.'
+    },
+    'pca': {
+        title: 'Clustering with PCA',
+        body: 'When on, this mode will try to move songs that are similar to each other closer togehter using "Principle Component Analysis" (PCA) projection. The x and y axes would not have a particular meaning.'
     }
 };
 
@@ -75,7 +83,6 @@ function addHelpTooltip (helpContent) {
     }
 
     var onCall = function (context) {
-        // console.log("onCall");
         let selection = context.selection ? context.selection() : context;
         // console.log(selection);
         if (selection.node().tagName == 'text') {
@@ -88,7 +95,7 @@ function addHelpTooltip (helpContent) {
                 .attr('class', 'far fa-question-circle')
         }
         selection
-            .attr('class', 'help')
+            .classed('help', true)
             .datum(function () {
                 return {
                     helpTitle: helpContent.title,
@@ -96,6 +103,7 @@ function addHelpTooltip (helpContent) {
                 }
             })
             .on('mouseover', function (d) {
+                
                 let tooltip = d3.select('.help-tooltip')
         
                 tooltip.select('.help-title')
@@ -107,27 +115,29 @@ function addHelpTooltip (helpContent) {
                 tooltip.classed('hide', false)
                     .style('left', function () {
                         if (d3.event.pageX + this.clientWidth > document.body.clientWidth)
-                            return 'auto'
+                            return 'auto';
+                        else if (d3.event.pageX - this.clientWidth <= 0)
+                            return this.clientWidth / 2 + 'px';
                         else
-                            return d3.event.pageX + 'px'
+                            return d3.event.pageX + 'px';
                     })
                     .style('right', function () {
                         if (d3.event.pageX + this.clientWidth > document.body.clientWidth)
-                            return -this.clientWidth / 2 + 'px'
+                            return -this.clientWidth / 2 + 'px';
                         else
-                            return 'auto'
+                            return 'auto';
                     })
                     .style('top', function () {
                         if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
-                            return 'auto'
+                            return 'auto';
                         else
-                            return d3.event.pageY + 'px'
+                            return d3.event.pageY + 'px';
                     })
                     .style('bottom', function () {
                         if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
-                            return '15px'
+                            return '15px';
                         else
-                            return 'auto'
+                            return 'auto';
                     })
             })
             .on('mouseout', function (d) {
@@ -139,38 +149,14 @@ function addHelpTooltip (helpContent) {
     return onCall;
 }
 
-d3.selectAll(".help")
-    .datum(function () {
-        return {
-            helpTitle: this.getAttribute("data-help-title"),
-            helpBody: this.getAttribute("data-help-body")
+d3.selectAll(".add-help")
+    .each(function (d, i, m) {
+        if (d3.select(m[i]).attr('data-help-key')) {
+            return addHelpTooltip(HELP_PRESETS[d3.select(m[i]).attr('data-help-key')])(d3.select(m[i]));
+        } else {
+            return addHelpTooltip({
+                title: d3.select(m[i]).attr('data-help-title'),
+                body: d3.select(m[i]).attr('data-help-body')
+            })(d3.select(m[i]));
         }
-    })
-    .on('mouseover', function (d) {
-        console.log('!!')
-        let tooltip = d3.select('.help-tooltip')
-        
-        tooltip.select('.help-title')
-        .text(d.helpTitle)
-        tooltip.select('.help-body')
-        .text(d.helpBody)
-
-        tooltip.classed('hide', false)
-            .style(function (d) {
-                console.log(d3.event.pageY + this.clientHeight, document.body.clientHeight);
-                if (d3.event.pageY + this.clientHeight > document.body.clientHeight)
-                    return {
-                        'left': d3.event.pageX + 'px',
-                        'bottom': '15px'
-                    }
-                else
-                    return {
-                        'left': d3.event.pageX + 'px',
-                        'top': d3.event.pageY + 'px'
-                    }
-            })
-    })
-    .on('mouseout', function (d) {
-        d3.select('.help-tooltip')
-            .classed('hide', true)
     });

@@ -36,14 +36,7 @@
 					<div class="container-column" style="margin:auto;">
 						<div class="cell mb-xs">
 							<div class="margin-gutter">
-								<small>Find a song on this chart</small>
-								<br>
-								<input type="text" class="btn vis-control" id="search-highlight" style="width: 100%;">
-							</div>
-						</div>
-						<div class="cell mb-xs">
-							<div class="margin-gutter">
-								<small>X / Angle Axis</small>
+								<small>X / Angular Axis</small>
 								<br>
 								<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
 									<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
@@ -84,6 +77,14 @@
 								</select>
 							</div>
 						</div>
+						<div class="cell mb-xs">
+							<div class="margin-gutter">
+								<small>Find a song on this chart</small>
+								<br>
+								<input type="text" class="btn vis-control" id="search-highlight" style="width: 100%;">
+							</div>
+						</div>
+						
 					<!-- </div> -->
 					<!-- <div class="container-row">
 						<div class="grow margin-gutter" style="width: 33.33%">
@@ -99,19 +100,19 @@
 					<!-- <div class="container-col"> -->
 						<div class="grow container-row mb-xs">
 							<div class="grow">
-								<small>Just cluster similar songs</small>
+								<small class="add-help" data-help-key="pca">Just cluster similar songs </small>
 							</div>
-							<label class="switch">
-								<input type="checkbox" id="toggle-pca">
+							<label class="switch vis-control">
+								<input type="checkbox" id="toggle-pca" class="vis-control">
 								<span class="slider round"></span>
 							</label>
 						</div>
 						<div class="grow container-row mb-xs">
 							<div class="grow">
-								<small>Split View</small>
+								<small class="add-help" data-help-key="split-view">Split View </small>
 							</div>
-							<label class="switch">
-								<input type="checkbox" id="toggle-split-view">
+							<label class="switch vis-control">
+								<input type="checkbox" id="toggle-split-view" class="vis-control">
 								<span class="slider round"></span>
 							</label>
 						</div>
@@ -119,8 +120,8 @@
 							<div class="grow">
 								<small>Show Album Cover</small>
 							</div>
-							<label class="switch">
-								<input type="checkbox" id="toggle-album-art">
+							<label class="switch vis-control">
+								<input type="checkbox" id="toggle-album-art" class="vis-control">
 								<span class="slider round"></span>
 							</label>
 						</div>
@@ -128,8 +129,8 @@
 							<div class="grow">
 								<small>Avoid Overlapping</small>
 							</div>
-							<label class="switch">
-								<input type="checkbox" id="toggle-force">
+							<label class="switch vis-control">
+								<input type="checkbox" id="toggle-force" class="vis-control">
 								<span class="slider round"></span>
 							</label>
 						</div>
@@ -213,10 +214,10 @@
             </div>
 		</div>
 		
-		<div id="veil" class="veil hide"></div>
+		<div id="veil" class="veil hide vis-control"></div>
 
 		<div id="star-view-drawer" class="container-col hide">
-			<div id="drop-area" class="text-center cell drawer-tab">
+			<div id="drop-area" class="text-center cell drawer-tab vis-control">
 				<!-- <h2>Detailed Analysis</h2> -->
 				<div id="starTitleLabel">
 					Drag a song here for more details
@@ -284,6 +285,20 @@
 			document.getElementById('toggle-album-art').checked = rvConfig.showAlbumArt;
 			document.getElementById('toggle-force').checked = rvConfig.enableForce;
 			document.getElementById('toggle-pca').checked = rvConfig.isPca;
+			updateSplitViewToggle();
+
+			function updateSplitViewToggle () {
+				let splitViewToggle = d3.select('#toggle-split-view');
+				let splitViewParent = d3.select(splitViewToggle.node().parentNode);
+				if (data.length > 1) {
+					splitViewToggle.attr('disabled', null);
+					splitViewParent.classed('disabled', false);
+				}
+				else {
+					splitViewToggle.attr('disabled', 'disabled');
+					splitViewParent.classed('disabled', true);
+				}
+			}
 
 			// UI events
 			d3.selectAll('#toggle-pca')
@@ -304,7 +319,8 @@
 								minOverride: false,
 								maxOverride: false,
 								isRadial: false
-							}
+							},
+							showAxes: false
 						});
 						d3.select('#select-x-axis').attr('disabled', 'disabled');
 						d3.select('#select-y-axis').attr('disabled', 'disabled');
@@ -327,7 +343,8 @@
 								minOverride: ySelectedOption.getAttribute('data-scale-min') || false,
 								maxOverride: ySelectedOption.getAttribute('data-scale-max') || false,
 								isRadial: ySelectedOption.getAttribute('data-radial') || false
-							}
+							},
+							showAxes: true
 						});
 						d3.select('#select-x-axis').attr('disabled', null);
 						d3.select('#select-y-axis').attr('disabled', null);
@@ -524,6 +541,8 @@
 						components.forEach(function (c) { c.onDataChanged(data); });
 						resolve();
 
+						updateSplitViewToggle();
+
 					})//.catch((error) => console.error(error));
 				});
 			}
@@ -537,6 +556,9 @@
 				// redraw artist buttons
 				drawArtistButtons();
 
+				// enable/disable split view toggle based on if there're more than one artist loaded
+				updateSplitViewToggle();
+				
 				// trigger a data change for the histograms
 				components.forEach(function (c) { c.onDataChanged(data); });
 				document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');

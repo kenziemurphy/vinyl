@@ -96,7 +96,7 @@ b, [font-weight="bold"] {
     width: 100%;
 }
 
-.btn:not(input):hover, .btn.active {
+.btn:not(input):not([disabled=disabled]):not(.disabled):hover, .btn.active {
     /* white-space: nowrap; */
     background-color: #F4F4F4;
     color: #111;
@@ -332,6 +332,15 @@ input:checked + .slider:before {
     margin-bottom: 5px;
 }
 
-.vis-control[disabled=disabled] {
-    opacity: 0.2;
+.vis-control {
+    transition: all 0.2s;
+}
+
+.vis-control[disabled=disabled], .vis-control.disabled {
+    opacity: 0.3;
+}
+
+.mini .hide-on-mini {
+    opacity: 0;
+    pointer-events: none;
 }
