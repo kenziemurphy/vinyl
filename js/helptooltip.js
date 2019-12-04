@@ -116,7 +116,7 @@ function addHelpTooltip (helpContent) {
                     .style('left', function () {
                         if (d3.event.pageX + this.clientWidth > document.body.clientWidth)
                             return 'auto';
-                        else if (d3.event.pageX - this.clientWidth <= 0)
+                        else if (d3.event.pageX - this.clientWidth / 2 <= 0)
                             return this.clientWidth / 2 + 'px';
                         else
                             return d3.event.pageX + 'px';

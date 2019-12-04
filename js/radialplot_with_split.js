@@ -99,7 +99,7 @@ class RadialView {
         this.svg.call(this.songToolTip);
 
         let _this = this;
-        d3.select('body').on('click', function () {
+        d3.select('body').on('click.rv', function () {
             function equalToEventTarget() {
                 return this == d3.event.target;
             }

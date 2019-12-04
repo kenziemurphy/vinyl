@@ -344,3 +344,53 @@ input:checked + .slider:before {
     opacity: 0;
     pointer-events: none;
 }
+
+.speech-bubble {
+	position: relative;
+	background: #ffffff;
+    border-radius: .4em;
+    padding: 10px;
+    box-shadow: 0 5px 5px #0004;
+}
+
+.speech-bubble p {
+    margin: 0;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.speech-bubble:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border: 7px solid transparent;
+	border-bottom-color: #fff;
+	border-top: 0;
+	margin-left: -7px;
+	margin-top: -7px;
+}
+
+.tutorial-tooltip {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    color: #222222;
+    font-size: 11pt;
+    font-weight: bold;
+    transform: translate(-50%, 5px);
+    transition: opacity 0.5s;
+}
+
+.tutorial-tooltip.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel {
+    border: 1px #fff6 solid;
+    border-radius: 10px;
+    padding: 10px 10px;
+}
