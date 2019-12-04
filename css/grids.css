@@ -2,7 +2,7 @@ text.label{
     text-anchor: middle;
     alignment-baseline: central;
     font-weight: normal;
-    opacity: 0.3;
+    opacity: 0.5;
     font-size: 10pt;
 }
 
@@ -12,7 +12,7 @@ text.label.highlight {
 }
 
 .tick text {
-    opacity: 0.3;
+    opacity: 0.5;
 }
 
 .mini text.label:not(.grid-axis-label) {
@@ -31,14 +31,14 @@ text.label.highlight {
 
 .grid-line, .tick line, path.domain{
     fill-opacity: 0;
-    stroke-opacity: 0.15;
+    stroke-opacity: 0.25;
     stroke: #ffffff;
 }
 
 .grid-line-clear {
     fill-opacity: 0;
     /* stroke-opacity: 1; */
-    stroke-opacity: 0.15;
+    stroke-opacity: 0.25;
     stroke-width: 3;
     stroke: #ffffff;
 }
