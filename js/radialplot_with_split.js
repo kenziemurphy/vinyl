@@ -54,7 +54,10 @@ class RadialView {
             showAxes: true
         }
         
-        this.PADDING = 50;
+        this.PADDING = {
+            x: 0,
+            y: 30
+        };
         this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
         this.RADIAL_KEYS = {
@@ -426,8 +429,8 @@ class RadialView {
             Math.min(this.W, this.H) / 8 : 
             Math.min(this.W, this.H) / 24;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
-            Math.min(this.W, this.H) / 2 - this.PADDING:
-            Math.min(this.W, this.H) / 4 - this.PADDING;
+            Math.min(this.W, this.H) / 2 - Math.max(this.PADDING.x, this.PADDING.y):
+            Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y);
 
         if (this.useRadialScale())
             this.SCALE_X = SCALE_ANGLE;
@@ -440,8 +443,8 @@ class RadialView {
                     ] 
                 )
                 .range(this.SPLITS == 1 ? 
-                    [-this.W / 2 + this.PADDING, this.W / 2 - this.PADDING] :
-                    [-this.W / 4 + this.PADDING, this.W / 4 - this.PADDING]
+                    [-this.W / 2 + this.PADDING.x, this.W / 2 - this.PADDING.x] :
+                    [-this.W / 4 + this.PADDING.x, this.W / 4 - this.PADDING.x]
                     );
 
         this.SCALE_Y = this.scaleSelector(this.config.yMapping.scale)
@@ -454,8 +457,8 @@ class RadialView {
             .range(this.useRadialScale() ? 
                 [this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST] :
                 this.SPLITS == 1 ? 
-                    [this.H / 2 - this.PADDING, -this.H / 2 + this.PADDING] :
-                    [this.H / 4 - this.PADDING, -this.H / 4 + this.PADDING]);
+                    [this.H / 2 - this.PADDING.y, -this.H / 2 + this.PADDING.y] :
+                    [this.H / 4 - this.PADDING.y, -this.H / 4 + this.PADDING.y]);
         
         // calculate size of data points to draw and normalize
         if (this.filteredData) {
