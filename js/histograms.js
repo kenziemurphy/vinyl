@@ -9,16 +9,19 @@ class HistogramView {
         //var svg = d3.select('svg');
         // NOTE: I fixed this svgWidth/Height, it should work now -- Tae
         this.svgWidth = parseInt(this.svg.style("width"), 10);
-        this.svgHeight = parseInt(this.svg.style("width"), 10);
+        this.svgHeight = parseInt(this.svg.style("height"), 10);
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
         this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 
+        this.histWidth = parseInt(this.svgWidth - 60);
+        this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
+
         this.x = d3.scaleLinear()
           .domain([0, 1])
           .range([52, 285]);
-
+        
         this.redraw();
 
     }
@@ -86,7 +89,7 @@ class HistogramView {
 
     var _this = this;
 
-    let histHeight = parseInt((screen.height - 250) / this.dimensions.length);
+    let histHeight = parseInt((this.svgHeight) / this.dimensions.length);
 
     //obtains max count from last json data group max
     let yMax = d3.max(stackedData[stackedData.length - 1], (d) => d[1]);
@@ -116,7 +119,6 @@ class HistogramView {
 
     let yAxis = (g) => g
     .attr('class', 'y_axis')
-    .attr("transform", 'translate(50,0)')
     .call(d3.axisLeft(y)
         .ticks(2));
 
@@ -140,6 +142,7 @@ class HistogramView {
     selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
         .attr("text-anchor", "middle")
         .attr('alignment-baseline', 'baseline')
+        .transition(d3.transition().duration(750))
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')')
         .text(xLabel)
         .call(addHelpTooltip(xLabel.toLowerCase()));
@@ -175,7 +178,7 @@ class HistogramView {
 
     rectanglesEnter.attr('class', "bin-rect")
           .attr("x", (d, i) => _this.x(d.data.bin))
-          .attr("width", 10)
+          .attr("width", (this.histWidth / 20) - 2)
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
           .on("mouseover", function(d) {
@@ -196,8 +199,10 @@ class HistogramView {
 
     // update
     rectangles.transition(d3.transition().duration(750))
+          .attr("x", (d, i) => _this.x(d.data.bin))
           .attr("y", d => y(d[1]))
-          .attr("height", d => y(d[0]) - y(d[1]));
+          .attr("height", d => y(d[0]) - y(d[1]))
+          .attr("width", (this.histWidth / 20) - 2);
 
     rectangles = rectangles.merge(rectanglesEnter);
 
@@ -232,21 +237,23 @@ class HistogramView {
 
         let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
 
+        this.histWidth = parseInt(this.svgWidth);
+
         // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
         for(let i = 0; i < realDimensions.length; i++) {
 
           if(realDimensions[i] === "tempo") {
             _this.x = d3.scaleLinear()
               .domain([0, 240])
-              .range([52, 285]);
+              .range([0, this.histWidth]);
             } else if(realDimensions[i] === "loudness") {
               _this.x = d3.scaleLinear()
               .domain([-60, 0])
-              .range([52, 285]);
+              .range([0, this.histWidth]);
             } else {
               _this.x = d3.scaleLinear()
               .domain([0, 1])
-              .range([52, 285]);
+              .range([0, this.histWidth]);
             }
 
           _this.drawHistogram(_this.stackData(realDimensions[i]), i);
@@ -263,6 +270,11 @@ class HistogramView {
 
     onScreenSizeChanged () {
         console.log('onScreenSizeChanged');
+        // update the size
+        this.svgWidth = parseInt(this.svg.style("width"), 10);
+        this.svgHeight = parseInt(this.svg.style("height"), 10);
+        // redraw
+        this.redraw();
     }
 
     onFilter (filterFunction) {

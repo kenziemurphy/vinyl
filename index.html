@@ -156,7 +156,7 @@
 					</div>
 					<h2>About the Data</h2>
 					<p class="notes">
-						The data visualized here were pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.
+						The data visualized here was pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.
 					</p>
 					<h2>Legend</h2>
 					<div class="panel">
@@ -288,7 +288,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete.min.js"></script>
-  		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
+		  <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
+		  <script src="https://unpkg.com/d3-simple-slider"></script>
 		<script src="js/lib/pca.min.js"></script>
 		<script src="js/utils.js"></script>
 		<script src="js/audiohelpers.js"></script>
@@ -507,7 +508,7 @@
 				   minChars: 1,
 				   data: (rec, input) => ({ 
 			         label: rec['name'], 
-			         value: rec['id']
+			         value: {"id": rec['id'], "name": rec['name']}
 			       })
 				}
 			);
@@ -538,17 +539,17 @@
 				});
 
 			// Listen to searchbar selection
-			// TODO: If more than 4 selections, provide an alert
 			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
 
 			    // Clear the searchbar to be ready for a new search
 			    document.getElementById('search-artist').value = "";
 
 			    // Retrieve songs for this artist from our API
-				var artistID = event.text.value;
-				console.log(artistID);
+				var artistID = event.text.value.id;
+				var artistName = event.text.value.name;
+				//console.log(artistID);
 				
-				loadArtistData(artistID)
+				loadArtistData(artistID, artistName)
 					.then(appendArtistData)
 					.then(function () {
 						document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
@@ -571,14 +572,15 @@
 			// NOTE arrayJoin was moved to utils.js
 
 			// Loads an array of song data for the given artistID and append that to our dataset
-			function loadArtistData(artistID) {
+			function loadArtistData(artistID, artistName) {
+
 				// FIXME limit number of collections
-				console.log('loading artist', artistID)
+				//console.log('loading artist', artistID)
 
 				if (artistID.indexOf('spotify:artist:') >= 0)
 					artistID = artistID.substring('spotify:artist:'.length)
 				
-				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID;
+				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID + "&name=" + artistName;
 
 				return new Promise(function (resolve, reject) {
 					return d3.json(url).then(resolve)//.then()//.catch((error) => console.error(error));
@@ -614,6 +616,8 @@
 			// Removes the data for the artist at index i from the dataset
 			function removeArtistData(i) {
 
+				d3.select("#search-artist").attr("disabled", false);
+
 				// remove data from array
 				data.splice(i, 1);
 
@@ -631,6 +635,9 @@
 
 			// Removes the data for the artist from the dataset by artist id
 			function removeArtistDataById(id) {
+
+				d3.select("#search-artist").attr("disabled", false);
+
 				let removeIndex = data.map(d => d.id).indexOf(id);
 				if (removeIndex>= 0)
 					removeArtistData(removeIndex);
@@ -641,11 +648,13 @@
 				// immediately after the artist is selected and have like a spinner to show loading instead?
 				// the current behavior that the feedback for artist loading is not immediate can make it a little confusing
 
-				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef']; // color scheme
+				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef'].slice(0, data.length); // color scheme
 
-				console.log(data);
+				let drawData = data.slice(0);
+				drawData.reverse();
+				colors.reverse();
 
-				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(data);
+				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(drawData, (d) => d.id);
 
 				// enter
 				let selectionEnter = selection.enter()
@@ -660,13 +669,12 @@
 						})
 						.on('mouseout', function (d, i) {
 							dispatch.call('highlight', this, k => true);
-						});;
+						});
 				selectionEnter.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
 						
-
 				// update
 				selection.style("border-left", (d, i) => "12px solid " + colors[i]).text((d) => d["name"])
-						.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));;
+						.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
 
 				selection.merge(selectionEnter);
 
