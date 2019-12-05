@@ -17,6 +17,11 @@
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   background-color: #151515;
+  transition: all 0.2s;
+}
+
+.drawer-tab.ready {
+  background-color: #444;
 }
 
 #star-view-drawer .drawer-tab {

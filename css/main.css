@@ -408,6 +408,18 @@ input:checked + .slider:before {
     transition: opacity 0.5s;
 }
 
+.tutorial-tooltip .speech-bubble {
+    animation: breathing 10s infinite;
+}
+
+@keyframes breathing {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.05); }
+    50%  { transform: scale(1); }
+    75%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 .tutorial-tooltip.hide {
     opacity: 0;
     pointer-events: none;
@@ -448,4 +460,20 @@ input:checked + .slider:before {
 
 .nowrap {
     white-space: nowrap;
+}
+
+.notes {
+    font-size: 10pt;
+    color: #fff9;
+    font-style: italic !important;
+}
+
+a:any-link {
+    color: inherit;
+    font-style: inherit;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #fff;
 }

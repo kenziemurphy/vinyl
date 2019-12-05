@@ -562,6 +562,15 @@ class RadialView {
                     d.isDragging = true;
                     d.fx = d3.event.x;
                     d.fy = d3.event.y;
+
+                    let dropTargetEl = document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY);
+                    let dropTargetId = 'drop-area';
+                    while (dropTargetEl && dropTargetEl.id != dropTargetId) {
+                        dropTargetEl = dropTargetEl.parentNode;
+                    }
+                    let dropTarget = d3.select(dropTargetEl);
+                    console.log(dropTarget.size() > 0, dropTarget.size() > 0 && dropTarget.attr("id") == dropTargetId);
+                    d3.select('#drop-area').classed('ready', dropTarget.size() > 0 && dropTarget.attr("id") == dropTargetId);
                 })
                 .on('end', function (d, i, m) {
                     d.isDragging = false;
@@ -583,6 +592,7 @@ class RadialView {
                         //     this.parentNode.classList.add('hide')
                         new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
                     }
+                    d3.select('#drop-area').classed('ready', false);
                 }));
             
         var songGEnterInner = songGEnter.append('g')

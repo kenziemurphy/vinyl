@@ -10,11 +10,11 @@ function callTutorial(selector, text) {
     console.log(boundingRect)
 
     d3.select('#tutorial')
-        .style('top', (boundingRect.bottom + 2) + 'px')
+        .style('top', (boundingRect.bottom + 5) + 'px')
         .style('left', ((boundingRect.left + boundingRect.right) / 2) + 'px')
         .classed('hide', false)
         .select('p')
-        .text(text)
+        .text(text);
 
     tutorialCalled.push(selector + ':' + text);
 }

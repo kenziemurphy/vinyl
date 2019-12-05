@@ -35,7 +35,22 @@
 					<h2>More Options</h2>
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel" id="options-panel">
-							<!-- <div class="cell mb-xs">
+							<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
+								<div>
+									<small class="nowrap">Position data points by</small>
+								</div>
+								<div class="container-row">
+									<div class="radio grow">
+										<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
+										<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca">Similarity </label>
+									</div>
+									<div class="grow radio">
+										<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
+										<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value">Value </label>
+									</div>
+								</div>
+							</div>
+							<div class="cell mb-xs">
 								<div class="margin-gutter">
 									<small>X / Angular Axis</small>
 									<br>
@@ -109,21 +124,7 @@
 									<span class="slider round"></span>
 								</label>
 							</div> -->
-							<!-- <div class="grow mb-xs" style="margin-bottom: 10px;">
-								<div class="mb-xs">
-									<small>Position data points by</small>
-								</div>
-								<div class="container-row">
-									<div class="grow radio">
-										<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
-										<label for="radio-pca-off" class="btn btn-block text-center add-help" data-help-key="pca">Value </label>
-									</div>
-									<div class="radio grow">
-										<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
-										<label for="radio-pca-on" class="btn btn-block text-center add-help" data-help-key="pca">Similarity </label>
-									</div>
-								</div>
-							</div> -->
+							
 							<div class="grow container-row mb-xs">
 								<div class="grow">
 									<small class="add-help" data-help-key="split-view">Split View </small>
@@ -153,16 +154,17 @@
 							</div>
 						</div>
 					</div>
-					<h2>How to read this visualization</h2>
-					<div>
+					<h2>About the Data</h2>
+					<p class="notes">
+						The data visualized here were pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.
+					</p>
+					<h2>Legend</h2>
+					<div class="panel">
 						<p>
 							[visuals]
 							<ul>
-								<li>Position</li>
 								<li>Size</li>
 								<li>Shape</li>
-								<li>Color</li>
-								<li>Image</li>
 								<li>Image</li>
 							</ul>
 						</p>
@@ -601,7 +603,7 @@
 					updateSplitViewToggle();
 
 					if (ENABLE_TUTORIAL && data.length <= 1) {
-						callTutorial('#search-artist', 'Try searching for your favorite artist here!')
+						callTutorial('#search-artist', 'Try adding your favorite artist to the comparison here!')
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
