@@ -55,7 +55,7 @@ class RadialView {
         }
         
         this.PADDING = {
-            x: 0,
+            x: 30,
             y: 30
         };
         this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
