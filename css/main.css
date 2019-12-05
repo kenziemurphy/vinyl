@@ -93,7 +93,6 @@ b, [font-weight="bold"] {
 
 .btn.btn-block {
     display: block;
-    width: 100%;
 }
 
 .btn:not(input):not([disabled=disabled]):not(.disabled):hover, .btn.active {
@@ -114,7 +113,7 @@ b, [font-weight="bold"] {
     /* margin: 10px; */
     margin-bottom: 10px;
     border-radius: 7px;
-    border: 1px #fff4 solid;
+    border: 1px #fff5 solid;
     border-left: 12px solid #fca981;
     line-height: 25px;
     /*opacity: 0.25;*/
@@ -151,7 +150,8 @@ div.awesomplete {
 #search-artist {
     box-sizing: border-box;
 	width: 100% !important;
-	height: 40px !important;
+    /* height: 40px !important; */
+    padding: 5px 15px;
 	font-size: medium; 
 	color: #fff;
 	font-family: proxima-nova, sans-serif;
@@ -161,7 +161,27 @@ div.awesomplete {
     border-width: 0px;
     padding-left: 10px;
     background-color: transparent;
-    box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25);
+    /* box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.25); */
+
+    border-radius: 7px;
+    border: 1px #fff5 solid;
+    line-height: 25px;
+    /*opacity: 0.25;*/
+    transition: border 0.2s;
+}
+
+#search-artist:focus {
+    border-color: #fff;
+}
+
+#search-highlight {
+    border-color: #fff5;
+}
+
+#search-highlight.active {
+    color: #ffffff;
+    background-color: transparent;
+    border-color: #fff;
 }
 
 /* Results list */
@@ -329,6 +349,10 @@ input:checked + .slider:before {
 }
 
 .mb-xs {
+    margin-bottom: 10px;
+}
+
+.mb-xxs {
     margin-bottom: 5px;
 }
 
@@ -390,7 +414,38 @@ input:checked + .slider:before {
 }
 
 .panel {
-    border: 1px #fff6 solid;
+    border: 1px #fff5 solid;
     border-radius: 10px;
     padding: 10px 10px;
+}
+
+.radio input[type="radio"] {
+    opacity: 0;
+    position: fixed;
+    width: 0;
+}
+
+.radio label.btn {
+    border-radius: 0;
+    border-color: #fff5;
+}
+
+.radio:first-child label.btn {
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+}
+
+.radio:last-child label.btn {
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+}
+
+.radio input[type="radio"]:checked + label {
+    background-color:#fff;
+    color: #222222;
+    font-weight: 900;
+}
+
+.nowrap {
+    white-space: nowrap;
 }

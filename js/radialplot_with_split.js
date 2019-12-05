@@ -60,10 +60,6 @@ class RadialView {
         };
         this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
-        this.RADIAL_KEYS = {
-            'key_signature': 'x',
-            'key': 'x'
-        }
         
         // data-dependent computed consts, will update when data is loaded
         this.SCALE_X = x => x;
@@ -108,7 +104,7 @@ class RadialView {
             var outsideButton = d3.selectAll('.vis-control, .vis-control *').filter(equalToEventTarget).empty();
             
             if (outsideDot && outsideButton) {
-                d3.select('input#search-highlight').classed('disabled', true);
+                d3.select('input#search-highlight').classed('active', false);
                 _this.resetSelection();
                 _this.selectionLocked = false;
             }
@@ -323,7 +319,9 @@ class RadialView {
                     //     this.SCALE_Y.range()[0] - 50)
                     .attr('y', this.useRadialScale() ? 
                         this.SCALE_Y.range()[1] + 50:
-                        this.SCALE_Y.range()[0] + 40);
+                        this.config.showAxis ? 
+                            this.SCALE_Y.range()[0] + 40:
+                            this.SCALE_Y.range()[0] + 20);
             }
         }
         
@@ -430,7 +428,7 @@ class RadialView {
             Math.min(this.W, this.H) / 24;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
             Math.min(this.W, this.H) / 2 - Math.max(this.PADDING.x, this.PADDING.y):
-            Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y);
+            Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y) * 1.5;
 
         if (this.useRadialScale())
             this.SCALE_X = SCALE_ANGLE;
@@ -742,15 +740,16 @@ class RadialView {
                     _this.songToolTip.hide({}, this.parentNode);
                     _this.dispatch.call('highlight', this, function (k) {
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
-                        // let isInFilter = true;
-                        // if (!d3.select('input#search-highlight').classed('disabled')) {
-                        //     if (k.name)
-                        //         isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
-                        //     else
-                        //         isInFilter = false;
-                        // }
+                        let isInFilter = true;
+                        console.trace();
+                        if (d3.select('#search-highlight').classed('active')) {
+                            if (k.name)
+                                isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                            else
+                                isInFilter = false;
+                        }
                         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
-                        return isTheSelectedSong// || isInFilter// || isSimilarSong;
+                        return isTheSelectedSong || isInFilter// || isSimilarSong;
                     });
                 }
             }
@@ -831,12 +830,14 @@ class RadialView {
         });
         // this.dispatch.call('highlight', this, k => true);
         this.dispatch.call('highlight', this, function (k) {
-            if (d3.select('input#search-highlight').classed('disabled'))
+            if (d3.select('input#search-highlight').classed('active')) {
+                if (!k.name)
+                    return false;
+                return k.name.toLowerCase()
+                    .indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+            } else {
                 return true;
-            if (!k.name)
-                return false;
-            return k.name.toLowerCase()
-                .indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+            }
         });
 
         this.svg.selectAll('line.similarity-link').remove();

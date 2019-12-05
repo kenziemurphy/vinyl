@@ -21,7 +21,7 @@
 			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
 				<h1>MusicOctoRobot</h1>
 				<h2>I'm interested in...</h2>
-				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search an artist / album / playlist..." />
+				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search for an artist..." />
 				<div id="artist-buttons">
 					<!--<div class="artist-btn">Muse<button>&times;</button></div>
 					<div class="artist-btn">Radiohead<button>&times;</button></div>
@@ -35,7 +35,7 @@
 					<h2>More Options</h2>
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel" id="options-panel">
-							<div class="cell mb-xs">
+							<!-- <div class="cell mb-xs">
 								<div class="margin-gutter">
 									<small>X / Angular Axis</small>
 									<br>
@@ -77,11 +77,12 @@
 										<option data-scale-type="linear" value="pca2">PCA2</option>	
 									</select>
 								</div>
-							</div>
-							<div class="cell mb-xs" style="margin-bottom: 10px;">
+							</div> -->
+							<div class="cell mb-xs">
 								<div class="margin-gutter">
-									<small>Find a song on this chart</small>
-									<br>
+									<div class="mb-xxs">
+										<small>Find a song on this chart</small>
+									</div>
 									<input type="text" class="btn vis-control" id="search-highlight" style="width: 100%;">
 								</div>
 							</div>
@@ -99,7 +100,7 @@
 							</div>
 						</div> -->
 						<!-- <div class="container-col"> -->
-							<div class="grow container-row mb-xs">
+							<!-- <div class="grow container-row mb-xs">
 								<div class="grow">
 									<small class="add-help" data-help-key="pca">Just cluster similar songs </small>
 								</div>
@@ -107,7 +108,22 @@
 									<input type="checkbox" id="toggle-pca" class="vis-control">
 									<span class="slider round"></span>
 								</label>
-							</div>
+							</div> -->
+							<!-- <div class="grow mb-xs" style="margin-bottom: 10px;">
+								<div class="mb-xs">
+									<small>Position data points by</small>
+								</div>
+								<div class="container-row">
+									<div class="grow radio">
+										<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
+										<label for="radio-pca-off" class="btn btn-block text-center add-help" data-help-key="pca">Value </label>
+									</div>
+									<div class="radio grow">
+										<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
+										<label for="radio-pca-on" class="btn btn-block text-center add-help" data-help-key="pca">Similarity </label>
+									</div>
+								</div>
+							</div> -->
 							<div class="grow container-row mb-xs">
 								<div class="grow">
 									<small class="add-help" data-help-key="split-view">Split View </small>
@@ -155,60 +171,77 @@
             </div>
 			<div class="cell grow container-col">
 				<div id="vis-area" class="cell grow container-col">
-					<!-- <div class="container-row" style="margin:auto;">
-						<div class="text-center margin-gutter">
-							<small>X / Angle Axis</small>
-							<br>
-							<select name="" class="btn active vis-control" id="select-x-axis" style="width: auto;">
-								<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
-								<option data-scale-type="linear" value="tempo">TEMPO</option>
-								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
-								<option data-scale-type="linear" value="release_year">YEAR</option>
-								<option data-scale-type="linear" value="duration">DURATION</option>
-								<option data-scale-type="linear" value="pca1">PCA1</option>	
-							</select>
+					<div class="container-row">
+						<div class="cell grow mb-xs" style="margin-bottom: 10px;">
+							<div>
+								<small>Position data points by</small>
+							</div>
+							<div class="container-row">
+								<div class="radio grow">
+									<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
+									<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca">Similarity </label>
+								</div>
+								<div class="grow radio">
+									<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
+									<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value">Value </label>
+								</div>
+							</div>
 						</div>
-						<div class="text-center margin-gutter">
-							<small>Y / Radial Axis</small>
-							<br>
-							<select name="" class="btn active vis-control" id="select-y-axis" style="width: auto;">
-								<option data-scale-type="linear" value="tempo">TEMPO</option>
-								<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
-								<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
-								<option data-scale-type="linear" value="release_year">YEAR</option>
-								<option data-scale-type="linear" value="duration">DURATION</option>	
-								<option data-scale-type="linear" value="pca2">PCA2</option>	
-							</select>
+						<div class="cell mb-xs grow">
+							<div class="margin-gutter">
+								<div>
+									<small>X / Angular Axis</small>
+								</div>
+								<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
+									<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>
+									<!-- <option data-scale-type="linear" value="pca1">PCA1</option>	 -->
+								</select>
+							</div>
 						</div>
-						<div class="text-center margin-gutter">
-							<small>Find a song in this graphic</small>
-							<br>
-							<input type="text" class="btn vis-control" id="search-highlight">
+						<div class="cell mb-xs grow">
+							<div class="margin-gutter">
+								<small>Y / Radial Axis</small>
+								<br>
+								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
+									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>	
+									<!-- <option data-scale-type="linear" value="pca2">PCA2</option>	 -->
+								</select>
+							</div>
 						</div>
-					</div> -->
-					<div class="grow container-col" style="padding-bottom: 30px;">
+					</div>
+					
+					<div class="grow container-col" style="padding-bottom: 10px;">
+							<!-- <div class="grow container-col" style="padding-bottom: 30px;"> -->
 						<svg id="radial-view" class="grow" overflow="visible"></svg>
 					</div>
 					<!-- <div class="" style="padding-top: 20px; padding-bottom: 20px;">
 						Other songs similar to your selection:
 					</div> -->
 				</div>
-				<div class="text-center cell drawer-tab">
+				<div class="text-center drawer-tab">
 					[placeholder]
 				</div>
             </div>
@@ -294,12 +327,14 @@
 
 			// UI initialization from vis's config
 			let rvConfig = rv.getConfig();
-			document.getElementById('select-x-axis').value = rvConfig.xMapping.key;
-			document.getElementById('select-y-axis').value = rvConfig.yMapping.key;
-			document.getElementById('toggle-split-view').checked = rvConfig.isSplitting;
-			document.getElementById('toggle-album-art').checked = rvConfig.showAlbumArt;
-			document.getElementById('toggle-force').checked = rvConfig.enableForce;
-			document.getElementById('toggle-pca').checked = rvConfig.isPca;
+			d3.select('#select-x-axis').property("value", rvConfig.xMapping.key);
+			d3.select('#select-y-axis').property("value", rvConfig.yMapping.key);
+			d3.select('#toggle-split-view').property("checked", rvConfig.isSplitting);
+			d3.select('#toggle-album-art').property("checked", rvConfig.showAlbumArt);
+			d3.select('#toggle-force').property("checked", rvConfig.enableForce);
+			d3.select('[name=radio-pca]').property("value", rvConfig.isPca);
+			// document.getElementById('radio-pca').checked = rvConfig.isPca;
+			// document.getElementById('toggle-pca').checked = rvConfig.isPca;
 			updateSplitViewToggle();
 
 			function updateSplitViewToggle () {
@@ -316,10 +351,11 @@
 			}
 
 			// UI events
-			d3.selectAll('#toggle-pca')
+			d3.selectAll('[name=radio-pca]')
+			// d3.selectAll('#toggle-pca')
 				.on('change', function () {
 					console.log(this.checked)
-					if (this.checked) {
+					if (this.value == 'mode-pca') {
 						rv.setConfig({
 							xMapping: {
 								key: 'pca1',
@@ -339,7 +375,7 @@
 						});
 						d3.select('#select-x-axis').attr('disabled', 'disabled');
 						d3.select('#select-y-axis').attr('disabled', 'disabled');
-					} else {
+					} else if (this.value == 'mode-value') {
 						let xSelect = d3.select('#select-x-axis').node();
 						let ySelect = d3.select('#select-y-axis').node();
 						let xSelectedOption = xSelect.options[xSelect.selectedIndex];
@@ -409,7 +445,8 @@
 					dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
 				})
 				.on('click', function () {
-					this.classList.remove('disabled')
+					// this.classList.remove('disabled')
+					this.classList.add('active')
 					this.select();
 					dispatch.call('highlight', this, k => k.name ? k.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0 : false);
 				});
@@ -565,7 +602,8 @@
 					if (ENABLE_TUTORIAL && data.length <= 1) {
 						callTutorial('#search-artist', 'Try searching for your favorite artist here!')
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
-						callTutorial('#options-panel', 'Now try adjusting the visualization here!')
+						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
+						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
 					}
 				})
 			}

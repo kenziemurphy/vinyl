@@ -7,9 +7,11 @@ function callTutorial(selector, text) {
         return;
     }
 
+    console.log(boundingRect)
+
     d3.select('#tutorial')
-        .style('top', boundingRect.bottom + 'px')
-        .style('left', (boundingRect.left + boundingRect.right / 2) + 'px')
+        .style('top', (boundingRect.bottom + 2) + 'px')
+        .style('left', ((boundingRect.left + boundingRect.right) / 2) + 'px')
         .classed('hide', false)
         .select('p')
         .text(text)
@@ -22,7 +24,6 @@ d3.select('body').on('click.tutorial', function () {
         return this == d3.event.target;
     }
 
-    console.log('!@!#!')
     var outsideTutorial = d3.select('#tutorial').filter(equalToEventTarget).empty();
     
     if (outsideTutorial) {

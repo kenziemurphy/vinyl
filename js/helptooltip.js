@@ -63,9 +63,13 @@ var HELP_PRESETS = {
         title: 'Split View',
         body: 'Only available when two or more artists are loaded.'
     },
-    'pca': {
+    'mode-pca': {
         title: 'Clustering with PCA',
         body: 'When on, this mode will try to move songs that are similar to each other closer togehter using "Principle Component Analysis" (PCA) projection. The x and y axes would not have a particular meaning.'
+    },
+    'mode-value': {
+        title: 'Plot by Value',
+        body: 'When on, this mode will position each data point on axes by the selected attributes.'
     }
 };
 
