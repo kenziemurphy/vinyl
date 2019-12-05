@@ -336,6 +336,7 @@
 			d3.select('#toggle-album-art').property("checked", rvConfig.showAlbumArt);
 			d3.select('#toggle-force').property("checked", rvConfig.enableForce);
 			d3.select('[name=radio-pca]').property("value", rvConfig.isPca);
+			d3.select('#toggle-pca').property("checked", rvConfig.isPca);
 			// document.getElementById('radio-pca').checked = rvConfig.isPca;
 			// document.getElementById('toggle-pca').checked = rvConfig.isPca;
 			updateSplitViewToggle();
@@ -354,11 +355,13 @@
 			}
 
 			// UI events
-			d3.selectAll('[name=radio-pca]')
+			d3.selectAll('[name=radio-pca], #toggle-pca')
 			// d3.selectAll('#toggle-pca')
 				.on('change', function () {
-					console.log(this.checked)
-					if (this.value == 'mode-pca') {
+					console.log(this.getAttribute('type'));
+					let isChecked = this.getAttribute('type') == 'checkbox' ? this.checked : this.value == 'mode-pca';
+					// console.log(this.checked)
+					if (isChecked) {
 						rv.setConfig({
 							xMapping: {
 								key: 'pca1',
@@ -378,7 +381,7 @@
 						});
 						d3.select('#select-x-axis').attr('disabled', 'disabled');
 						d3.select('#select-y-axis').attr('disabled', 'disabled');
-					} else if (this.value == 'mode-value') {
+					} else {
 						let xSelect = d3.select('#select-x-axis').node();
 						let ySelect = d3.select('#select-y-axis').node();
 						let xSelectedOption = xSelect.options[xSelect.selectedIndex];
