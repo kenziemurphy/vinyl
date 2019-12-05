@@ -11,7 +11,7 @@ var margin = {
     left: 150,
     right: 150
 };
-const labelMargin = 20;
+const labelMargin = 30;
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
@@ -160,24 +160,42 @@ class StarView {
                 new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
             });
 
-        var category = texts.append('text')
+        var category_title = texts.append('text')
             .attr('class', 'star-categories')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
-                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 30;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 40;
                 //console.log(d.name);
-                return "translate(" + center_x + "," + center_y + ")";
+                return "translate(" + (center_x - 10) + "," + center_y + ")";
             })
-            .attr('text-anchor', 'middle');
+            .attr('text-anchor', 'end');
+
+        var category_content = texts.append('text')
+            .attr('class', 'star-categories')
+            .attr('transform', function(d, i){
+                var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 40;
+                //console.log(d.name);
+                return "translate(" + (center_x + 10) + "," + center_y + ")";
+            })
+            .attr('text-anchor', 'start');
+            
 
         for (var num = 0; num < categories.length; num++){
             //console.log(num);
-            category.append('svg:tspan')
+            category_title.append('svg:tspan')
                 .attr('x', 0)
                 .attr('dy', 20)
                 .text(function(d){
                     //console.log(d[categories[num]]);
-                    return categories[num] + ': ' + d[categories[num]];
+                    return categories[num] + ': ';
+                });
+            category_content.append('svg:tspan')
+                .attr('x', 0)
+                .attr('dy', 20)
+                .text(function(d){
+                    //console.log(d[categories[num]]);
+                    return d[categories[num]];
                 });
         }
             
@@ -293,7 +311,8 @@ class StarView {
             y1 = starCircleRadius * Math.sin(r);
             y2 = (starRadius + starCircleRadius) * Math.sin(r);
 
-            var lines = this.svg.selectAll('line')
+            var lines = this.svg.append('g')
+                .selectAll('line')
                 .data(dataArray)
                 .enter()
                 .append('line')
@@ -306,7 +325,7 @@ class StarView {
                     var center_y = margin.top + starRadius + starCircleRadius;
                     return 'translate(' + center_x + ',' + center_y + ')';
                 })
-                .attr('stroke-opacity', 0.1)
+                // .attr('stroke-opacity', 0.1)
                 .attr('x1', x1)
                 .attr('x2', x2)
                 .attr('y1', y1)

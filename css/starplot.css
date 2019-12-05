@@ -76,7 +76,7 @@
 }
 .star-axis {
   stroke: #f4f4f4;
-  /*stroke-opacity: 0.1;*/
+  stroke-opacity: 0.1;
   stroke-width: 1px;
 }
 .star-path {
