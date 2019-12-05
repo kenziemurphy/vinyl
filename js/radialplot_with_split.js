@@ -750,11 +750,11 @@ class RadialView {
                     _this.songToolTip.hide({}, this.parentNode);
                     _this.dispatch.call('highlight', this, function (k) {
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
-                        let isInFilter = true;
-                        console.trace();
-                        if (d3.select('#search-highlight').classed('active')) {
+                        let isInFilter = false;
+                        let searchBox = d3.select('input#search-highlight');
+                        if (searchBox.classed('active') && searchBox.node().value.trim().length) {
                             if (k.name)
-                                isInFilter = k.name.toLowerCase().indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                                isInFilter = k.name.toLowerCase().indexOf(searchBox.node().value.trim().toLowerCase()) >= 0;
                             else
                                 isInFilter = false;
                         }

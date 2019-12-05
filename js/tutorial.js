@@ -14,7 +14,7 @@ function callTutorial(selector, text) {
         .style('left', ((boundingRect.left + boundingRect.right) / 2) + 'px')
         .classed('hide', false)
         .select('p')
-        .text(text);
+        .html(text);
 
     tutorialCalled.push(selector + ':' + text);
 }

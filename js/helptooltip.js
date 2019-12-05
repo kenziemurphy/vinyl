@@ -68,7 +68,7 @@ var HELP_PRESETS = {
         body: 'When on, this mode will try to move songs that are similar to each other closer togehter using "Principle Component Analysis" (PCA) projection. The x and y axes would not have a particular meaning.'
     },
     'mode-value': {
-        title: 'Plot by Value',
+        title: 'Plot by Attribute Values',
         body: 'When on, this mode will position each data point on axes by the selected attributes.'
     }
 };

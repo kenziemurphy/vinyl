@@ -181,11 +181,11 @@
 							<div class="container-row">
 								<div class="radio grow">
 									<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
-									<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca">Similarity </label>
+									<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca"><small>Group by Similarity</small> </label>
 								</div>
 								<div class="grow radio">
 									<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
-									<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value">Value </label>
+									<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value"><small>Plot by Value</small> </label>
 								</div>
 							</div>
 						</div>
@@ -603,7 +603,7 @@
 					updateSplitViewToggle();
 
 					if (ENABLE_TUTORIAL && data.length <= 1) {
-						callTutorial('#search-artist', 'Try adding your favorite artist to the comparison here!')
+						callTutorial('#search-artist', 'Try adding your favorite artist to the comparison here!<br>Tip: you can compare up to 4 artists at a time')
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
