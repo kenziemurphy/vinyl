@@ -15,7 +15,7 @@
 .song .dot {
     fill: #fff;
     stroke: #fff;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-opacity: 1;
 }
 
@@ -72,6 +72,11 @@
 .song.active .rotate-anim.rotate-6, .song.hover .rotate-anim.rotate-6 { animation: rotate-6; }
 .song.active .rotate-anim.rotate-7, .song.hover .rotate-anim.rotate-7 { animation: rotate-7; }
 .song.active .rotate-anim.rotate-8, .song.hover .rotate-anim.rotate-8 { animation: rotate-8; }
+
+.song .hover-area {
+    fill-opacity: 0;
+    cursor: pointer;
+}
 
 @keyframes rotate-1 {
     0%   { transform: rotate(0deg); }

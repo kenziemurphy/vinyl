@@ -18,7 +18,7 @@ var categories = [
         unit: "seconds"
     },
     {
-        key: "key_signature",
+        key: "key_signature_full",
         label: "Key",
         unit: ""
     },
@@ -173,14 +173,14 @@ class StarView {
             });
 
         var cross = texts.append('text')
-            .attr('class', 'star-remove')
+            .attr('class', 'star-remove clickable')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i + 30;
                 var center_y = 20;
                 return "translate(" + center_x + "," + center_y + ")";
             })
             .attr('text-anchor', 'end')
-            .text('x')
+            .html('&times;')
             .on('click', function(d, i){
                 flag = 0;
                 removeIndex = i;
@@ -188,21 +188,21 @@ class StarView {
                 new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
             });
 
-        var category_title = texts.append('text')
+        var category_title = texts.append('g')
             .attr('class', 'star-categories')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
-                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 40;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 70;//40;
                 //console.log(d.name);
                 return "translate(" + (center_x - 10) + "," + center_y + ")";
             })
             .attr('text-anchor', 'end');
 
-        var category_content = texts.append('text')
+        var category_content = texts.append('g')
             .attr('class', 'star-categories')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) *(2*i + 1) + spacing * i;
-                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 40;
+                var center_y = margin.top + (starCircleRadius + starRadius) * 2 + 70;//40;
                 //console.log(d.name);
                 return "translate(" + (center_x + 10) + "," + center_y + ")";
             })
@@ -211,17 +211,20 @@ class StarView {
 
         for (var num = 0; num < categories.length; num++){
             //console.log(num);
-            category_title.append('svg:tspan')
-                .attr('x', 0)
-                .attr('dy', 20)
+            category_title.append('text')
+                .attr('transform', `translate(${0}, ${num * 20})`)
+                // .attr('x', 0)
+                // .attr('dy', 20)
                 // .attr('font-weight', 'bold')
                 .text(function(d){
                     //console.log(d[categories[num]]);
-                    return categories[num].label + ': ';
-                });
-            category_content.append('svg:tspan')
-                .attr('x', 0)
-                .attr('dy', 20)
+                    return categories[num].label + ' ';
+                })
+                .call(addHelpTooltip(categories[num].key));
+            category_content.append('text')
+                .attr('transform', `translate(${0}, ${num * 20})`)
+                // .attr('x', 0)
+                // .attr('dy', 20)
                 .text(function(d){
                     //console.log(d[categories[num]]);
                     return round(d[categories[num].key], 1) + ' ' + categories[num].unit;

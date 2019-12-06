@@ -181,11 +181,11 @@
 							<div class="container-row">
 								<div class="radio grow">
 									<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
-									<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca"><small>Group by Similarity</small> </label>
+									<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap clickable" data-help-key="mode-pca"><small>Group by Similarity</small> </label>
 								</div>
 								<div class="grow radio">
 									<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
-									<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value"><small>Plot by Value</small> </label>
+									<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap clickable" data-help-key="mode-value"><small>Plot by Value</small> </label>
 								</div>
 							</div>
 						</div>
@@ -257,7 +257,7 @@
 		<div id="veil" class="veil hide vis-control"></div>
 
 		<div id="star-view-drawer" class="container-col hide">
-			<div id="drop-area" class="text-center cell drawer-tab vis-control">
+			<div id="drop-area" class="text-center cell drawer-tab vis-control clickable">
 				<!-- <h2>Detailed Analysis</h2> -->
 				<div id="starTitleLabel">
 					Drag a song here for more details
@@ -619,7 +619,7 @@
 			// Removes the data for the artist at index i from the dataset
 			function removeArtistData(i) {
 
-				d3.select("#search-artist").attr("disabled", false);
+				d3.select("#search-artist").attr("disabled", null);
 
 				// remove data from array
 				data.splice(i, 1);

@@ -51,6 +51,7 @@
   font-size: 18px;
   font-family: proxima-nova, sans-serif;
   fill: #f4f4f4;
+  font-weight: bold;
 }
 .star-label {
   font-size: 14px;
@@ -65,6 +66,9 @@
   font-family: proxima-nova, sans-serif;
   fill: #f4f4f4;
   fill-opacity: 0.3;
+}
+.star-remove:hover {
+  fill-opacity: 0.6;
 }
 .star-categories {
   font-size: 14px;
@@ -109,6 +113,3 @@
 }*/
 
 
-.hover-area {
-  fill-opacity: 0;
-}

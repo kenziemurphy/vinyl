@@ -15,6 +15,10 @@ var HELP_PRESETS = {
         title: 'Key',
         body: `The key of a song indicates its "root" note.` 
     },
+    'key_signature_full': {
+        title: 'Key',
+        body: `The key of a song indicates its "root" note.` 
+    },
     'time_signature': {
         title: 'Time Signature',
         body: 'The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure)'
@@ -65,7 +69,7 @@ var HELP_PRESETS = {
     },
     'mode-pca': {
         title: 'Group by Similarity',
-        body: 'When on, this mode will try to move songs that are similar to each other closer together. The x and y axes would not have a particular meaning.<br>(This is grouped by "Principle Component Analysis" (PCA) projection).'
+        body: 'When on, this mode will try to move songs that are similar to each other closer together. The x and y axes would not have a particular meaning.<br>This cluster view was created using "Principle Component Analysis" (PCA) projection technique.'
     },
     'mode-value': {
         title: 'Plot by Attribute Values',
@@ -111,9 +115,9 @@ function addHelpTooltip (helpContent) {
                 let tooltip = d3.select('.help-tooltip')
         
                 tooltip.select('.help-title')
-                .text(d.helpTitle)
+                .html(d.helpTitle)
                 tooltip.select('.help-body')
-                .text(d.helpBody)
+                .html(d.helpBody)
         
                 
                 tooltip.classed('hide', false)

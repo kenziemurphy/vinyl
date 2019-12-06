@@ -1,8 +1,13 @@
 // facts
 const MAX_SPLITS = 4;
 const ALL_KEYS = [
-    'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
+    'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭m', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
     'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
+];
+
+const ALL_KEYS_FULL = [
+    'C minor', 'C♯/D♭ minor', 'D minor', 'D♯/E♭ minor', 'E minor', 'F minor', 'F♯/G♭ minor', 'G minor', 'G♯/A♭ minor', 'A minor', 'A♯/B♭ minor', 'B minor',
+    'C major', 'C♯/D♭ major', 'D major', 'D♯/E♭ major', 'E major', 'F major', 'F♯/G♭ major', 'G major', 'G♯/A♭ major', 'A major', 'A♯/B♭ major', 'B major',
 ];
 
 // computed consts
@@ -152,7 +157,8 @@ class RadialView {
                 d.x = _this.W / 2;
                 d.y = _this.H / 2;
             }
-            d.key_signature = _this.getKeyFromKeyId(d.key, d.mode);
+            d.key_signature = _this.getKeyFromKeyId(d.key, d.mode, false);
+            d.key_signature_full = _this.getKeyFromKeyId(d.key, d.mode, true);
         });
 
         this.filteredData = this.data.filter(this.filter);
@@ -930,13 +936,13 @@ class RadialView {
      * @param int mode - mode in range of [0, 1] (major/minor)
      * @return string - musical notation of the key
     */
-    getKeyFromKeyId (key, mode = false) {
+    getKeyFromKeyId (key, mode = false, full = false) {
         if (mode === false) {
             mode = Math.ceil(key / 12);
             key = key % 12;
         }
     
-        return ALL_KEYS[key + mode * 12];
+        return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
         // return ALL_KEYS[key * 2 + mode];
     }
 
