@@ -5,26 +5,118 @@ class HistogramView {
         this.svg = svg;
         this.data = data;
         this.dispatch = dispatch;
+        this.brushHist;
 
         //var svg = d3.select('svg');
         // NOTE: I fixed this svgWidth/Height, it should work now -- Tae
         this.svgWidth = parseInt(this.svg.style("width"), 10);
         this.svgHeight = parseInt(this.svg.style("height"), 10);
 
+
+
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
         this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 
-        this.histWidth = parseInt(this.svgWidth - 60);
+        this.histWidth = parseInt(this.svgWidth);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
         this.paddingLeft = 20;
+
+        this.HistTop = 0;
+        this.HistBottom = this.histHeight - 30;
+
         this.x = d3.scaleLinear()
           .domain([0, 1])
           .range([52, 285]);
-        
+
+        let _this = this;
+
+        this.brush = d3.brush()
+            .extent(function() {
+                return [[20, _this.HistTop], [_this.histWidth, _this.HistBottom]];
+            })
+            // .extent([[20, _this.HistTop], [_this.histWidth, _this.HistBottom]])
+            .on("start",  function (histogram) {
+
+                // Check if this g element is different than the previous brush
+                if(_this.brushHist !== this) {
+
+
+                // Clear the old brush
+                 _this.brush.move(d3.select(_this.brushHist), null);
+
+                // Update the global scales for the subsequent brushmove events
+                // _this.x.domain(extentByAttribute[cell.x]);
+                // _this.y.domain(extentByAttribute[cell.y]);
+
+                // Save the state of this g element as having an active brush
+                _this.brushHist = this;
+            }
+            })
+            .on("brush", function (histogram) {
+                        // Get the extent or bounding box of the brush event, this is a 2x2 array
+                var e = d3.event.selection;
+
+                if(e) {
+
+                    // Select all .dot circles, and add the "hidden" class if the data for that circle
+                    // lies outside of the brush-filter applied for this SplomCells x and y attributes
+                    d3.selectAll('.bin-rect')
+                     .classed("faded", function(d){
+                        // console.log(d);
+                        // return e[0][0] > _this.x(d[bin]) || _this.x(d[bin]) > e[1][0]
+                        // || e[0][1] > _this.y(d[bin]) || _this.y(d[bin]) > e[1][1];
+                        return true;
+                    })
+                    // .classed('fade', function(d) {
+
+                    //     /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                    //         and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                    //     let artistIndex = this.parentNode.id.slice(-1);
+
+                    //     // get the Spotify id of the collection (artist)
+                    //     let collectionId = _this.data[artistIndex].id;
+
+                    //     // get a list of the id's in this bin
+                    //     let idsInBin = d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
+
+                    //       The filtering function typically has format (d) => d.id == s.id where s.id is the magical song id we want to highlight.
+                    //         Or (d) => d.collection_id == s.id where s.id is the id of a collection we want to highlight all the songs of
+                    //         Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...]
+                    //         so those filtering functions can operate on it.
+
+                    //     idsInBin = idsInBin.map((d) => {
+                    //         return {"id": d, collection_id: collectionId};
+                    //     });
+
+                    //     /* check if the filter function evaluates true for at least one id in this bin, i.e. if one id in this bin needs to be highlighted,
+                    //     then highlight the whole bin */
+                    //     for(let id of idsInBin) {
+                    //         if(_this.highlight(id)) {
+                    //             return false;
+                    //         }
+                    //     }
+
+                    //     // otherwise, if the filteredIds is not empty then this bin does not contain the id we want to highlight -> fade it
+                    //     return true;
+                    // });
+                }
+            })
+            .on("end", function() {
+                        // If there is no longer an extent or bounding box then the brush has been removed
+                if(!d3.event.selection) {
+                    // Bring back all hidden .dot elements
+                    svg.selectAll('.faded').classed('faded', false);
+                    // Return the state of the active brushCell to be undefined
+                    this.brushHist = undefined;
+                }
+            });
+
         this.redraw();
 
     }
+
+
 
   // Generates the data for one histogram by stacking the data of all the collections / artists for a single dimension (e.g. energy)
   stackData(dimension) {
@@ -100,7 +192,8 @@ class HistogramView {
     let range = [i*histHeight + (histHeight-30), i*histHeight];
     let domain = [0, yMax];
 
-    // console.log(range);
+    this.HistBottom = i*histHeight + (histHeight-30);
+    this.HistTop = i*histHeight;
 
     let y = d3.scaleLinear()
     .domain(domain)
@@ -131,7 +224,12 @@ class HistogramView {
     let yAxisG = this.svg.selectAll("#hist" + i + "Y").data(temp);
 
     // enter
-    let histogramGEnter = histogramG.enter().append("g").attr("id", "hist" + i);
+    let histogramGEnter = histogramG.enter()
+        .append("g")
+        .attr("id", "hist" + i)
+        .attr('class', 'brush')
+        .call(this.brush);
+
     let xAxisGEnter = xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(xAxis);
     let yAxisGEnter = yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(yAxis);
 
@@ -263,6 +361,36 @@ class HistogramView {
     }
   }
 
+    /**
+     * @desc draws grid in the back of the vis
+     * @param void
+     * @return void
+    */
+    // initGrid () {
+    //     this.grids = [];
+    //     this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
+    //     for (let i = 0 ; i < this.SPLITS; i++) {
+    //         let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g.grid-split#grid-split-${i}`)
+    //             .classed('mini', this.SPLITS > 1);
+    //         if (this.useRadialScale())
+    //             this.grids.push(axisRadial(
+    //                 this.SCALE_X,
+    //                 this.SCALE_Y,
+    //                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
+    //                 this.config.xMapping.key,
+    //                 this.config.yMapping.key));
+    //         else{
+    //             this.grids.push(axisRect(
+    //                 this.SCALE_X,
+    //                 this.SCALE_Y,
+    //                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
+    //                 this.config.xMapping.key,
+    //                 this.config.yMapping.key));
+    //             }
+    //         multiGridG.call(this.grids[i]);
+    //     }
+    // }
+
     onDataChanged (newData) {
         this.data = newData;
         this.redraw();
@@ -277,6 +405,8 @@ class HistogramView {
         // redraw
         this.redraw();
     }
+
+
 
     onFilter (filterFunction) {
         this.filter = filterFunction;
