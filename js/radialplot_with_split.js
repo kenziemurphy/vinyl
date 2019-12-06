@@ -740,6 +740,7 @@ class RadialView {
                     _this.selectedSong = songParentData;
                 }
                 
+                callTutorial('#drop-area', 'Drag and drop it here to see more details', 'n');
             }
         } else if (action == 'mouseout') {
             return function (d, i, m) {
@@ -937,16 +938,6 @@ class RadialView {
     
         return ALL_KEYS[key + mode * 12];
         // return ALL_KEYS[key * 2 + mode];
-    }
-    
-    /**
-     * @desc round number to a certain decimal points
-     * @param float value - the number to be rounded
-     * @param int decimal - number of desired decimal points
-     * @return float - rounded number
-    */
-    round(value, decimals) {
-       return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
     /**

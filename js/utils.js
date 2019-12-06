@@ -71,3 +71,16 @@ function selectAllOrCreateIfNotExist (d3selection, selector) {
     }
     return sel;
 }
+
+/**
+ * @desc round number to a certain decimal points
+ * @param float value - the number to be rounded
+ * @param int decimal - number of desired decimal points
+ * @return float - rounded number
+*/
+function round (value, decimals) {
+    if (typeof value == 'number')
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    else
+        return value;
+}

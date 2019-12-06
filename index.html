@@ -244,7 +244,7 @@
 						Other songs similar to your selection:
 					</div> -->
 				</div>
-				<div class="text-center drawer-tab">
+				<div class="text-center drawer-tab transparent">
 					[placeholder]
 				</div>
             </div>
@@ -608,7 +608,7 @@
 					updateSplitViewToggle();
 
 					if (ENABLE_TUTORIAL && data.length <= 1) {
-						callTutorial('#search-artist', 'Try adding your favorite artist to the comparison here!<br>Tip: you can compare up to 4 artists at a time')
+						callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')

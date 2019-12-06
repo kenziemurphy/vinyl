@@ -39,10 +39,6 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
         .tickSize(0);
     
 
-    function round(value, decimals) {
-        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    }
-
     var axis = function (context) {
         console.log('domain', scaleX.domain(), scaleY.domain());
         let selection = context.selection ? context.selection() : context

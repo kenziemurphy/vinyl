@@ -31,10 +31,6 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         ]
     }
 
-    function round(value, decimals) {
-        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    }
-
     var axis = function (context) {
         let selection = context.selection ? context.selection() : context
         

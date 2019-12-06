@@ -1,6 +1,34 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
 var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "popularity"]; // Edit this for more histograms
-var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
+// var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
+var categories = [
+    {
+        key: "tempo",
+        label: "Tempo",
+        unit: "BPM"
+    },
+    {
+        key: "loudness",
+        label: "Loudness",
+        unit: "dB"
+    },
+    {
+        key: "duration",
+        label: "Duration",
+        unit: "seconds"
+    },
+    {
+        key: "key_signature",
+        label: "Key",
+        unit: ""
+    },
+    {
+        key: "time_signature",
+        label: "Time Signature",
+        unit: ""
+    },
+];
+
 //const starCircleRadius = 50;
 //const starRadius = 120;
 //const spacing = 100;
@@ -186,16 +214,17 @@ class StarView {
             category_title.append('svg:tspan')
                 .attr('x', 0)
                 .attr('dy', 20)
+                // .attr('font-weight', 'bold')
                 .text(function(d){
                     //console.log(d[categories[num]]);
-                    return categories[num] + ': ';
+                    return categories[num].label + ': ';
                 });
             category_content.append('svg:tspan')
                 .attr('x', 0)
                 .attr('dy', 20)
                 .text(function(d){
                     //console.log(d[categories[num]]);
-                    return d[categories[num]];
+                    return round(d[categories[num].key], 1) + ' ' + categories[num].unit;
                 });
         }
             

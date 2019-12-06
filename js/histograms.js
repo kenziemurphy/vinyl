@@ -17,7 +17,7 @@ class HistogramView {
 
         this.histWidth = parseInt(this.svgWidth - 60);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
-
+        this.paddingLeft = 20;
         this.x = d3.scaleLinear()
           .domain([0, 1])
           .range([52, 285]);
@@ -119,6 +119,7 @@ class HistogramView {
 
     let yAxis = (g) => g
     .attr('class', 'y_axis')
+    .attr('transform', 'translate(' + this.paddingLeft + ',0)')
     .call(d3.axisLeft(y)
         .ticks(2));
 
@@ -245,15 +246,15 @@ class HistogramView {
           if(realDimensions[i] === "tempo") {
             _this.x = d3.scaleLinear()
               .domain([0, 240])
-              .range([0, this.histWidth]);
+              .range([this.paddingLeft, this.histWidth]);
             } else if(realDimensions[i] === "loudness") {
               _this.x = d3.scaleLinear()
               .domain([-60, 0])
-              .range([0, this.histWidth]);
+              .range([this.paddingLeft, this.histWidth]);
             } else {
               _this.x = d3.scaleLinear()
               .domain([0, 1])
-              .range([0, this.histWidth]);
+              .range([this.paddingLeft, this.histWidth]);
             }
 
           _this.drawHistogram(_this.stackData(realDimensions[i]), i);
