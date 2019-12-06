@@ -66,7 +66,7 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-radial.grid-axis-label.inner-top.hide-on-mini')
             .attr('y', -minRadialDist + AXIS_LABELS_OFFSET);
         selection.selectAll('text.label.label-axis-radial')
-            .text(snakeToCap(radialMappingLabel))
+            .text(Utils.formatKeyLabel(radialMappingLabel))
             .call(addHelpTooltip(radialMappingLabel.toLowerCase()));
 
         // radial scale labels
@@ -79,7 +79,7 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         
         radialLabelsTop.merge(radialLabelsTopEnter)
             .transition()
-            .text(d => round(d, 1))
+            .text(d => d3.format('.1f')(d))
             .attr('y', d => -scaleRadial(d))
             .attr('fill', '#ffffff');
 
@@ -94,7 +94,7 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         
         radialLabelsBottom.merge(radialLabelsBottomEnter)
             .transition()
-            .text(d => round(d, 1))
+            .text(d => Utils.formatByKey(radialMappingLabel)(d))
             .attr('y', d => scaleRadial(d))
             .attr('fill', '#ffffff');
 

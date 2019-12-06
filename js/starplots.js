@@ -21,7 +21,7 @@ var categories = [
     {
         key: "duration",
         label: "Duration",
-        unit: "seconds",
+        unit: "",
         needHelpTooltip: false
     },
     {
@@ -237,6 +237,7 @@ class StarView {
                 // .attr('dy', 20)
                 .text(function(d){
                     //console.log(d[categories[num]]);
+                    return Utils.formatByKey(categories[num].key)(d[categories[num].key]) + ' ' + categories[num].unit;
                     return round(d[categories[num].key], 1) + ' ' + categories[num].unit;
                 });
         }

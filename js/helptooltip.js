@@ -83,7 +83,7 @@ function addHelpTooltip (helpContent) {
         helpContent = HELP_PRESETS[helpContentKey];
         if (helpContent === undefined) {
             helpContent = {
-                title: helpContentKey,
+                title: Utils.formatKeyLabel(helpContentKey),
                 body: ''
             }
         }

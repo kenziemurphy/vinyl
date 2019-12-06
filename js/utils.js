@@ -1,3 +1,31 @@
+window.Utils = {
+    FORMAT_FOR_KEY: {
+        'release_year': d3.format('d'),
+        'popularity': d3.format('d'),
+        'duration': (d) => d3.timeFormat('%M:%S')( new Date(0).setSeconds(d) )
+    },
+    formatByKey: function (key) {
+        return this.FORMAT_FOR_KEY[key] || function (value) {
+            if (typeof value == 'number')
+                return d3.format('.1f')(value);
+            else
+                return value;
+        }
+    },
+    KEY_LABEL: {
+        "tempo": "Tempo (BPM)",
+        "loudness": "Loudness (dB)",
+        "duration": "Duration (min)",
+        "key_signature": "Key"
+    },
+    snakeToCap (s) {
+        return s.split('_').map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(' ');
+    },
+    formatKeyLabel: function (key) {
+        return this.KEY_LABEL[key] || this.snakeToCap(key)
+    }
+}
+
 function arrayJoin (a, b, key) {
     var bKeys = b.map(y => y[key]);
     var abJoined = a.map(function (x) {
@@ -85,6 +113,4 @@ function round (value, decimals) {
         return value;
 }
 
-function snakeToCap (s) {
-    return s.split('_').map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(' ');
-}
+
