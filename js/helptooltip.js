@@ -64,12 +64,12 @@ var HELP_PRESETS = {
         body: 'Only available when two or more artists are loaded.'
     },
     'mode-pca': {
-        title: 'Clustering with PCA',
-        body: 'When on, this mode will try to move songs that are similar to each other closer togehter using "Principle Component Analysis" (PCA) projection. The x and y axes would not have a particular meaning.'
+        title: 'Group by Similarity',
+        body: 'When on, this mode will try to move songs that are similar to each other closer together. The x and y axes would not have a particular meaning.<br>(This is grouped by "Principle Component Analysis" (PCA) projection).'
     },
     'mode-value': {
         title: 'Plot by Attribute Values',
-        body: 'When on, this mode will position each data point on axes by the selected attributes.'
+        body: 'When on, this mode will position each data point on axes by the selected attributes (e.g., key, tempo, energy, etc.).'
     }
 };
 

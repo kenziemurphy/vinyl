@@ -409,7 +409,7 @@ input:checked + .slider:before {
 }
 
 .tutorial-tooltip .speech-bubble {
-    animation: breathing 10s infinite;
+    animation: breathing 5s infinite;
 }
 
 @keyframes breathing {
