@@ -132,11 +132,11 @@ class StarView {
 
     titleUpdate (){
         if(dataArray.length == 0){
-            document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details";
+            document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details.";
             document.getElementById("starClear").innerHTML = "";
         } 
         else if(dataArray.length >= 1 && dataArray.length < 4){
-            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison. Drag more songs here for more details";
+            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison: Drag more songs here for more details.";
             document.getElementById("starClear").innerHTML = "Clear All";
         }
             
