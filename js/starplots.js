@@ -3,6 +3,12 @@ var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence
 // var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 var categories = [
     {
+        key: "release_date",
+        label: "Release Date",
+        unit: "",
+        needHelpTooltip: false
+    },
+    {
         key: "tempo",
         label: "Tempo",
         unit: "BPM"
@@ -15,7 +21,8 @@ var categories = [
     {
         key: "duration",
         label: "Duration",
-        unit: "seconds"
+        unit: "",
+        needHelpTooltip: false
     },
     {
         key: "key_signature_full",
@@ -64,6 +71,9 @@ class StarView {
         this.data = data;
         this.dispatch = dispatch;
         console.log('init');
+        // console.log(data);
+        // dataArray = [];
+        // this.titleUpdate();
         
 
     }
@@ -73,19 +83,26 @@ class StarView {
         this.radiusCal(window.innerWidth);
         // console.log("starRadius", starRadius);
         // console.log("starCircleRadius", starCircleRadius);
-        
-        if (flag){
-            if(dataArray.length < 4)
-                dataArray.push(newData);
-            else
-                alert("4 songs is the maximum for comparison");
+        // console.log("newData", this.data);
+        if(this.data == undefined){
+            // console.log("undefined");
+            d3.select('#star-view').selectAll('*').remove();
+            dataArray = [];
         }
-            
-            
         else{
-            //dataArray.pop(newData);
-            dataArray.splice(removeIndex, 1);
-            flag = 1;
+            if (flag){
+                if(dataArray.length < 4)
+                    dataArray.push(newData);
+                else
+                    alert("4 songs is the maximum for comparison");
+            }
+                
+                
+            else{
+                //dataArray.pop(newData);
+                dataArray.splice(removeIndex, 1);
+                flag = 1;
+            }
         }
         //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
@@ -114,12 +131,20 @@ class StarView {
     }
 
     titleUpdate (){
-        if(dataArray.length == 0)
-            document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details";
-        else if(dataArray.length >= 1 && dataArray.length < 4)
-            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison. Drag more songs here for more details";
-        else
+        if(dataArray.length == 0){
+            document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details.";
+            document.getElementById("starClear").innerHTML = "";
+        } 
+        else if(dataArray.length >= 1 && dataArray.length < 4){
+            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison: Drag more songs here for more details.";
+            document.getElementById("starClear").innerHTML = "Clear All";
+        }
+            
+        else{
             document.getElementById("starTitleLabel").innerHTML = "4 Songs in Comparison";
+            document.getElementById("starClear").innerHTML = "Clear All";
+        }
+            
         
     }
 
@@ -220,13 +245,17 @@ class StarView {
                     //console.log(d[categories[num]]);
                     return categories[num].label + ' ';
                 })
-                .call(addHelpTooltip(categories[num].key));
+                .call(function (d, i, m) {
+                    if(categories[num].needHelpTooltip !== false)
+                        addHelpTooltip(categories[num].key)(d);
+                });
             category_content.append('text')
                 .attr('transform', `translate(${0}, ${num * 20})`)
                 // .attr('x', 0)
                 // .attr('dy', 20)
                 .text(function(d){
                     //console.log(d[categories[num]]);
+                    return Utils.formatByKey(categories[num].key)(d[categories[num].key]) + ' ' + categories[num].unit;
                     return round(d[categories[num].key], 1) + ' ' + categories[num].unit;
                 });
         }
@@ -245,7 +274,9 @@ class StarView {
                 //console.log(d);
                 return "img_" + i;
             })
-            .attr("x", -starCircleRadius)
+            // .attr("x", -starCircleRadius)
+            // .attr("y", -starCircleRadius)
+            .attr("x", 0)
             .attr("y", -starCircleRadius)
             .attr("width", 2 * starCircleRadius)
             .attr("height", 2 * starCircleRadius)
@@ -257,7 +288,8 @@ class StarView {
             .attr("height", 2 * starCircleRadius)
             .attr("xlink:href", d => d.images[2].url)
 
-        var circles = this.svg.selectAll("circle")
+        var circles = this.svg.append('g')
+            .selectAll("circle")
             .data(dataArray)
             .enter();
 

@@ -38,8 +38,8 @@ text.label.highlight {
 .grid-line-clear {
     fill-opacity: 0;
     /* stroke-opacity: 1; */
-    stroke-opacity: 0.15;
-    stroke-width: 3;
+    stroke-opacity: .6;
+    stroke-width: 2;
     stroke: #ffffff;
 }
 
@@ -54,7 +54,7 @@ text.label.highlight {
     fill: #ffffff;
     font-weight: 900;
     font-style: italic;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
     /* text-transform: uppercase; */
 }
 

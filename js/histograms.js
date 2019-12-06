@@ -16,7 +16,7 @@ class HistogramView {
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
-        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year"]; // Edit this for more histograms
 
         this.histWidth = parseInt(this.svgWidth);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
@@ -208,7 +208,10 @@ class HistogramView {
     let xAxis = (g) => g
     .attr('class', 'x_axis')
     .attr("transform", 'translate(0,' + (range[0]+1) + ')')
-    .call(d3.axisBottom(_this.x).tickValues(d3.range(start, end+step, step)));
+    .call(d3.axisBottom(_this.x)
+      .tickValues(d3.range(start, end+step, step))
+      .tickFormat(Utils.formatByKey(_this.dimensions[i]))
+      );
 
     let yAxis = (g) => g
     .attr('class', 'y_axis')
@@ -233,16 +236,14 @@ class HistogramView {
     let xAxisGEnter = xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(xAxis);
     let yAxisGEnter = yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(yAxis);
 
-    let xLabel = _this.dimensions[i].charAt(0).toUpperCase() +  _this.dimensions[i].slice(1);
-
     // calculate the center location of the histogram
     let centerPx = parseInt(this.x.range()[0] + (this.x.range()[1] - this.x.range()[0])/2);
 
     selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
         .attr("text-anchor", "middle")
         .attr('alignment-baseline', 'baseline')
-        .text(xLabel)
-        .call(addHelpTooltip(xLabel.toLowerCase()))
+        .text(Utils.formatKeyLabel(_this.dimensions[i]))
+        .call(addHelpTooltip(_this.dimensions[i].toLowerCase()))
         .transition(d3.transition().duration(750))
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')');
 
@@ -336,6 +337,11 @@ class HistogramView {
 
         let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
 
+        let flatData = [];
+        for(let i = 0; i < this.data.length; i++) {
+          flatData = flatData.concat(this.data[i].songs);
+        }
+
         this.histWidth = parseInt(this.svgWidth);
 
         // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
@@ -348,6 +354,10 @@ class HistogramView {
             } else if(realDimensions[i] === "loudness") {
               _this.x = d3.scaleLinear()
               .domain([-60, 0])
+              .range([this.paddingLeft, this.histWidth]);
+            } else if(realDimensions[i] === "release_year") {
+              _this.x = d3.scaleLinear()
+              .domain(d3.extent(flatData, (d) => d.release_year))
               .range([this.paddingLeft, this.histWidth]);
             } else {
               _this.x = d3.scaleLinear()

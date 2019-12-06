@@ -27,16 +27,20 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
 
     var axisB = d3.axisBottom(scaleX)
         .tickValues(xGridInterval)
-        .tickSize(H);
+        .tickSize(H)
+        .tickFormat(d3.format("f"));
     var axisT = d3.axisTop(scaleX)
         .tickValues(xGridInterval)
-        .tickSize(0);
+        .tickSize(0)
+        .tickFormat(d3.format("f"));
     var axisL = d3.axisLeft(scaleY)
         .tickValues(yGridInterval)
-        .tickSize(-W);
+        .tickSize(-W)
+        .tickFormat(d3.format("f"));
     var axisR = d3.axisRight(scaleY)
         .tickValues(yGridInterval)
-        .tickSize(0);
+        .tickSize(0)
+        .tickFormat(d3.format("f"));
     
 
     var axis = function (context) {
@@ -47,6 +51,11 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
             .style('z-index', '-1')
             .attr('transform', `translate(${center[0]}, ${center[1]})`);
         
+        axisB.tickFormat(Utils.formatByKey(xMappingLabel));
+        axisT.tickFormat(Utils.formatByKey(xMappingLabel));
+        axisL.tickFormat(Utils.formatByKey(yMappingLabel));
+        axisR.tickFormat(Utils.formatByKey(yMappingLabel));
+
         selectAllOrCreateIfNotExist(gridG, 'g.axis-rect.axis-b')
             .attr('transform', `translate(0, ${-H / 2})`)
             .call(axisB)
@@ -82,7 +91,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
             .attr('transform', 'rotate(-90)');
 
         selection.selectAll('text.label.label-axis-y')
-            .text(yMappingLabel)
+            .text(Utils.formatKeyLabel(yMappingLabel))
             .call(addHelpTooltip(yMappingLabel.toLowerCase()));
 
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.top')
@@ -90,7 +99,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.bottom')
             .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET);
         selection.selectAll('text.label.label-axis-x')
-            .text(xMappingLabel)
+            .text(Utils.formatKeyLabel(xMappingLabel))
             .call(addHelpTooltip(xMappingLabel.toLowerCase()));
 
         if (!showAxes) {

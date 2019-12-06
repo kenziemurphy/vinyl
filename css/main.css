@@ -489,6 +489,18 @@ input:checked + .slider:before {
     font-style: italic !important;
 }
 
+#starClear {
+    float: right;
+    font-size: 10pt;
+    color: #fff9;
+    font-style: italic !important;
+    padding-right: 30px;
+
+}
+#drop-area {
+    display: flex;
+}
+
 a:any-link {
     color: inherit;
     font-style: inherit;
