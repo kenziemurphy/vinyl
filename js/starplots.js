@@ -274,7 +274,9 @@ class StarView {
                 //console.log(d);
                 return "img_" + i;
             })
-            .attr("x", -starCircleRadius)
+            // .attr("x", -starCircleRadius)
+            // .attr("y", -starCircleRadius)
+            .attr("x", 0)
             .attr("y", -starCircleRadius)
             .attr("width", 2 * starCircleRadius)
             .attr("height", 2 * starCircleRadius)
@@ -286,7 +288,8 @@ class StarView {
             .attr("height", 2 * starCircleRadius)
             .attr("xlink:href", d => d.images[2].url)
 
-        var circles = this.svg.selectAll("circle")
+        var circles = this.svg.append('g')
+            .selectAll("circle")
             .data(dataArray)
             .enter();
 

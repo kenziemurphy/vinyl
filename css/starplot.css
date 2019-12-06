@@ -1,6 +1,6 @@
 #star-view-drawer {
   position: fixed;
-  padding: 30px 30px;
+  padding: 10px 10px;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -27,13 +27,14 @@
 #star-view-drawer .drawer-tab {
   position: absolute;
   left: 50%;
-  transform: translate(-50%, -100%) translateY(-29px);
+  /*transform: translate(-50%, -100%) translateY(-29px);*/
+  transform: translate(-50%, -100%);
   transition: width 0.5s;
   min-width: calc(50% - 30px);
 }
 
 #star-view {
-  height: 450px;
+  height: 400px;
   /*pointer-events: none;*/
 }
 
