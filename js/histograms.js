@@ -13,7 +13,7 @@ class HistogramView {
 
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
-        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
+        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year"]; // Edit this for more histograms
 
         this.histWidth = parseInt(this.svgWidth - 60);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
@@ -143,7 +143,7 @@ class HistogramView {
     selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
         .attr("text-anchor", "middle")
         .attr('alignment-baseline', 'baseline')
-        .text(xLabel)
+        .text(snakeToCap(xLabel))
         .call(addHelpTooltip(xLabel.toLowerCase()))
         .transition(d3.transition().duration(750))
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')');
@@ -238,6 +238,11 @@ class HistogramView {
 
         let histogramsDatasets = []; // has length = to the length of dimensions, each entry is a dataset for one histogram
 
+        let flatData = [];
+        for(let i = 0; i < this.data.length; i++) {
+          flatData = flatData.concat(this.data[i].songs);
+        }
+
         this.histWidth = parseInt(this.svgWidth);
 
         // for each dimension (e.g. energy) create stacked histogram data and draw a histogram
@@ -250,6 +255,10 @@ class HistogramView {
             } else if(realDimensions[i] === "loudness") {
               _this.x = d3.scaleLinear()
               .domain([-60, 0])
+              .range([this.paddingLeft, this.histWidth]);
+            } else if(realDimensions[i] === "release_year") {
+              _this.x = d3.scaleLinear()
+              .domain(d3.extent(flatData, (d) => d.release_year))
               .range([this.paddingLeft, this.histWidth]);
             } else {
               _this.x = d3.scaleLinear()

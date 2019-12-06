@@ -84,3 +84,7 @@ function round (value, decimals) {
     else
         return value;
 }
+
+function snakeToCap (s) {
+    return s.split('_').map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(' ');
+}

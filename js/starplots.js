@@ -3,6 +3,12 @@ var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence
 // var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 var categories = [
     {
+        key: "release_date",
+        label: "Release Date",
+        unit: "",
+        needHelpTooltip: false
+    },
+    {
         key: "tempo",
         label: "Tempo",
         unit: "BPM"
@@ -15,7 +21,8 @@ var categories = [
     {
         key: "duration",
         label: "Duration",
-        unit: "seconds"
+        unit: "seconds",
+        needHelpTooltip: false
     },
     {
         key: "key_signature_full",
@@ -220,7 +227,10 @@ class StarView {
                     //console.log(d[categories[num]]);
                     return categories[num].label + ' ';
                 })
-                .call(addHelpTooltip(categories[num].key));
+                .call(function (d, i, m) {
+                    if(categories[num].needHelpTooltip !== false)
+                        addHelpTooltip(categories[num].key)(d);
+                });
             category_content.append('text')
                 .attr('transform', `translate(${0}, ${num * 20})`)
                 // .attr('x', 0)

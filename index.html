@@ -560,13 +560,14 @@
 
 			// helpers
 			function preprocessData (data) {
+				// TODO: try to remove duplicate data
 				data.forEach(function (d) {
 					if (d.duration_ms)
 						d.duration = d.duration_ms / 1000;
-					if (d.album && d.album.release_date)
-						d.release_year = d.album.release_date.indexOf('-') < 0 ?
-							+d.album.release_date :
-							+d.album.release_date.substring(0, d.album.release_date.indexOf('-'));
+					if (d.release_date)
+						d.release_year = d.release_date.indexOf('-') < 0 ?
+							+d.release_date :
+							+d.release_date.substring(0, d.release_date.indexOf('-'));
 				})
 			}
 
@@ -591,6 +592,7 @@
 			function appendArtistData (loadedData) {
 				return new Promise(function (resolve, reject) {
 					preprocessData(loadedData.songs);
+					console.log('preprocessed', loadedData);
 					// console.log(loadedData);
 	
 					// Append to data array

@@ -27,16 +27,20 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
 
     var axisB = d3.axisBottom(scaleX)
         .tickValues(xGridInterval)
-        .tickSize(H);
+        .tickSize(H)
+        .tickFormat(d3.format("d"));
     var axisT = d3.axisTop(scaleX)
         .tickValues(xGridInterval)
-        .tickSize(0);
+        .tickSize(0)
+        .tickFormat(d3.format("d"));
     var axisL = d3.axisLeft(scaleY)
         .tickValues(yGridInterval)
-        .tickSize(-W);
+        .tickSize(-W)
+        .tickFormat(d3.format("d"));
     var axisR = d3.axisRight(scaleY)
         .tickValues(yGridInterval)
-        .tickSize(0);
+        .tickSize(0)
+        .tickFormat(d3.format("d"));
     
 
     var axis = function (context) {
@@ -82,7 +86,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
             .attr('transform', 'rotate(-90)');
 
         selection.selectAll('text.label.label-axis-y')
-            .text(yMappingLabel)
+            .text(snakeToCap(yMappingLabel))
             .call(addHelpTooltip(yMappingLabel.toLowerCase()));
 
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.top')
@@ -90,7 +94,7 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.bottom')
             .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET);
         selection.selectAll('text.label.label-axis-x')
-            .text(xMappingLabel)
+            .text(snakeToCap(xMappingLabel))
             .call(addHelpTooltip(xMappingLabel.toLowerCase()));
 
         if (!showAxes) {
