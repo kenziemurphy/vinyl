@@ -255,11 +255,12 @@
 		<div id="veil" class="veil hide vis-control"></div>
 
 		<div id="star-view-drawer" class="container-col hide">
-			<div id="drop-area" class="text-center cell drawer-tab vis-control clickable">
+			<div id="drop-area" class="cell drawer-tab vis-control clickable">
 				<!-- <h2>Detailed Analysis</h2> -->
-				<div id="starTitleLabel">
+				<div id="starTitleLabel" class="text-center grow">
 					Drag a song here for more details
 				</div>
+				<div id="starClear"></div>
 				<!--<div>
 					2 Songs in Comparison [TODO: show number of songs in comparison]
 				</div>-->
@@ -462,6 +463,15 @@
 					d3.select(drawer).classed('hide', !d3.select(drawer).classed('hide'));
 					d3.select('#veil').classed('hide', d3.select(drawer).classed('hide'))
 				}, false);
+			d3.select('#starClear')
+				.on('click', function() {
+					console.log("removeAll");
+					// flag = 0;
+	    //             removeIndex = i;
+	    //             console.log("remove", i);
+	    //             new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
+	                new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged();
+				})
 
 			d3.select('#veil')
 				.on('click', function () {

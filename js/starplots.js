@@ -71,6 +71,9 @@ class StarView {
         this.data = data;
         this.dispatch = dispatch;
         console.log('init');
+        // console.log(data);
+        // dataArray = [];
+        // this.titleUpdate();
         
 
     }
@@ -80,19 +83,26 @@ class StarView {
         this.radiusCal(window.innerWidth);
         // console.log("starRadius", starRadius);
         // console.log("starCircleRadius", starCircleRadius);
-        
-        if (flag){
-            if(dataArray.length < 4)
-                dataArray.push(newData);
-            else
-                alert("4 songs is the maximum for comparison");
+        // console.log("newData", this.data);
+        if(this.data == undefined){
+            // console.log("undefined");
+            d3.select('#star-view').selectAll('*').remove();
+            dataArray = [];
         }
-            
-            
         else{
-            //dataArray.pop(newData);
-            dataArray.splice(removeIndex, 1);
-            flag = 1;
+            if (flag){
+                if(dataArray.length < 4)
+                    dataArray.push(newData);
+                else
+                    alert("4 songs is the maximum for comparison");
+            }
+                
+                
+            else{
+                //dataArray.pop(newData);
+                dataArray.splice(removeIndex, 1);
+                flag = 1;
+            }
         }
         //this.dataArray = [this.data[1], this.data[150]];
         console.log('onDataChanged');
@@ -121,12 +131,20 @@ class StarView {
     }
 
     titleUpdate (){
-        if(dataArray.length == 0)
+        if(dataArray.length == 0){
             document.getElementById("starTitleLabel").innerHTML = "Drag a song here for more details";
-        else if(dataArray.length >= 1 && dataArray.length < 4)
+            document.getElementById("starClear").innerHTML = "";
+        } 
+        else if(dataArray.length >= 1 && dataArray.length < 4){
             document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison. Drag more songs here for more details";
-        else
+            document.getElementById("starClear").innerHTML = "Clear All";
+        }
+            
+        else{
             document.getElementById("starTitleLabel").innerHTML = "4 Songs in Comparison";
+            document.getElementById("starClear").innerHTML = "Clear All";
+        }
+            
         
     }
 
