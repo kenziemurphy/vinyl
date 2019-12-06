@@ -41,7 +41,7 @@ b, [font-weight="bold"] {
 .container-main {
     height: 100vh;
     padding-top: 30px;
-    /* padding-bottom: 30px; */
+    padding-bottom: 30px;
     width: 100vw;
 }
 
@@ -78,7 +78,7 @@ b, [font-weight="bold"] {
 .btn {
     /* white-space: nowrap; */
     background-color: transparent;
-    border: 1px #fff solid;
+    border: 1px #fff5 solid;
     color: #F4F4F4;
     padding: 3px 10px;
     border-radius: 100px;
@@ -93,6 +93,7 @@ b, [font-weight="bold"] {
 
 .btn.btn-block {
     display: block;
+    width: 100%;
 }
 
 .btn:not(input):not([disabled=disabled]):not(.disabled):hover, .btn.active {
@@ -168,6 +169,10 @@ div.awesomplete {
     line-height: 25px;
     /*opacity: 0.25;*/
     transition: border 0.2s;
+}
+
+#search-artist[disabled=disabled] {
+    opacity: 0.5;
 }
 
 #search-artist:focus {

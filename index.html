@@ -20,17 +20,15 @@
         <div class="container-main container-row">
 			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
 				<h1>MusicOctoRobot</h1>
-				<h2>I'm interested in...</h2>
-				<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search for an artist..." />
-				<div id="artist-buttons">
-					<!--<div class="artist-btn">Muse<button>&times;</button></div>
-					<div class="artist-btn">Radiohead<button>&times;</button></div>
-					<div class="artist-btn">Slot Machine<button>&times;</button></div>-->
+				<div class="grow">
+					<h2>I'm interested in...</h2>
+					<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search for an artist..." />
+					<div id="artist-buttons">
+						<!--<div class="artist-btn">Muse<button>&times;</button></div>
+						<div class="artist-btn">Radiohead<button>&times;</button></div>
+						<div class="artist-btn">Slot Machine<button>&times;</button></div>-->
+					</div>
 				</div>
-
-
-				<br>
-				<!-- <svg id="..."></svg> -->
 				<div>
 					<h2>More Options</h2>
 					<div class="container-column" style="margin:auto;">
@@ -93,7 +91,7 @@
 									</select>
 								</div>
 							</div> -->
-							<div class="cell mb-xs">
+							<div class="mb-xs">
 								<div class="margin-gutter">
 									<div class="mb-xxs">
 										<small>Find a song on this chart</small>
@@ -125,7 +123,7 @@
 								</label>
 							</div> -->
 							
-							<div class="grow container-row mb-xs">
+							<div class="container-row mb-xs">
 								<div class="grow">
 									<small class="add-help" data-help-key="split-view">Split View </small>
 								</div>
@@ -134,7 +132,7 @@
 									<span class="slider round"></span>
 								</label>
 							</div>
-							<div class="grow container-row mb-xs">
+							<div class="container-row mb-xs">
 								<div class="grow">
 									<small>Show Album Cover</small>
 								</div>
@@ -143,7 +141,7 @@
 									<span class="slider round"></span>
 								</label>
 							</div>
-							<div class="grow container-row mb-xs">
+							<div class="container-row mb-xs">
 								<div class="grow">
 									<small>Avoid Overlapping</small>
 								</div>
@@ -152,23 +150,15 @@
 									<span class="slider round"></span>
 								</label>
 							</div>
+							<div class="container-row mb-xs">
+								<button class="btn btn-block clickable" onclick="alert('TODO: show tutorial page again')">How to read this vis?</button>
+							</div>
 						</div>
 					</div>
 					<h2>About the Data</h2>
 					<p class="notes">
 						The data visualized here was pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.
 					</p>
-					<h2>Legend</h2>
-					<div class="panel">
-						<p>
-							[visuals]
-							<ul>
-								<li>Size</li>
-								<li>Shape</li>
-								<li>Image</li>
-							</ul>
-						</p>
-					</div>
 				</div>
             </div>
 			<div class="cell grow container-col">
@@ -251,6 +241,14 @@
 			<div style="width: 25%;" class="cell container-col">
 				<h2>Song features</h2>
 				<svg id="histogram-view" class="grow" overflow="visible"></svg>
+				<!-- <h2>Legend</h2>
+				<div class="panel">
+					<ul>
+						<li>Size</li>
+						<li>Shape</li>
+						<li>Image</li>
+					</ul>
+				</div> -->
             </div>
 		</div>
 		
@@ -612,6 +610,11 @@
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
+					}
+
+					if (data.length >= 4) {
+						d3.select("#search-artist")
+							.attr('disabled', 'disabled');
 					}
 				})
 			}

@@ -118,7 +118,6 @@ function addHelpTooltip (helpContent) {
                 .html(d.helpTitle)
                 tooltip.select('.help-body')
                 .html(d.helpBody)
-        
                 
                 tooltip.classed('hide', false)
                     .style('left', function () {
@@ -152,6 +151,7 @@ function addHelpTooltip (helpContent) {
                 d3.select('.help-tooltip')
                     .classed('hide', true)
             });
+        // console.log('!', selection, helpContent.title)
     }
 
     return onCall;
