@@ -143,10 +143,10 @@ class HistogramView {
     selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
         .attr("text-anchor", "middle")
         .attr('alignment-baseline', 'baseline')
-        .transition(d3.transition().duration(750))
-        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')')
         .text(xLabel)
-        .call(addHelpTooltip(xLabel.toLowerCase()));
+        .call(addHelpTooltip(xLabel.toLowerCase()))
+        .transition(d3.transition().duration(750))
+        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')');
 
     // update
     xAxisG.transition(d3.transition().duration(750)).call(xAxis);
