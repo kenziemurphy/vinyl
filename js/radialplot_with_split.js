@@ -261,23 +261,36 @@ class RadialView {
         this.recomputeConsts();
 
         // //IF you REALLY want to actually draw a vinyl record...
-        // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
-        // d3.selectAll('g.vinyl').remove();
-        // if (this.useRadialScale()) {
-        //     for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-        //         let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
-        //             .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
-        //         let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
-        //             .attr('r', this.SCALE_Y.range()[1])
-        //             .style('fill', '#111111');
-        //         let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
-        //             .attr('r', this.SCALE_Y.range()[0])
-        //             .style('fill', this.COLOR_SCHEME[i]);
-        //         let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
-        //             .attr('r', this.SCALE_Y.range()[0] / 20)
-        //             .style('fill', '#212039');
-        //     }
-        // }
+        let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
+        d3.selectAll('g.vinyl').remove();
+        if (this.useRadialScale()) {
+            
+
+            for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+                let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
+                    .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+                let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+                    .attr('r', this.SCALE_Y.range()[1])
+                    .style('fill', '#111111');
+                if(!this.config.isSplitting){
+                    let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
+                        .attr('r', this.SCALE_Y.range()[0])
+                        .style('fill', '#4D4D61')
+                        // .style('fill', '#212039')
+                        // .style('fill', '000000')
+                        // .style('fill', 'f4f4f4')
+                        .style('fill-opacity', '.9');
+                }
+                else{
+                    let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
+                    .attr('r', this.SCALE_Y.range()[0])
+                    .style('fill', this.COLOR_SCHEME[i]);
+                }
+                let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
+                    .attr('r', this.SCALE_Y.range()[0] / 20)
+                    .style('fill', '#212039');
+            }
+        }
 
         // draw grid
         if (this.shouldReinitGrid) {

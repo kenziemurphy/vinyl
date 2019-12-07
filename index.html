@@ -30,7 +30,7 @@
 					</div>
 				</div>
 				<div>
-					<h2>More Options</h2>
+					<h2 id="select-more-options">More Options</h2>
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel" id="options-panel">
 							<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
@@ -303,6 +303,7 @@
 		
         <script>
 			var ENABLE_TUTORIAL = true;
+			var ENABLE_ALL_TUTORIALS = false;
 
 			var components = [];
 			var data = [];
@@ -465,11 +466,7 @@
 				}, false);
 			d3.select('#starClear')
 				.on('click', function() {
-					console.log("removeAll");
-					// flag = 0;
-	    //             removeIndex = i;
-	    //             console.log("remove", i);
-	    //             new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
+					// console.log("removeAll");
 	                new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged();
 				})
 
@@ -622,6 +619,9 @@
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
+					}
+					else if(ENABLE_TUTORIAL && data.length == 3) {
+						callTutorial('#select-more-options', 'You can also try more options here.')
 					}
 
 					if (data.length >= 4) {
