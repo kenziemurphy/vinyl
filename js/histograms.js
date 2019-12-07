@@ -6,6 +6,7 @@ class HistogramView {
         this.data = data;
         this.dispatch = dispatch;
         this.brushHist;
+        this.isBrushing = false;
 
         //var svg = d3.select('svg');
         // NOTE: I fixed this svgWidth/Height, it should work now -- Tae
@@ -40,6 +41,7 @@ class HistogramView {
             })
             // .extent([[20, _this.HistTop], [_this.histWidth, _this.HistBottom]])
             .on("start",  function (histogram) {
+                _this.isBrushing = true;
 
                 // Check if this g element is different than the previous brush
                 if(_this.brushHist !== this) {
@@ -104,6 +106,7 @@ class HistogramView {
             .on("end", function() {
                         // If there is no longer an extent or bounding box then the brush has been removed
                 if(!d3.event.selection) {
+                    _this.isBrushing = false;
                     _this.idsInBinBrush = [];
                     // Bring back all hidden .dot elements
                     svg.selectAll('.fade').classed('faded', false);
@@ -282,8 +285,8 @@ class HistogramView {
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
           .on("mouseover", function(d) {
-
-            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+            if (!_this.isBrushing) {
+                /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
                 and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
             let artistIndex = this.parentNode.id.slice(-1);
 
@@ -293,8 +296,11 @@ class HistogramView {
             // send a filtering function out to the other components to highlight the id's in this bin everywhere
              _this.dispatch.call('highlight', this, (k) => idsInBin.includes(k.id));
 
+            }
           }).on("mouseout", (d) => {
+            if (!_this.isBrushing) {
                 _this.dispatch.call('highlight', this, k => true);
+            }
           });
 
     // update
