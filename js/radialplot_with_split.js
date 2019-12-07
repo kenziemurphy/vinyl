@@ -262,16 +262,20 @@ class RadialView {
         this.recomputeConsts();
 
         // //IF you REALLY want to actually draw a vinyl record...
+        // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
+        let centerPadding = 10;
+
         let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
-        let centerPadding = 20;
         d3.selectAll('g.vinyl').remove();
         if (this.useRadialScale()) {
+            
+
             for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-                let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}.hide`)
+                let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
                     .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
-                // let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
-                //     .attr('r', this.SCALE_Y.range()[1] + 10)
-                //     .style('fill', '#111111');
+                let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+                    .attr('r', this.SCALE_Y.range()[1])
+                    .style('fill', '#111111');
 
                 let vinylGInner = selectAllOrCreateIfNotExist(vinylG, 'g.spinning');
 
@@ -294,12 +298,29 @@ class RadialView {
                     .attr("width", d => 2 * r)
                     .attr("height", d => 2 * r);
 
-                let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
-                    .attr('r', r)
-                    // .style('fill', this.COLOR_SCHEME[i]);
-                    .style('fill', `url(#image_center_${i})`);
-                let vinylHole = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-hole')
-                    .attr('r', this.SCALE_Y.range()[0] / 20)
+                if(!this.config.isSplitting){
+                    let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
+                        .attr('r', r)
+                        .style('fill', '#4D4D61')
+                        // .style('fill', '#212039')
+                        // .style('fill', '000000')
+                        // .style('fill', 'f4f4f4')
+                        .style('fill-opacity', '.9');        
+
+                    let vinylCenterImage = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center-image')
+                        .attr('r', r)
+                        // .style('fill', this.COLOR_SCHEME[i]);
+                        .style('fill', `url(#image_center_${i})`);
+                }
+                else{
+                    let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
+                        .attr('r', r)
+                        .style('fill', this.COLOR_SCHEME[i]);
+    
+                }
+                
+                let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
+                    .attr('r', 10)
                     .style('fill', '#212039');
             }
         }
@@ -849,7 +870,7 @@ class RadialView {
             .classed('similar-highlight', true);
 
         console.log('!@#', d3.select('#image_center_0'))
-        d3.select(`.vinyl#vinyl-${0}`)
+        d3.select(`.vinyl-center-image`)
             .classed('hide', false);
         d3.select('#image_center_0 image')
             .attr('xlink:href', d.images[0].url);
@@ -890,7 +911,7 @@ class RadialView {
 
         this.svg.selectAll('line.similarity-link').remove();
 
-        d3.select(`.vinyl`)
+        d3.select(`.vinyl-center-image`)
             .classed('hide', true);
     }
 

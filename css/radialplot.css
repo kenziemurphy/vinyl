@@ -150,10 +150,13 @@
 
 .vinyl {
     z-index: -100;
+}
+
+.vinyl-center-image {
     transition: opacity 0.3s;
 }
 
-.vinyl.hide {
+.vinyl-center-image.hide {
     opacity: 0;
 }
 
