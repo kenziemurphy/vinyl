@@ -518,3 +518,7 @@ a:hover {
 .clickable {
     cursor: pointer;
 }
+
+.hide {
+    opacity: 0;
+}

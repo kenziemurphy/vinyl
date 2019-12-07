@@ -63,6 +63,7 @@ class RadialView {
             x: 30,
             y: 30
         };
+        // this.COLOR_SCHEME = ['#81D0EF', '#F36293', '#6988F2', '#FCA981'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
         
@@ -261,23 +262,47 @@ class RadialView {
         this.recomputeConsts();
 
         // //IF you REALLY want to actually draw a vinyl record...
-        // let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
-        // d3.selectAll('g.vinyl').remove();
-        // if (this.useRadialScale()) {
-        //     for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-        //         let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
-        //             .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
-        //         let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
-        //             .attr('r', this.SCALE_Y.range()[1])
-        //             .style('fill', '#111111');
-        //         let vinylCenter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-center')
-        //             .attr('r', this.SCALE_Y.range()[0])
-        //             .style('fill', this.COLOR_SCHEME[i]);
-        //         let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
-        //             .attr('r', this.SCALE_Y.range()[0] / 20)
-        //             .style('fill', '#212039');
-        //     }
-        // }
+        let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
+        let centerPadding = 20;
+        d3.selectAll('g.vinyl').remove();
+        if (this.useRadialScale()) {
+            for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+                let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}.hide`)
+                    .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+                // let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
+                //     .attr('r', this.SCALE_Y.range()[1] + 10)
+                //     .style('fill', '#111111');
+
+                let vinylGInner = selectAllOrCreateIfNotExist(vinylG, 'g.spinning');
+
+                var defs = vinylGInner.append('svg:defs');
+        
+                defs.append('svg:pattern')
+                    .attr('id', d => `image_center_${i}`)
+                    .attr("patternUnits", "userSpaceOnUse")
+                    .append("svg:image")
+                    // FIXME get album art once the api has been fixed
+                    .attr("xlink:href", '')
+                
+                let r = this.SCALE_Y.range()[0] - centerPadding;
+                vinylGInner.selectAll('defs pattern')
+                    .attr("width", d => 2 * r)
+                    .attr("height", d => 2 * r)
+                    .attr("x", d => -r)
+                    .attr("y", d => -r)
+                    .selectAll("image")
+                    .attr("width", d => 2 * r)
+                    .attr("height", d => 2 * r);
+
+                let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
+                    .attr('r', r)
+                    // .style('fill', this.COLOR_SCHEME[i]);
+                    .style('fill', `url(#image_center_${i})`);
+                let vinylHole = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-hole')
+                    .attr('r', this.SCALE_Y.range()[0] / 20)
+                    .style('fill', '#212039');
+            }
+        }
 
         // draw grid
         if (this.shouldReinitGrid) {
@@ -558,7 +583,7 @@ class RadialView {
         let _this = this;
         let dataPointsG = selectAllOrCreateIfNotExist(this.svg, 'g.data-points');
         var songG = dataPointsG.selectAll('g.song').data(this.filteredData, d => d.id);
-    
+
         var songGEnter = songG.enter()
             .append('g')
             .attr('class', 'song')
@@ -822,6 +847,12 @@ class RadialView {
         _this.svg.selectAll('.song')
             .filter(d => similarSongs.filter(x => x.song.id == d.id).length > 0)
             .classed('similar-highlight', true);
+
+        console.log('!@#', d3.select('#image_center_0'))
+        d3.select(`.vinyl#vinyl-${0}`)
+            .classed('hide', false);
+        d3.select('#image_center_0 image')
+            .attr('xlink:href', d.images[0].url);
     }
 
     /**
@@ -858,6 +889,9 @@ class RadialView {
         });
 
         this.svg.selectAll('line.similarity-link').remove();
+
+        d3.select(`.vinyl`)
+            .classed('hide', true);
     }
 
     /**
