@@ -72,6 +72,7 @@ class HistogramView {
 
 
                 if(e) {
+                    let tempArray = [];
                     // Select all .dot circles, and add the "hidden" class if the data for that circle
                     // lies outside of the brush-filter applied for this SplomCells x and y attributes
                     d3.selectAll('#' + histID + ' .bin-rect')
@@ -93,13 +94,39 @@ class HistogramView {
                             let collectionId = _this.data[artistIndex].id;
 
                             // get a list of the id's in this bin
-                            _this.idsInBinBrush = _this.idsInBinBrush + d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
+                            _this.idsInBinBrush = _this.idsInBinBrush.concat(d.data["ids" + artistIndex]); //_this.getAllIdsInBin(d);
 
                             // send a filtering function out to the other components to highlight the id's in this bin everywhere
                             _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
+                            console.log(_this.idsInBinBrush)
+                        } else {
+
+                            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                            and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                            let artistIndex = this.parentNode.id.slice(-1);
+
+                            // get the Spotify id of the collection (artist)
+                            let collectionId = _this.data[artistIndex].id;
+
+                            let idsToDelete= d.data["ids" + artistIndex];
+                            console.log(_this.idsInBinBrush)
+
+                            _this.idsInBinBrush = _this.idsInBinBrush.filter(function(id) {
+                                if(idsToDelete.includes(id)) {
+                                    return false;
+                                }
+                                return true;
+                            });
+
+                            _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
+
+
+
+
+
+
                         }
                         console.log("INDEXES");
-
                     })
                 }
             })
