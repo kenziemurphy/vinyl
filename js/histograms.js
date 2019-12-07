@@ -12,9 +12,11 @@ class HistogramView {
         this.svgWidth = parseInt(this.svg.style("width"), 10);
         this.svgHeight = parseInt(this.svg.style("height"), 10);
 
+        this.idsInBinBrush = [];
+
 
         // sets colors for the histogram rectangles
-        this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
+        this.colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];
         this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year"]; // Edit this for more histograms
 
         this.histWidth = parseInt(this.svgWidth);
@@ -59,75 +61,52 @@ class HistogramView {
                 var e = d3.event.selection;
 
                 let indexes = [];
-                let _this = this;
-                console.log("HISTOGRAM");
-                console.log(this);
+                let ids = [];
+                let _THIS = this;
+                //console.log("HISTOGRAM");
+                //console.log(this);
+
+                let histID = this['id'];
 
 
                 if(e) {
-
                     // Select all .dot circles, and add the "hidden" class if the data for that circle
                     // lies outside of the brush-filter applied for this SplomCells x and y attributes
-                    d3.selectAll('.bin-rect')
-                     .classed("faded", function(d){
+                    d3.selectAll('#' + histID + ' .bin-rect')
+                     .classed("", function(d){
                         // console.log("RECTANGLE")
                         // console.log(d3.select(this).attr("x"))
                         // console.log(+d3.select(this).attr("x") + +d3.select(this).attr("width"))
 
+
                         if (+d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]) {
                             indexes.push(this);
-                            return true;
-                        } else {
-                            return false;
+
+
+                            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                            and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                            let artistIndex = this.parentNode.id.slice(-1);
+
+                            // get the Spotify id of the collection (artist)
+                            let collectionId = _this.data[artistIndex].id;
+
+                            // get a list of the id's in this bin
+                            _this.idsInBinBrush = _this.idsInBinBrush + d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
+
+                            // send a filtering function out to the other components to highlight the id's in this bin everywhere
+                            _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
                         }
+                        console.log("INDEXES");
 
-
-
-
-                        // console.log(d);
-                        // return e[0][0] > _this.x(d[bin]) || _this.x(d[bin]) > e[1][0]
-                        // || e[0][1] > _this.y(d[bin]) || _this.y(d[bin]) > e[1][1];
-                        //return true;
                     })
-                    // .classed('fade', function(d) {
-
-                    //     /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
-                    //         and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
-                    //     let artistIndex = this.parentNode.id.slice(-1);
-
-                    //     // get the Spotify id of the collection (artist)
-                    //     let collectionId = _this.data[artistIndex].id;
-
-                    //     // get a list of the id's in this bin
-                    //     let idsInBin = d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
-
-                    //       The filtering function typically has format (d) => d.id == s.id where s.id is the magical song id we want to highlight.
-                    //         Or (d) => d.collection_id == s.id where s.id is the id of a collection we want to highlight all the songs of
-                    //         Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...]
-                    //         so those filtering functions can operate on it.
-
-                    //     idsInBin = idsInBin.map((d) => {
-                    //         return {"id": d, collection_id: collectionId};
-                    //     });
-
-                    //     /* check if the filter function evaluates true for at least one id in this bin, i.e. if one id in this bin needs to be highlighted,
-                    //     then highlight the whole bin */
-                    //     for(let id of idsInBin) {
-                    //         if(_this.highlight(id)) {
-                    //             return false;
-                    //         }
-                    //     }
-
-                    //     // otherwise, if the filteredIds is not empty then this bin does not contain the id we want to highlight -> fade it
-                    //     return true;
-                    // });
                 }
             })
             .on("end", function() {
                         // If there is no longer an extent or bounding box then the brush has been removed
                 if(!d3.event.selection) {
+                    _this.idsInBinBrush = [];
                     // Bring back all hidden .dot elements
-                    svg.selectAll('.faded').classed('faded', false);
+                    svg.selectAll('.fade').classed('faded', false);
                     // Return the state of the active brushCell to be undefined
                     this.brushHist = undefined;
                 }
@@ -443,8 +422,6 @@ class HistogramView {
 
               this.xAxisGEnter = this.xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(this.xAxis);
               this.yAxisGEnter = this.yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(this.yAxis);
-              console.log("SVG" + this.svg)
-              console.log("X" + this.x)
 
               // calculate the center location of the histogram
     let centerPx = parseInt(this.x.range()[0] + (this.x.range()[1] - this.x.range()[0])/2);
@@ -488,7 +465,7 @@ class HistogramView {
     onHighlight(filterFunction) {
 
         this.highlight = filterFunction;
-        console.log(filterFunction);
+        //console.log(filterFunction);
 
         let _this = this;
 
@@ -505,6 +482,8 @@ class HistogramView {
                 // get a list of the id's in this bin
                 let idsInBin = d.data["ids" + artistIndex]; //_this.getAllIdsInBin(d);
 
+
+
                  /* The filtering function typically has format (d) => d.id == s.id where s.id is the magical song id we want to highlight.
                     Or (d) => d.collection_id == s.id where s.id is the id of a collection we want to highlight all the songs of
                     Get our id's array from the format [id1, id2, ...] into [{id: id1, collection_id: cid1}, {id: id2, collection_id: cid2}, ...]
@@ -513,6 +492,8 @@ class HistogramView {
                 idsInBin = idsInBin.map((d) => {
                     return {"id": d, collection_id: collectionId};
                 });
+
+
 
                 /* check if the filter function evaluates true for at least one id in this bin, i.e. if one id in this bin needs to be highlighted,
                 then highlight the whole bin */

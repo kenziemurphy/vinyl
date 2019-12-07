@@ -15,18 +15,18 @@ const ANGLE_TILT = Math.PI * 2 / ALL_KEYS.length / 2;    // can't draw the "0" u
 const SCALE_ANGLE = d3.scaleOrdinal()
     .domain(ALL_KEYS)
     .range(d3.range(
-        ANGLE_TILT, 
+        ANGLE_TILT,
         Math.PI * 2 + ANGLE_TILT,
         Math.PI * 2 / ALL_KEYS.length
     ));
 
 class RadialView {
     constructor (svg, data = [], dispatch) {
-        
+
         this.svg = svg;
         this.data = data;
         this.dispatch = dispatch;
-        
+
         this.selectedSong = false;
 
         // default config
@@ -58,15 +58,15 @@ class RadialView {
             splitKey: 'collection_id',
             showAxes: true
         }
-        
+
         this.PADDING = {
             x: 40,
             y: 40
         };
         // this.COLOR_SCHEME = ['#81D0EF', '#F36293', '#6988F2', '#FCA981'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
-        this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
+        this.COLOR_SCHEME = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.TIME_SIG_AS_POLYGON = true;
-        
+
         // data-dependent computed consts, will update when data is loaded
         this.SCALE_X = x => x;
         this.SCALE_Y = x => x;
@@ -80,7 +80,7 @@ class RadialView {
         this.collections = [];
         this.grids = [];
         this.shouldReinitGrid = true;
-        
+
         this.songToolTip = d3.tip()
             .attr("class", "d3-tip song-tooltip")
             .offset([-5, 0])
@@ -108,7 +108,7 @@ class RadialView {
 
             var outsideDot = d3.selectAll('.song.active *').filter(equalToEventTarget).empty();
             var outsideButton = d3.selectAll('.vis-control, .vis-control *').filter(equalToEventTarget).empty();
-            
+
             if (outsideDot && outsideButton) {
                 d3.select('input#search-highlight').classed('active', false);
                 _this.resetSelection();
@@ -199,7 +199,7 @@ class RadialView {
         let willBeRadial = false;
         willBeRadial = willBeRadial || (config.xMapping === undefined ? this.config.xMapping.isRadial : config.xMapping.isRadial);
         willBeRadial = willBeRadial || (config.yMapping === undefined ? this.config.yMapping.isRadial : config.yMapping.isRadial);
-        
+
         if (
             (config.isSplitting !== undefined && config.isSplitting != this.config.isSplitting) ||
             (willBeRadial !== undefined && willBeRadial != this.useRadialScale())
@@ -232,15 +232,15 @@ class RadialView {
                 .classed('mini', this.SPLITS > 1);
             if (this.useRadialScale())
                 this.grids.push(axisRadial(
-                    this.SCALE_X, 
-                    this.SCALE_Y, 
+                    this.SCALE_X,
+                    this.SCALE_Y,
                     this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                     this.config.xMapping.key,
                     this.config.yMapping.key));
             else{
                 this.grids.push(axisRect(
-                    this.SCALE_X, 
-                    this.SCALE_Y, 
+                    this.SCALE_X,
+                    this.SCALE_Y,
                     this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                     this.config.xMapping.key,
                     this.config.yMapping.key));
@@ -268,7 +268,7 @@ class RadialView {
         let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         d3.selectAll('g.vinyl').remove();
         if (this.useRadialScale()) {
-            
+
 
             for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
                 let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
@@ -280,14 +280,14 @@ class RadialView {
                 let vinylGInner = selectAllOrCreateIfNotExist(vinylG, 'g.spinning');
 
                 var defs = vinylGInner.append('svg:defs');
-        
+
                 defs.append('svg:pattern')
                     .attr('id', d => `image_center_${i}`)
                     .attr("patternUnits", "userSpaceOnUse")
                     .append("svg:image")
                     // FIXME get album art once the api has been fixed
                     .attr("xlink:href", '')
-                
+
                 let r = this.SCALE_Y.range()[0] - centerPadding;
                 vinylGInner.selectAll('defs pattern')
                     .attr("width", d => 2 * r)
@@ -305,7 +305,7 @@ class RadialView {
                         // .style('fill', '#212039')
                         // .style('fill', '000000')
                         // .style('fill', 'f4f4f4')
-                        .style('fill-opacity', '.9');        
+                        .style('fill-opacity', '.9');
 
                     let vinylCenterImage = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center-image')
                         .attr('r', r)
@@ -316,9 +316,9 @@ class RadialView {
                     let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
                         .attr('r', r)
                         .style('fill', this.COLOR_SCHEME[i]);
-    
+
                 }
-                
+
                 let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
                     .attr('r', 10)
                     .style('fill', '#212039');
@@ -333,8 +333,8 @@ class RadialView {
         // if (this.config.showAxes) {
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g#grid-split-${i}`);
-            this.grids[i].update(this.SCALE_Y, 
-                this.SCALE_X, 
+            this.grids[i].update(this.SCALE_Y,
+                this.SCALE_X,
                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
                 this.config.xMapping.key,
                 this.config.yMapping.key,
@@ -343,8 +343,8 @@ class RadialView {
 
             if (this.selectedSong) {
                 this.grids[i].showGuide(
-                    this.selectedSong[this.config.xMapping.key], 
-                    this.selectedSong[this.config.yMapping.key], 
+                    this.selectedSong[this.config.xMapping.key],
+                    this.selectedSong[this.config.yMapping.key],
                     this.SCALE_DOT_COLOR(this.selectedSong[this.config.splitKey])
                     );
             }
@@ -366,17 +366,17 @@ class RadialView {
                     .append('text')
                     .attr('class', 'label-split')
                     .text(this.collections[i].name)
-                    // .attr('x', this.useRadialScale() ? 
+                    // .attr('x', this.useRadialScale() ?
                     //     -this.SCALE_Y.range()[1] - 50:
                     //     this.SCALE_Y.range()[0] - 50)
-                    .attr('y', this.useRadialScale() ? 
+                    .attr('y', this.useRadialScale() ?
                         this.SCALE_Y.range()[1] + 50:
-                        this.config.showAxes ? 
+                        this.config.showAxes ?
                             this.SCALE_Y.range()[0] + 40:
                             this.SCALE_Y.range()[0] + 20);
             }
         }
-        
+
 
         // buttons
         let _this = this;
@@ -437,7 +437,7 @@ class RadialView {
             return d3.scaleLinear()
         else if (type == 'log')
             return d3.scaleLog()
-        else 
+        else
             return d3.scaleLinear()
     }
 
@@ -454,7 +454,7 @@ class RadialView {
             1: [[this.W / 2, this.H / 2]],
             2: [
                 [this.W / 4, this.H / 2],
-                [this.W * 3 / 4, this.H / 2],    
+                [this.W * 3 / 4, this.H / 2],
             ],
             3: [
                 [this.W / 4, this.H / 4],
@@ -466,7 +466,7 @@ class RadialView {
                 [this.W * 3 / 4, this.H / 4],
                 [this.W / 4, this.H * 3 / 4],
                 [this.W * 3 / 4, this.H * 3 / 4],
-            ], 
+            ],
         }
 
         let nGroups = d3.nest()
@@ -474,11 +474,11 @@ class RadialView {
             .entries(this.filteredData)
             .length
         this.SPLITS = this.config.isSplitting ? Math.min(nGroups, MAX_SPLITS) : 1;
-        
-        this.MIN_RADIAL_DIST = this.SPLITS == 1 ? 
-            Math.min(this.W, this.H) / 8 : 
+
+        this.MIN_RADIAL_DIST = this.SPLITS == 1 ?
+            Math.min(this.W, this.H) / 8 :
             Math.min(this.W, this.H) / 24;
-        this.MAX_RADIAL_DIST = this.SPLITS == 1 ? 
+        this.MAX_RADIAL_DIST = this.SPLITS == 1 ?
             Math.min(this.W, this.H) / 2 - Math.max(this.PADDING.x, this.PADDING.y):
             Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y) * 1.5;
 
@@ -488,11 +488,11 @@ class RadialView {
             this.SCALE_X = this.scaleSelector(this.config.xMapping.scale)
                 .domain(this.data.length == 0 ? [0, 1] :
                     [
-                        this.config.xMapping.minOverride || d3.min(this.data, d => d[this.config.xMapping.key]), 
+                        this.config.xMapping.minOverride || d3.min(this.data, d => d[this.config.xMapping.key]),
                         this.config.xMapping.maxOverride || d3.max(this.data, d => d[this.config.xMapping.key])
-                    ] 
+                    ]
                 )
-                .range(this.SPLITS == 1 ? 
+                .range(this.SPLITS == 1 ?
                     [-this.W / 2 + this.PADDING.x, this.W / 2 - this.PADDING.x] :
                     [-this.W / 4 + this.PADDING.x, this.W / 4 - this.PADDING.x]
                     );
@@ -500,16 +500,16 @@ class RadialView {
         this.SCALE_Y = this.scaleSelector(this.config.yMapping.scale)
             .domain(this.data.length == 0 ? [0, 1] :
                 [
-                    this.config.yMapping.minOverride || d3.min(this.data, d => d[this.config.yMapping.key]), 
+                    this.config.yMapping.minOverride || d3.min(this.data, d => d[this.config.yMapping.key]),
                     this.config.yMapping.maxOverride || d3.max(this.data, d => d[this.config.yMapping.key])
-                ] 
+                ]
             )
-            .range(this.useRadialScale() ? 
+            .range(this.useRadialScale() ?
                 [this.MIN_RADIAL_DIST, this.MAX_RADIAL_DIST] :
-                this.SPLITS == 1 ? 
+                this.SPLITS == 1 ?
                     [this.H / 2 - this.PADDING.y, -this.H / 2 + this.PADDING.y] :
                     [this.H / 4 - this.PADDING.y, -this.H / 4 + this.PADDING.y]);
-        
+
         // calculate size of data points to draw and normalize
         if (this.filteredData) {
             let tempScale = d3.scalePow()
@@ -517,8 +517,8 @@ class RadialView {
                 .domain(d3.extent(this.data, d => d[this.config.dotRadiusMapping]))
                 .range([2, 10]);
             let dataByKey = d3.nest()
-                .key(d => this.SPLITS == 1 ? 
-                    this.getKeyFromKeyId(d.key, d.mode) : 
+                .key(d => this.SPLITS == 1 ?
+                    this.getKeyFromKeyId(d.key, d.mode) :
                     `${this.getKeyFromKeyId(d.key, d.mode)} - ${d[this.config.splitKey]}` )
                 .rollup(v => ({
                     sumArea: d3.sum(v, d => Math.PI * tempScale(d[this.config.dotRadiusMapping]) * tempScale(d[this.config.dotRadiusMapping])),
@@ -533,14 +533,14 @@ class RadialView {
                 .domain(d3.extent(this.data, d => d[this.config.dotRadiusMapping]))
                 .range([2, drawingArea / (this.SPLITS == 1 ? 700 : 1400) * Math.sqrt(1 / maxSumAreaSpoke)]);
         }
-            
+
         this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME)
             .domain(this.collections.map(d => d.id));
         this.SCALE_DOT_CHART_INDEX = this.SPLITS == 1 ?
             x => 0 :
             d3.scaleOrdinal(d3.range(0, this.SPLITS, 1))
     }
-    
+
     /**
      * @desc initlize or update d3.forceSimulation
      * @param void
@@ -567,7 +567,7 @@ class RadialView {
                         .attr('x2', s => s.song.x)
                         .attr('y2', s => s.song.y)
                 });
-        }          
+        }
 
         this.force.velocityDecay(0.5);
         this.force.nodes(this.filteredData);
@@ -592,9 +592,9 @@ class RadialView {
             .strength(0.2);
 
         this.force.alphaTarget(0.7).restart()
-       
+
     }
-    
+
     /**
      * @desc draw data points or updates if they already exists
      * @param void
@@ -646,30 +646,30 @@ class RadialView {
                     }
                     d3.select('#drop-area').classed('ready', false);
                 }));
-            
+
         var songGEnterInner = songGEnter.append('g')
             .attr('class', d => `song-inner rotate-anim rotate-${d.time_signature}`)
             .style('animation-duration', d => `${60 / d.tempo * d.time_signature}s`)
-    
+
         var defs = songGEnterInner.append('svg:defs');
-        
+
         defs.append('svg:pattern')
             .attr('id', d => `image${d.id}`)
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
             // FIXME get album art once the api has been fixed
             .attr("xlink:href", d => d.images[2].url)
-    
+
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
             .append('polygon')
             .attr('class', 'dot pulse')
-    
+
         var circlePoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature <= 2 : true)
             .append('circle')
             .attr('class', 'dot pulse')
-            
+
         var dotHoverArea = songGEnterInner.append('circle')
             .attr('class', 'hover-area')
             // .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
@@ -705,24 +705,24 @@ class RadialView {
             .attr('points', function (d) {
                 // draw regular polygons
                 var points = [];
-                
+
                 var n = d.time_signature;
-                
+
                 var theta_offset_radial = _this.useRadialScale() ? SCALE_ANGLE(_this.getKeyFromKeyId(d.key, d.mode)) : -Math.PI / 2;
                 var theta_offset = 2 * Math.PI / d.time_signature / 2 + Math.PI + theta_offset_radial;
-                
+
                 var size = _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]);
                 var targetArea = Math.PI * size * size;
                 var axesLength = Math.sqrt(targetArea / (n * Math.sin(Math.PI / n) * Math.cos(Math.PI / n)));
-    
+
                 for (var i = 0; i < d.time_signature; i++) {
                     var theta = i * 2 * Math.PI / d.time_signature;
-    
+
                     var x = Math.cos(theta + theta_offset) * axesLength;
                     var y = Math.sin(theta + theta_offset) * axesLength;
                     points.push([x, y]);
                 }
-    
+
                 return points.map(d => `${d[0]},${d[1]}`).join(' ');
            })
 
@@ -733,10 +733,10 @@ class RadialView {
         songG.merge(songGEnter)
             .selectAll('.hover-area')
             .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
-    
+
         songG.exit().remove();
     }
-    
+
     /**
      * @desc mouse action function selector for each data point
      * @param string action ('mouseover' | 'click' | 'mouseout') - type of event
@@ -750,7 +750,7 @@ class RadialView {
                 let songParentData = songParent.datum();
                 songParent.classed('hover', true);
                 if (songParentData.isDragging) return;
-                
+
                 if (!_this.selectedSong) {
                     // d = d;
                     _this.selectSong(songParentData, songParent.node());
@@ -791,7 +791,7 @@ class RadialView {
                     d3.select(m[i].closest('.song')).classed('active', true)
                     _this.selectedSong = songParentData;
                 }
-                
+
                 callTutorial('#drop-area', 'Drag and drop it here to see more details', 'n');
             }
         } else if (action == 'mouseout') {
@@ -838,11 +838,11 @@ class RadialView {
         let _this = this;
         this.dispatch.call('highlight', elem, s => s.id == d.id);
         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
-    
+
         _this.grids.forEach(function (g, i) {
             g.showGuide(
-                d[_this.config.xMapping.key], 
-                d[_this.config.yMapping.key], 
+                d[_this.config.xMapping.key],
+                d[_this.config.yMapping.key],
                 _this.SCALE_DOT_COLOR(d[_this.config.splitKey]));
             });
 
@@ -859,12 +859,12 @@ class RadialView {
             .attr('y1', s => s.source.y)
             .attr('x2', s => s.source.x)
             .attr('y2', s => s.source.y)
-        
+
         _this.svg.selectAll('line.similarity-link')
             .transition()
             .attr('x2', s => s.song.x)
             .attr('y2', s => s.song.y)
-        
+
         _this.svg.selectAll('.song')
             .filter(d => similarSongs.filter(x => x.song.id == d.id).length > 0)
             .classed('similar-highlight', true);
@@ -883,7 +883,7 @@ class RadialView {
     */
     resetSelection () {
         let _this = this;
-        
+
         if (this.selectedSong) {
             this.selectedSong.audio.stopFadeOut();
             this.selectedSong = false;
@@ -935,7 +935,7 @@ class RadialView {
         //     distances.push(this.euclidianDistance(this.filteredData[i], d));
         // }
         // console.log(d3.extent(distances));
-        
+
         // scale mapping for similarity score
         let sacleSimilarityScore = d3.scaleLinear()
             .domain([0.05, 0.6])
@@ -947,15 +947,15 @@ class RadialView {
             similarSongs.push({
                 source: d,
                 song: nearest[i],
-                similarity: sacleSimilarityScore(this.euclidianDistance(nearest[i], d)) 
+                similarity: sacleSimilarityScore(this.euclidianDistance(nearest[i], d))
             });
         }
         return similarSongs;
     }
-    
-    
+
+
     // helpers
-    
+
     /**
      * @desc converts polar coordinates to x,y coordinates
      * @param float angle - angle in polar coordinates
@@ -976,10 +976,10 @@ class RadialView {
      * @return float distance - a measure of the difference between song a and b
     */
     euclidianDistance(a, b) {
-        return Math.sqrt(Math.pow(a["energy"] - b["energy"], 2) 
-            + Math.pow(a["instrumentalness"] - b["instrumentalness"], 2) 
-            + Math.pow(a["acousticness"] - b["acousticness"], 2) 
-            + Math.pow(a["valence"] - b["valence"], 2) 
+        return Math.sqrt(Math.pow(a["energy"] - b["energy"], 2)
+            + Math.pow(a["instrumentalness"] - b["instrumentalness"], 2)
+            + Math.pow(a["acousticness"] - b["acousticness"], 2)
+            + Math.pow(a["valence"] - b["valence"], 2)
             + Math.pow(a["danceability"] - b["danceability"], 2)
             + Math.pow(a["liveness"] - b["liveness"], 2)
             + Math.pow(a["speechiness"] - b["speechiness"], 2));
@@ -996,7 +996,7 @@ class RadialView {
             mode = Math.ceil(key / 12);
             key = key % 12;
         }
-    
+
         return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
         // return ALL_KEYS[key * 2 + mode];
     }
@@ -1005,7 +1005,7 @@ class RadialView {
      * @desc map a data point to its target x,y position
      * @param Object d - the data point
      * @param float distanceOverride (optional) - for radial coordinates: arbitrary distance from the origin
-     * @param boolean isRadial (optional) - 
+     * @param boolean isRadial (optional) -
      *      true if you want the radial coordinates plot with key/mode as the angle axis
      *      false if you want x,y coordinates for a given pair of attibutes and scales (unfinished)
      * @return Array - [x, y] coordinates of the data point
@@ -1017,7 +1017,7 @@ class RadialView {
             return this.angleDistanceToXy(angle, distance);
         } else {
             return [
-                this.SCALE_X(d[this.config.xMapping.key]), 
+                this.SCALE_X(d[this.config.xMapping.key]),
                 this.SCALE_Y(d[this.config.yMapping.key])
             ]
         }

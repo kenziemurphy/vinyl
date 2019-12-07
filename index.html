@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="css/radialplot.css" />
         <link rel="stylesheet" href="css/starplot.css" />
 		<link rel="stylesheet" href="css/main.css" />
-		
+
 		<script src="https://kit.fontawesome.com/45bc1cc8f8.js" crossorigin="anonymous"></script>
     </head>
     <body>
@@ -69,7 +69,7 @@
 										<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 										<option data-scale-type="linear" value="release_year">YEAR</option>
 										<option data-scale-type="linear" value="duration">DURATION</option>
-										<option data-scale-type="linear" value="pca1">PCA1</option>	
+										<option data-scale-type="linear" value="pca1">PCA1</option>
 									</select>
 								</div>
 							</div>
@@ -89,8 +89,8 @@
 										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
 										<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 										<option data-scale-type="linear" value="release_year">YEAR</option>
-										<option data-scale-type="linear" value="duration">DURATION</option>	
-										<option data-scale-type="linear" value="pca2">PCA2</option>	
+										<option data-scale-type="linear" value="duration">DURATION</option>
+										<option data-scale-type="linear" value="pca2">PCA2</option>
 									</select>
 								</div>
 							</div> -->
@@ -102,7 +102,7 @@
 									<input type="text" class="btn vis-control" id="search-highlight" style="width: 100%;">
 								</div>
 							</div>
-							
+
 						<!-- </div> -->
 						<!-- <div class="container-row">
 							<div class="grow margin-gutter" style="width: 33.33%">
@@ -125,7 +125,7 @@
 									<span class="slider round"></span>
 								</label>
 							</div> -->
-							
+
 							<div class="container-row mb-xs">
 								<div class="grow">
 									<small class="add-help" data-help-key="split-view">Split View </small>
@@ -225,13 +225,13 @@
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
-									<option data-scale-type="linear" value="duration">DURATION</option>	
+									<option data-scale-type="linear" value="duration">DURATION</option>
 									<!-- <option data-scale-type="linear" value="pca2">PCA2</option>	 -->
 								</select>
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="grow container-col" style="padding-bottom: 10px;">
 							<!-- <div class="grow container-col" style="padding-bottom: 30px;"> -->
 						<svg id="radial-view" class="grow" overflow="visible"></svg>
@@ -257,7 +257,7 @@
 				</div> -->
             </div>
 		</div>
-		
+
 		<div id="veil" class="veil hide vis-control"></div>
 
 		<div id="star-view-drawer" class="container-col hide">
@@ -277,7 +277,7 @@
 			</div>
 		</div>
 
-		
+
 		<div class="help-tooltip hide">
 			<h3 class="help-title">Test Help Tooltip</h3>
 			<p class="help-body">This is a test help message on the help tooltip. This is a test help message on the help tooltip. This is a test help message on the help tooltip.</p>
@@ -306,7 +306,7 @@
         <script src="js/histograms.js"></script>
         <script src="js/starplots.js"></script>
         <script src="js/tutorial.js"></script>
-		
+
         <script>
 			var ENABLE_TUTORIAL = true;
 			var ENABLE_ALL_TUTORIALS = false;
@@ -317,7 +317,7 @@
 			var dispatch = d3.dispatch('filter', 'highlight');
 
 			callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
-			
+
 			var rv;
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
@@ -420,7 +420,7 @@
 			d3.selectAll('#toggle-split-view').on('change', function (e) {
 				rv.setConfig({isSplitting: this.checked});
 			});
-			
+
 			d3.selectAll('#toggle-album-art').on('change', function (e) {
 				rv.setConfig({showAlbumArt: this.checked});
 			});
@@ -519,11 +519,11 @@
 				   url:    "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot/search?searchString=",
 				   urlEnd: "*",
 				   limit: 1
-				}, 
+				},
 				{  /* awesomplete options */
 				   minChars: 1,
-				   data: (rec, input) => ({ 
-			         label: rec['name'], 
+				   data: (rec, input) => ({
+			         label: rec['name'],
 			         value: {"id": rec['id'], "name": rec['name']}
 			       })
 				}
@@ -542,16 +542,16 @@
 				let artistsExit = artistsInDataset.filter(n => !artistsInUrl.includes(n));
 
 				applyPromise(artistsEnter, loadArtistData)
-					.then(function (e) { 
-						return new Promise.all(e.map(appendArtistData)) 
+					.then(function (e) {
+						return new Promise.all(e.map(appendArtistData))
 					});
 				artistsExit.forEach(removeArtistDataById);
 			}
 
 			// Promise.all(urlParams.getAll('q').map(d => loadArtistData(d))).then(() => {console.log('!!!')});
 			applyPromise(urlParams.getAll('q'), loadArtistData)
-				.then(function (e) { 
-					return Promise.all(e.map(appendArtistData)) 
+				.then(function (e) {
+					return Promise.all(e.map(appendArtistData))
 				});
 
 			// Listen to searchbar selection
@@ -564,7 +564,7 @@
 				var artistID = event.text.value.id;
 				var artistName = event.text.value.name;
 				//console.log(artistID);
-				
+
 				loadArtistData(artistID, artistName)
 					.then(appendArtistData)
 					.then(function () {
@@ -596,7 +596,7 @@
 
 				if (artistID.indexOf('spotify:artist:') >= 0)
 					artistID = artistID.substring('spotify:artist:'.length)
-				
+
 				var url = "https://oeeppedclg.execute-api.us-east-1.amazonaws.com/musicoctorobot?artistId=" + artistID + "&name=" + artistName;
 
 				return new Promise(function (resolve, reject) {
@@ -609,17 +609,17 @@
 					preprocessData(loadedData.songs);
 					console.log('preprocessed', loadedData);
 					// console.log(loadedData);
-	
+
 					// Append to data array
 					data.push(loadedData);
-	
+
 					// redraw artist buttons
 					drawArtistButtons();
-	
+
 					// trigger a data change for the histograms
 					components.forEach(function (c) { c.onDataChanged(data); });
 					resolve();
-	
+
 					updateSplitViewToggle();
 
 					if (ENABLE_TUTORIAL && data.length <= 1) {
@@ -652,7 +652,7 @@
 
 				// enable/disable split view toggle based on if there're more than one artist loaded
 				updateSplitViewToggle();
-				
+
 				// trigger a data change for the histograms
 				components.forEach(function (c) { c.onDataChanged(data); });
 				document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
@@ -670,11 +670,11 @@
 			}
 
 			function drawArtistButtons() {
-				// TODO @Ben, can we draw the artist button 
+				// TODO @Ben, can we draw the artist button
 				// immediately after the artist is selected and have like a spinner to show loading instead?
 				// the current behavior that the feedback for artist loading is not immediate can make it a little confusing
 
-				let colors = ['#fca981', '#6988f2', '#f36293', '#81d0ef'].slice(0, data.length); // color scheme
+				let colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'].slice(0, data.length); // color scheme
 
 				let drawData = data.slice(0);
 				drawData.reverse();
@@ -697,7 +697,7 @@
 							dispatch.call('highlight', this, k => true);
 						});
 				selectionEnter.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));
-						
+
 				// update
 				selection.style("border-left", (d, i) => "12px solid " + colors[i]).text((d) => d["name"])
 						.append("button").html("&times;").on("click", (d,i) => removeArtistData(i));

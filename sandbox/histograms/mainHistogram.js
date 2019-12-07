@@ -11,7 +11,7 @@ fileNameArray.push('../radialplot/slotmachine.json')
 fileNameArray.push('../radialplot/radiohead.json')
 
 // sets colors for the histogram rectangles
-var colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
+var colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];
 var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness"]; // Edit this for more histograms
 
 var x = d3.scaleLinear()
