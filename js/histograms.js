@@ -13,7 +13,6 @@ class HistogramView {
         this.svgHeight = parseInt(this.svg.style("height"), 10);
 
 
-
         // sets colors for the histogram rectangles
         this.colors = ['#FCA981','#6988F2','#F36293', '#81D0EF'];
         this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year"]; // Edit this for more histograms
@@ -29,9 +28,11 @@ class HistogramView {
           .domain([0, 1])
           .range([52, 285]);
 
+        this.createAxes();
+
         let _this = this;
 
-        this.brush = d3.brush()
+        this.brush = d3.brushX()
             .extent(function() {
                 return [[20, _this.HistTop], [_this.histWidth, _this.HistBottom]];
             })
@@ -57,16 +58,36 @@ class HistogramView {
                         // Get the extent or bounding box of the brush event, this is a 2x2 array
                 var e = d3.event.selection;
 
+                let indexes = [];
+                let _this = this;
+                console.log("HISTOGRAM");
+                console.log(this);
+
+
                 if(e) {
 
                     // Select all .dot circles, and add the "hidden" class if the data for that circle
                     // lies outside of the brush-filter applied for this SplomCells x and y attributes
                     d3.selectAll('.bin-rect')
                      .classed("faded", function(d){
+                        // console.log("RECTANGLE")
+                        // console.log(d3.select(this).attr("x"))
+                        // console.log(+d3.select(this).attr("x") + +d3.select(this).attr("width"))
+
+                        if (+d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]) {
+                            indexes.push(this);
+                            return true;
+                        } else {
+                            return false;
+                        }
+
+
+
+
                         // console.log(d);
                         // return e[0][0] > _this.x(d[bin]) || _this.x(d[bin]) > e[1][0]
                         // || e[0][1] > _this.y(d[bin]) || _this.y(d[bin]) > e[1][1];
-                        return true;
+                        //return true;
                     })
                     // .classed('fade', function(d) {
 
@@ -112,7 +133,7 @@ class HistogramView {
                 }
             });
 
-        this.redraw();
+        //this.redraw();
 
     }
 
@@ -371,35 +392,75 @@ class HistogramView {
     }
   }
 
-    /**
-     * @desc draws grid in the back of the vis
-     * @param void
-     * @return void
-    */
-    // initGrid () {
-    //     this.grids = [];
-    //     this.allGridsG = selectAllOrCreateIfNotExist(this.svg, 'g.grids-all');
-    //     for (let i = 0 ; i < this.SPLITS; i++) {
-    //         let multiGridG = selectAllOrCreateIfNotExist(this.allGridsG, `g.grid-split#grid-split-${i}`)
-    //             .classed('mini', this.SPLITS > 1);
-    //         if (this.useRadialScale())
-    //             this.grids.push(axisRadial(
-    //                 this.SCALE_X,
-    //                 this.SCALE_Y,
-    //                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
-    //                 this.config.xMapping.key,
-    //                 this.config.yMapping.key));
-    //         else{
-    //             this.grids.push(axisRect(
-    //                 this.SCALE_X,
-    //                 this.SCALE_Y,
-    //                 this.CENTER_BY_NUM_SPLITS[this.SPLITS][i],
-    //                 this.config.xMapping.key,
-    //                 this.config.yMapping.key));
-    //             }
-    //         multiGridG.call(this.grids[i]);
-    //     }
-    // }
+    createAxes() {
+
+        let _this = this;
+
+          for(let i = 0; i < this.dimensions.length; i++) {
+            let range = [i*this.histHeight + (this.histHeight-30), i*this.histHeight];
+            if(this.dimensions[i] === "tempo") {
+              this.x = d3.scaleLinear()
+                .domain([0, 240])
+                .range([0, this.histWidth]);
+              } else if(this.dimensions[i] === "loudness") {
+                this.x = d3.scaleLinear()
+                .domain([-60, 0])
+                .range([0, this.histWidth]);
+              } else {
+                this.x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, this.histWidth]);
+              }
+
+        this.range = [i*this.histHeight + (this.histHeight-30), i*this.histHeight];
+          this.domain = [0, this.yMax];
+
+          this.y = d3.scaleLinear()
+          .domain(this.domain)
+          .range(this.range);
+
+          // used for forcing x axis ticks to have specific values
+          this.numTicks = 1; // <--- Adjust this value to force a different number of ticks on the axis
+          this.start = this.x.domain()[0];
+          this.end = this.x.domain()[1];
+          this.step = (this.x.domain()[1] - this.x.domain()[0])/this.numTicks;
+
+
+
+          this.xAxis = (g) => g
+          .attr('class', 'x_axis')
+          .attr("transform", 'translate(0,' + (this.range[0]+1) + ')')
+          .call(d3.axisBottom(this.x).tickValues(d3.range(this.start, this.end + this.step, this.step)));
+
+          this.yAxis = (g) => g
+          .attr('class', 'y_axis')
+          .call(d3.axisLeft(this.y)
+              .ticks(2));
+
+              this.temp = [1];
+              this.xAxisG = this.svg.selectAll("#hist" + i + "X").data(this.temp);
+              this.yAxisG = this.svg.selectAll("#hist" + i + "Y").data(this.temp);
+
+              this.xAxisGEnter = this.xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(this.xAxis);
+              this.yAxisGEnter = this.yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(this.yAxis);
+              console.log("SVG" + this.svg)
+              console.log("X" + this.x)
+
+              // calculate the center location of the histogram
+    let centerPx = parseInt(this.x.range()[0] + (this.x.range()[1] - this.x.range()[0])/2);
+
+    selectAllOrCreateIfNotExist(this.svg, `text.label.grid-axis-label.x_label#axis-label-${i}`)
+        .attr("text-anchor", "middle")
+        .attr('alignment-baseline', 'baseline')
+        .text(Utils.formatKeyLabel(_this.dimensions[i]))
+        .call(addHelpTooltip(_this.dimensions[i].toLowerCase()))
+        .transition(d3.transition().duration(750))
+        .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')');
+
+          }
+
+
+    }
 
     onDataChanged (newData) {
         this.data = newData;
