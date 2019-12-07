@@ -274,8 +274,6 @@ class StarView {
                 //console.log(d);
                 return "img_" + i;
             })
-            // .attr("x", -starCircleRadius)
-            // .attr("y", -starCircleRadius)
             .attr("x", 0)
             .attr("y", -starCircleRadius)
             .attr("width", 2 * starCircleRadius)
@@ -321,6 +319,7 @@ class StarView {
                 
             //})
             .on("mouseout", this.playClip('mouseout'));
+
 
         for(var num = 0; num < 5; num ++){
             circles.append("circle")
