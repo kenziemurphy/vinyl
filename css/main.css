@@ -16,7 +16,7 @@ body {
 
 body * { 
     font-family: proxima-nova, sans-serif;
-    font-style: normal;
+    /* font-style: normal; */
     font-weight: 400;
     box-sizing: border-box;
 }
@@ -31,7 +31,7 @@ h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, 
     margin-top: 0;
 }
 
-h2 { font-size: 16pt; font-style: normal; }
+h2 { font-size: 14pt; font-style: normal; }
 h3 { font-size: 12pt; font-style: normal; }
 
 b, [font-weight="bold"] {
@@ -497,6 +497,9 @@ input:checked + .slider:before {
     padding-right: 30px;
 
 }
+#starTitleLabel {
+    font-size: 10pt;
+}
 #drop-area {
     display: flex;
 }
@@ -517,4 +520,8 @@ a:hover {
 
 .clickable {
     cursor: pointer;
+}
+
+.text-muted {
+    opacity: 0.5;
 }

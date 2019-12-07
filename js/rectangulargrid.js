@@ -1,10 +1,12 @@
 function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxes = true) {
 
-    console.log('!!!!')
     const NUM_GRID_LINES = 5;
     const MID_LABEL_HORIZONTAL_OFFSET = 25;
     const MID_LABEL_VERTICAL_OFFSET = 7;
-    const AXIS_LABEL_OFFSET = 20;
+    const AXIS_LABEL_OFFSET = {
+        x: 30,
+        y: 20
+    };
 
     var scaleX = xScale;
     var scaleY = yScale;
@@ -81,12 +83,12 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
 
         // axis labels
         let yLabelRightG = selectAllOrCreateIfNotExist(gridG, 'g.label-axis-y-left-g')
-            .attr('transform', `translate(${scaleX.range()[1] + AXIS_LABEL_OFFSET}, 0)`);
+            .attr('transform', `translate(${scaleX.range()[1] + AXIS_LABEL_OFFSET.x}, 0)`);
         selectAllOrCreateIfNotExist(yLabelRightG, 'text.label.label-axis-y.grid-axis-label.right')
             .attr('transform', 'rotate(90)');
 
         let yLabelLeftG = selectAllOrCreateIfNotExist(gridG, 'g.label-axis-y-right-g')
-            .attr('transform', `translate(${scaleX.range()[0] - AXIS_LABEL_OFFSET}, 0)`);
+            .attr('transform', `translate(${scaleX.range()[0] - AXIS_LABEL_OFFSET.x}, 0)`);
         selectAllOrCreateIfNotExist(yLabelLeftG, 'text.label.label-axis-y.grid-axis-label.left')
             .attr('transform', 'rotate(-90)');
 
@@ -95,9 +97,9 @@ function axisRect (xScale, yScale, center, xMappingLabel, yMappingLabel, showAxe
             .call(addHelpTooltip(yMappingLabel.toLowerCase()));
 
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.top')
-            .attr('y', scaleY.range()[1] - AXIS_LABEL_OFFSET);
+            .attr('y', scaleY.range()[1] - AXIS_LABEL_OFFSET.y);
         selectAllOrCreateIfNotExist(gridG, 'text.label.label-axis-x.grid-axis-label.bottom')
-            .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET);
+            .attr('y', scaleY.range()[0] + AXIS_LABEL_OFFSET.y);
         selection.selectAll('text.label.label-axis-x')
             .text(Utils.formatKeyLabel(xMappingLabel))
             .call(addHelpTooltip(xMappingLabel.toLowerCase()));

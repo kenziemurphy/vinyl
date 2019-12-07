@@ -152,6 +152,24 @@
     z-index: -100;
 }
 
+.vinyl-center-image {
+    transition: opacity 0.3s;
+}
+
+.vinyl-center-image.hide {
+    opacity: 0;
+}
+
+.vinyl .spinning{
+    animation: turntable 10s infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes turntable {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .label-split {
     text-anchor: middle;
     alignment-baseline: central;

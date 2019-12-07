@@ -28,9 +28,12 @@
 						<div class="artist-btn">Radiohead<button>&times;</button></div>
 						<div class="artist-btn">Slot Machine<button>&times;</button></div>-->
 					</div>
+					<div class="text-center text-muted" style="line-height: 1;">
+						<i><small>Up to 4 artists can be added<br>to the comparison</small></i>
+					</div>
 				</div>
 				<div>
-					<h2>More Options</h2>
+					<h2 id="select-more-options">More Options</h2>
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel" id="options-panel">
 							<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
@@ -155,9 +158,12 @@
 							</div>
 						</div>
 					</div>
-					<h2>About the Data</h2>
-					<p class="notes">
-						The data visualized here was pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.
+					<!-- <h2>About the Data</h2> -->
+					<p class="text-muted" style="margin-bottom: 0;">
+						<small>
+							<b>About the Data</b>
+							<i>The data visualized here were pulled from <a href="https://developer.spotify.com/" target="_blank">Spotify API</a>. Most data attributes are computed by Spotify's audio analysis algorithms.</i>
+						</small>
 					</p>
 				</div>
             </div>
@@ -303,13 +309,16 @@
 		
         <script>
 			var ENABLE_TUTORIAL = true;
+			var ENABLE_ALL_TUTORIALS = false;
 
 			var components = [];
 			var data = [];
 
 			var dispatch = d3.dispatch('filter', 'highlight');
 
-			var rv
+			callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
+			
+			var rv;
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
 			components.push(new HistogramView(d3.select('svg#histogram-view'), [], dispatch));
 			// components.push(new StarView(d3.select('svg#star-view'), [], dispatch));
@@ -465,11 +474,7 @@
 				}, false);
 			d3.select('#starClear')
 				.on('click', function() {
-					console.log("removeAll");
-					// flag = 0;
-	    //             removeIndex = i;
-	    //             console.log("remove", i);
-	    //             new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged(d);
+					// console.log("removeAll");
 	                new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged();
 				})
 
@@ -622,6 +627,9 @@
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
+					}
+					else if(ENABLE_TUTORIAL && data.length == 3) {
+						callTutorial('#select-more-options', 'You can also try more options here.')
 					}
 
 					if (data.length >= 4) {
