@@ -60,8 +60,8 @@ class RadialView {
         }
         
         this.PADDING = {
-            x: 30,
-            y: 30
+            x: 40,
+            y: 40
         };
         // this.COLOR_SCHEME = ['#81D0EF', '#F36293', '#6988F2', '#FCA981'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.COLOR_SCHEME = ['#FCA981','#6988F2','#F36293', '#81D0EF'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
@@ -371,7 +371,7 @@ class RadialView {
                     //     this.SCALE_Y.range()[0] - 50)
                     .attr('y', this.useRadialScale() ? 
                         this.SCALE_Y.range()[1] + 50:
-                        this.config.showAxis ? 
+                        this.config.showAxes ? 
                             this.SCALE_Y.range()[0] + 40:
                             this.SCALE_Y.range()[0] + 20);
             }
@@ -457,15 +457,15 @@ class RadialView {
                 [this.W * 3 / 4, this.H / 2],    
             ],
             3: [
-                [this.W / 4, this.H / 4 + 20],
-                [this.W * 3 / 4, this.H / 4 + 20],
-                [this.W / 2, this.H * 3 / 4 - 20],
+                [this.W / 4, this.H / 4],
+                [this.W * 3 / 4, this.H / 4],
+                [this.W / 2, this.H * 3 / 4],
             ],
             4: [
-                [this.W / 4, this.H / 4 - 10],
-                [this.W * 3 / 4, this.H / 4 - 10],
-                [this.W / 4, this.H * 3 / 4 - 10],
-                [this.W * 3 / 4, this.H * 3 / 4 - 10],
+                [this.W / 4, this.H / 4],
+                [this.W * 3 / 4, this.H / 4],
+                [this.W / 4, this.H * 3 / 4],
+                [this.W * 3 / 4, this.H * 3 / 4],
             ], 
         }
 
