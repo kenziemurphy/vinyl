@@ -153,6 +153,10 @@
     transition: opacity 0.3s;
 }
 
+.vinyl.hide {
+    opacity: 0;
+}
+
 .vinyl .spinning{
     animation: turntable 10s infinite;
     animation-timing-function: linear;
