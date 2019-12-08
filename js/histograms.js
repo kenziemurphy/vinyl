@@ -473,7 +473,8 @@ class HistogramView {
           this.xAxis = (g) => g
           .attr('class', 'x_axis')
           .attr("transform", 'translate(0,' + (this.range[0]+1) + ')')
-          .call(d3.axisBottom(this.x).tickValues(d3.range(this.start, this.end + this.step, this.step)));
+          .call(d3.axisBottom(this.x).ticks(0));
+
 
           this.yAxis = (g) => g
           .attr('class', 'y_axis')
