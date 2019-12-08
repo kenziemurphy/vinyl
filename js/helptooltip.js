@@ -15,6 +15,10 @@ var HELP_PRESETS = {
         title: 'Key',
         body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
     },
+    'key_signature_by_fifths': {
+        title: 'Key',
+        body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
+    },
     'key_signature_full': {
         title: 'Key',
         body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
