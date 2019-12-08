@@ -16,7 +16,8 @@ window.Utils = {
         "tempo": "Tempo (BPM)",
         "loudness": "Loudness (dB)",
         "duration": "Duration (min)",
-        "key_signature": "Key"
+        "key_signature": "Key",
+        "key_signature_by_fifths": "Key"
     },
     snakeToCap (s) {
         return s.split('_').map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(' ');

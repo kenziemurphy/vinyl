@@ -1,29 +1,18 @@
 // facts
 const MAX_SPLITS = 4;
-const ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH = true;
-const ALL_KEYS = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
-    [
-        'Am', 'Em', 'Bm', 'F♯/G♭m', 'C♯/D♭m', 'G♯/A♭m', 'D♯/E♭m', 'A♯/B♭m', 'Fm', 'Cm', 'Gm', 'Dm', 
-        'C', 'G', 'D', 'A', 'E', 'B', 'F♯/G♭', 'C♯/D♭', 'G♯/A♭', 'D♯/E♭', 'A♯/B♭', 'F',
-    ]:
-    [
+const ALL_KEYS = [
         'Cm', 'C♯/D♭m', 'Dm', 'D♯/E♭m', 'Em', 'Fm', 'F♯/G♭m', 'Gm', 'G♯/A♭m', 'Am', 'A♯/B♭m', 'Bm',
         'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
     ];
-// const ALL_KEYS = [
-//     'Cm', 'C♯/D♭m', 'Dm', 'D♯/E♭m', 'Em', 'Fm', 'F♯/G♭m', 'Gm', 'G♯/A♭m', 'Am', 'A♯/B♭m', 'Bm',
-//     'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
-// ];
+const ALL_KEYS_BY_FIFTHS = [
+        'Am', 'Em', 'Bm', 'F♯/G♭m', 'C♯/D♭m', 'G♯/A♭m', 'D♯/E♭m', 'A♯/B♭m', 'Fm', 'Cm', 'Gm', 'Dm', 
+        'C', 'G', 'D', 'A', 'E', 'B', 'F♯/G♭', 'C♯/D♭', 'G♯/A♭', 'D♯/E♭', 'A♯/B♭', 'F',
+    ]
 
-const ALL_KEYS_FULL = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
-    [
-        'A minor', 'E minor', 'B minor', 'F♯/G♭ minor', 'C♯/D♭ minor', 'G♯/A♭ minor', 'D♯/E♭ minor', 'A♯/B♭ minor', 'F minor', 'C minor', 'G minor', 'D minor', 
-        'C major', 'G major', 'D major', 'A major', 'E major', 'B major', 'F♯/G♭ major', 'C♯/D♭ major', 'G♯/A♭ major', 'D♯/E♭ major', 'A♯/B♭ major', 'F major',
-    ]:
-    [
-        'C minor', 'C♯/D♭ minor', 'D minor', 'D♯/E♭ minor', 'E minor', 'F minor', 'F♯/G♭ minor', 'G minor', 'G♯/A♭ minor', 'A minor', 'A♯/B♭ minor', 'B minor',
-        'C major', 'C♯/D♭ major', 'D major', 'D♯/E♭ major', 'E major', 'F major', 'F♯/G♭ major', 'G major', 'G♯/A♭ major', 'A major', 'A♯/B♭ major', 'B major',
-    ];
+const ALL_KEYS_FULL = [
+    'C minor', 'C♯/D♭ minor', 'D minor', 'D♯/E♭ minor', 'E minor', 'F minor', 'F♯/G♭ minor', 'G minor', 'G♯/A♭ minor', 'A minor', 'A♯/B♭ minor', 'B minor',
+    'C major', 'C♯/D♭ major', 'D major', 'D♯/E♭ major', 'E major', 'F major', 'F♯/G♭ major', 'G major', 'G♯/A♭ major', 'A major', 'A♯/B♭ major', 'B major',
+];
 
 // computed consts
 const ANGLE_TILT = Math.PI * 2 / ALL_KEYS.length / 2;    // can't draw the "0" upright, we want the major/minor line to be completely horizontal
@@ -34,6 +23,12 @@ const SCALE_ANGLE = d3.scaleOrdinal()
         Math.PI * 2 + ANGLE_TILT,
         Math.PI * 2 / ALL_KEYS.length
     ));
+
+const RADIAL_SCALE_DOMAIN_BY_KEY = {
+    key: ALL_KEYS,
+    key_signature: ALL_KEYS,
+    key_signature_by_fifths: ALL_KEYS_BY_FIFTHS
+}
 
 class RadialView {
     constructor (svg, data = [], dispatch) {
@@ -174,6 +169,7 @@ class RadialView {
                 d.y = _this.H / 2;
             }
             d.key_signature = _this.getKeyFromKeyId(d.key, d.mode, false);
+            d.key_signature_by_fifths = _this.getKeyFromKeyId(d.key, d.mode, false);
             d.key_signature_full = _this.getKeyFromKeyId(d.key, d.mode, true);
         });
 
@@ -283,7 +279,6 @@ class RadialView {
         let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         d3.selectAll('g.vinyl').remove();
         if (this.useRadialScale()) {
-
 
             for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
                 let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
@@ -498,7 +493,8 @@ class RadialView {
             Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y);
 
         if (this.useRadialScale())
-            this.SCALE_X = SCALE_ANGLE;
+            this.SCALE_X = SCALE_ANGLE
+                .domain(RADIAL_SCALE_DOMAIN_BY_KEY[this.config.xMapping.key]);
         else
             this.SCALE_X = this.scaleSelector(this.config.xMapping.scale)
                 .domain(this.data.length == 0 ? [0, 1] :
@@ -1010,14 +1006,12 @@ class RadialView {
     getKeyFromKeyId (key, mode = false, full = false) {
         if (mode === false) {
             mode = Math.ceil(key / 12);
-            key = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? ((key * 7 - (mode == 1 ? 0 : 3)) % 12 ): key % 12;
-            return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
+            key = key % 12;
         }
 
-        let keyIndex = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
-            (key * 7 - (mode == 1 ? 0 : 3)) % 12 + mode * 12:
-            key + mode * 12;
+        let keyIndex = key + mode * 12;
         return full ? ALL_KEYS_FULL[keyIndex] : ALL_KEYS[keyIndex];
+
         // return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
         // return ALL_KEYS[key * 2 + mode];
     }
