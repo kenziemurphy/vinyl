@@ -287,7 +287,7 @@ class RadialView {
                     .attr('r', this.SCALE_Y.range()[1])
                     .style('fill', '#111111');
 
-                let vinylGInner = selectAllOrCreateIfNotExist(vinylG, 'g.spinning');
+                let vinylGInner = selectAllOrCreateIfNotExist(vinylG, 'g#vinyl-inner');
 
                 var defs = vinylGInner.append('svg:defs');
 

@@ -191,20 +191,20 @@
 									<small class="nowrap">X / Angular Axis</small>
 								</div>
 								<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
-									<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
+									<option data-scale-type="linear" value="key_signature" data-radial="true" selected="selected">KEY</option>
 									<option data-scale-type="linear" value="key_signature_by_fifths" data-radial="true">KEY (Ordered by Circle of Fifths)</option>
-									<option data-scale-type="linear" value="tempo">TEMPO</option>
-									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
 									<option data-scale-type="linear" value="duration">DURATION</option>
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
 									<!-- <option data-scale-type="linear" value="pca1">PCA1</option>	 -->
 								</select>
 							</div>
@@ -215,7 +215,6 @@
 									<small class="nowrap">Y / Radial Axis</small>
 								</div>
 								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
-									<option data-scale-type="linear" value="tempo">TEMPO</option>
 									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
@@ -227,6 +226,7 @@
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
 									<option data-scale-type="linear" value="duration">DURATION</option>
+									<option data-scale-type="linear" value="tempo" selected="selected">TEMPO</option>
 									<!-- <option data-scale-type="linear" value="pca2">PCA2</option>	 -->
 								</select>
 							</div>
@@ -261,7 +261,7 @@
 						<li>Image</li>
 					</ul>
 				</div> -->
-				<p class="text-muted" style="margin-bottom: 0;">
+				<p class="text-muted" style="margin-bottom: 0; margin-top: 0;">
 					<small>
 						<b>Made by</b>
 						<i><a href="https://taepras.com">Tae Prasongpongchai</a>, <a href="https://www.xichen.design/">Xi Chen</a>, <a href="http://www.benjamindupreez.com/">Benjamin Du Preez</a>, <a href="http://fmckenziemurphy.com/">McKenzie Murphy</a></i>

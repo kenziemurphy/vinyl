@@ -60,7 +60,7 @@ var HELP_PRESETS = {
         body: `	Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value.` 
     },
     'valence': {
-        title: 'Valence',
+        title: 'Musical Positivity (aka. Valence)',
         body: `A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).`
     },
     'popularity': {
