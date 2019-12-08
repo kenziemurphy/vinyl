@@ -518,7 +518,16 @@ input:checked + .slider:before {
 }
 #drop-area {
     display: flex;
+    flex-direction: column;
 }
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
 
 a:any-link {
     color: inherit;
