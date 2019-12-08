@@ -227,7 +227,7 @@
 			<div id="drop-area" class="cell drawer-tab vis-control clickable">
 				<!-- <h2>Detailed Analysis</h2> -->
 				<div class="text-center">
-					<i class="fa fa-angle-up" id="expand-icon"></i>
+					<i class="fa fa-angle-up" id="expand-icon" style="opacity: 0;"></i>
 				</div>
 				<div class="flex-container">
 					<div id="starTitleLabel" class="text-center grow">
@@ -283,6 +283,8 @@
 			var data = [];
 
 			var dispatch = d3.dispatch('filter', 'highlight');
+
+			var SongInStarPlot = false;
 
 
 			var rv;
@@ -450,22 +452,35 @@
 			d3.select('#star-view-drawer .drawer-tab')
 				.on('click', function (e) {
 					let drawer = this.parentNode;
-					d3.select(drawer).classed('hide', !d3.select(drawer).classed('hide'));
-					if(d3.select(drawer).classed('hide')){
-						document.getElementById('expand-icon').classList.remove('fa-angle-down');
-						document.getElementById('expand-icon').classList.add('fa-angle-up');
+					// console.log("Songinstarplot", SongInStarPlot);
+					if(SongInStarPlot){
+						console.log("Songinstarplot", SongInStarPlot);
+						d3.select(drawer).classed('hide', !d3.select(drawer).classed('hide'));
+						document.getElementById('expand-icon').style.opacity = 1;
+						if(d3.select(drawer).classed('hide')){
+							document.getElementById('expand-icon').classList.remove('fa-angle-down');
+							document.getElementById('expand-icon').classList.add('fa-angle-up');
+						}
+						else{
+							document.getElementById('expand-icon').classList.remove('fa-angle-up');
+							document.getElementById('expand-icon').classList.add('fa-angle-down');
+						}
 					}
 					else{
-						document.getElementById('expand-icon').classList.remove('fa-angle-up');
-						document.getElementById('expand-icon').classList.add('fa-angle-down');
+						document.getElementById('expand-icon').style.opacity = 0;
 					}
-					console.log("drawer", d3.select(drawer).classed('hide'));
+						
+					
+					// console.log("drawer", d3.select(drawer).classed('hide'));
 
 					d3.select('#veil').classed('hide', d3.select(drawer).classed('hide'))
 				}, false);
 			d3.select('#starClear')
 				.on('click', function() {
-					// console.log("removeAll");
+					console.log("removeAll");
+					document.getElementById('star-view-drawer').classList.remove('show');
+					document.getElementById('star-view-drawer').classList.add('hide');
+					// d3.select('#star-view-drawer').classed('hide', true);
 	                new StarView(d3.select('svg#star-view'), [], dispatch).onDataChanged();
 				})
 
@@ -473,6 +488,8 @@
 				.on('click', function () {
 					d3.select('#star-view-drawer').classed('hide', true);
 					d3.select('#veil').classed('hide', true);
+					document.getElementById('expand-icon').classList.remove('fa-angle-down');
+					document.getElementById('expand-icon').classList.add('fa-angle-up');
 				});
 
 

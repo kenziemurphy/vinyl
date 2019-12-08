@@ -650,6 +650,10 @@ class RadialView {
                     d.isDragging = false;
                     d.fx = null;
                     d.fy = null;
+                    document.getElementById('expand-icon').style.opacity = 1;
+                    document.getElementById('expand-icon').classList.remove('fa-angle-up');
+                    document.getElementById('expand-icon').classList.add('fa-angle-down');
+
                     let dropTargetEl = document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY);
                     let dropTargetId = 'drop-area';
                     while (dropTargetEl && dropTargetEl.id != dropTargetId) {

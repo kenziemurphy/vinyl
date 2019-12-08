@@ -43,8 +43,8 @@ var categories = [
 
 var margin = {
     top: 80,
-    left: 150,
-    right: 150
+    left: 100,
+    right: 100
 };
 const labelMargin = 30;
 
@@ -85,9 +85,10 @@ class StarView {
         // console.log("starCircleRadius", starCircleRadius);
         // console.log("newData", this.data);
         if(this.data == undefined){
-            // console.log("undefined");
+            console.log("undefined");
             d3.select('#star-view').selectAll('*').remove();
             dataArray = [];
+            SongInStarPlot = false;
         }
         else{
             if (flag){
@@ -109,7 +110,8 @@ class StarView {
         this.titleUpdate();
 
         if(dataArray.length >= 1){
-            console.log("dataArray", dataArray);       
+            console.log("dataArray", dataArray);    
+            SongInStarPlot = true;   
             this.redraw();
         }
 
