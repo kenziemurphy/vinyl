@@ -46,7 +46,7 @@ var margin = {
     left: 100,
     right: 100
 };
-const labelMargin = 30;
+const labelMargin = 15;
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
@@ -187,14 +187,14 @@ class StarView {
             .attr('class', 'star-title')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
-                var center_y = 20;
+                var center_y = 30;
                 //console.log(d.name);
                 return "translate(" + center_x + "," + center_y + ")";
             })
             .attr('text-anchor', 'middle')
             .text(function(d){
-                if(d.name.length > 25)
-                    return d.name.substring(0,25) + "...";
+                if(d.name.length > 22)
+                    return d.name.substring(0,22) + "...";
                 else
                     return d.name;
             });
@@ -203,7 +203,7 @@ class StarView {
             .attr('class', 'star-remove clickable')
             .attr('transform', function(d, i){
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 2) + spacing * i + 30;
-                var center_y = 20;
+                var center_y = 30;
                 return "translate(" + center_x + "," + center_y + ")";
             })
             .attr('text-anchor', 'end')
@@ -499,18 +499,15 @@ class StarView {
                     return 'translate(' + center_x + ',' + (2*i+1) * center_y + ')';
                 })*/
                 .attr('transform', function(d, i){
-                    // let angle = num / dimensions.length * 360 - 90;
-                    /*let selfAngle = angle + 90;
-                    if(selfAngle > 90 && selfAngle < 270){
-                        selfAngle += 180;
-                    }*/
-                    // if(angle > 90 && angle < 270) {
-                    //     angle += 180;
-                    // }
-                    //console.log("angle", selfAngle);
+                    let angle = num / dimensions.length * 360 - 100;
+                    if(angle > 90 && angle < 270) {
+                        angle += 180;
+                    }
+                    console.log("angle", angle);
                     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
                     var center_y = margin.top + starRadius + starCircleRadius;
-                    return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
+                    // return 'translate(' + (center_x + x) + ',' + (center_y + y) + ')';
+                    return 'translate(' + (center_x + x) + ',' + (center_y + y) + ') rotate(' + angle + ')';
                 })
                 .attr('id', function(d, i){
                     return "label_" + i + "_" + num;
