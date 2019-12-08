@@ -18,8 +18,8 @@ class HistogramView {
 
         // sets colors for the histogram rectangles
         this.colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];
-        this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year"]; // Edit this for more histograms
-
+        //this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year", "popularity"]; // Edit this for more histograms
+        this.dimensions = ["popularity", "release_year", "energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "duration", "tempo"];
         this.histWidth = parseInt(this.svgWidth);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
         this.paddingLeft = 20;
@@ -50,10 +50,6 @@ class HistogramView {
                 // Clear the old brush
                  _this.brush.move(d3.select(_this.brushHist), null);
 
-                // Update the global scales for the subsequent brushmove events
-                // _this.x.domain(extentByAttribute[cell.x]);
-                // _this.y.domain(extentByAttribute[cell.y]);
-
                 // Save the state of this g element as having an active brush
                 _this.brushHist = this;
             }
@@ -73,15 +69,10 @@ class HistogramView {
 
                 if(e) {
                     let tempArray = [];
-                    // Select all .dot circles, and add the "hidden" class if the data for that circle
-                    // lies outside of the brush-filter applied for this SplomCells x and y attributes
+                    // Select all .bin-rect, and add the "fade" class if the data for that circle
+                    // lies outside of the brush-filter applied for this rectangle x and y attributes
                     d3.selectAll('#' + histID + ' .bin-rect')
                      .classed("", function(d){
-                        // console.log("RECTANGLE")
-                        // console.log(d3.select(this).attr("x"))
-                        // console.log(+d3.select(this).attr("x") + +d3.select(this).attr("width"))
-
-
                         if (+d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]) {
                             indexes.push(this);
 
@@ -120,29 +111,24 @@ class HistogramView {
 
                             _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
 
-
-
-
-
-
                         }
                         console.log("INDEXES");
                     })
                 }
             })
             .on("end", function() {
-                        // If there is no longer an extent or bounding box then the brush has been removed
+                // If there is no longer an extent or bounding box then the brush has been removed
+                console.log("HERE WE ARE")
                 if(!d3.event.selection) {
                     _this.isBrushing = false;
                     _this.idsInBinBrush = [];
-                    // Bring back all hidden .dot elements
-                    svg.selectAll('.fade').classed('faded', false);
-                    // Return the state of the active brushCell to be undefined
+                    // Bring back all faded elements
+                    _this.dispatch.call('highlight', this, k => true);
+                    // svg.selectAll('.fade').classed('fade', false);
+                    // Return the state of the active brushHist to be undefined
                     this.brushHist = undefined;
                 }
             });
-
-        //this.redraw();
 
     }
 
@@ -500,7 +486,9 @@ class HistogramView {
 
         this.highlight = filterFunction;
         //console.log(filterFunction);
-
+        // if ( this.highlight({k: -1}) === true {
+        //     console.log("REMOVE SELECTION");
+        // }
         let _this = this;
 
         d3.selectAll('.bin-rect')
