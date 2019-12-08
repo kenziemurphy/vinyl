@@ -2,6 +2,7 @@ window.Utils = {
     FORMAT_FOR_KEY: {
         'release_year': d3.format('d'),
         'popularity': d3.format('d'),
+        'time_signature': d3.format('d'),
         'duration': (d) => d3.timeFormat('%M:%S')( new Date(0).setSeconds(d) )
     },
     formatByKey: function (key) {
@@ -18,7 +19,7 @@ window.Utils = {
         "duration": "Duration (min)",
         "key_signature": "Key",
         "key_signature_by_fifths": "Key",
-        "valence": "Positivity"
+        "valence": "Positiveness"
     },
     snakeToCap (s) {
         return s.split('_').map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(' ');

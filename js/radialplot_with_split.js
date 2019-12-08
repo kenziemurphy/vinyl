@@ -278,11 +278,12 @@ class RadialView {
 
         let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         d3.selectAll('g.vinyl').remove();
-        if (this.useRadialScale()) {
 
-            for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
-                let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
-                    .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+        for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
+            let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
+                .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
+
+            if (this.useRadialScale()) {
                 let vinylOuter = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-outer')
                     .attr('r', this.SCALE_Y.range()[1])
                     .style('fill', '#111111');
@@ -332,8 +333,18 @@ class RadialView {
                 let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
                     .attr('r', this.SCALE_Y.range()[0] / 10)
                     .style('fill', '#212039');
+            } else {
+                console.log('rectangular grid')
+                // rectangular grid
+                let vinylRect = selectAllOrCreateIfNotExist(vinylG, 'rect.vinyl-rect')
+                    .attr('x', this.SCALE_X.range()[0])
+                    .attr('y', this.SCALE_Y.range()[1])
+                    .attr('width', this.SCALE_X.range()[1] - this.SCALE_X.range()[0])
+                    .attr('height', this.SCALE_Y.range()[0] - this.SCALE_Y.range()[1])
+                    .style('fill', '#111111');
             }
         }
+        
 
         // draw grid
         if (this.shouldReinitGrid) {
@@ -810,6 +821,7 @@ class RadialView {
                 d3.select(m[i].closest('.song')).classed('hover', false);
                 if (!_this.selectionLocked) {
                     _this.resetSelection();
+                    // console.log('selectionx', x);
                 } else {
                     _this.songToolTip.hide({}, this.parentNode);
                     _this.dispatch.call('highlight', this, function (k) {
@@ -848,7 +860,13 @@ class RadialView {
         let similarSongs = this.getSimilarSongs(this.selectedSong, k);
 
         let _this = this;
-        this.dispatch.call('highlight', elem, s => s.id == d.id);
+        let activeBrushes = d3.selectAll('.brush .selection')
+            .filter(function () {
+                return d3.select(this).style('display') != 'none'
+            });
+        if (activeBrushes.size() <= 0) {
+            this.dispatch.call('highlight', elem, s => s.id == d.id);
+        }
         // let isSimilarSong = _this.similarSongsToSelection.filter(x => x.song.id == k.id).length > 0;
 
         _this.grids.forEach(function (g, i) {
@@ -910,16 +928,22 @@ class RadialView {
             g.hideGuide();
         });
         // this.dispatch.call('highlight', this, k => true);
-        this.dispatch.call('highlight', this, function (k) {
-            if (d3.select('input#search-highlight').classed('active')) {
-                if (!k.name)
-                    return false;
-                return k.name.toLowerCase()
-                    .indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
-            } else {
-                return true;
-            }
-        });
+        let activeBrushes = d3.selectAll('.brush .selection')
+            .filter(function () {
+                return d3.select(this).style('display') != 'none'
+            });
+        if (activeBrushes.size() <= 0) {
+            this.dispatch.call('highlight', this, function (k) {
+                if (d3.select('input#search-highlight').classed('active')) {
+                    if (!k.name)
+                        return false;
+                    return k.name.toLowerCase()
+                        .indexOf(d3.select('input#search-highlight').node().value.toLowerCase()) >= 0;
+                } else {
+                    return true;
+                }
+            });
+        }
 
         this.svg.selectAll('line.similarity-link').remove();
 

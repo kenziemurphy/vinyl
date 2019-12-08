@@ -19,7 +19,7 @@ class HistogramView {
         // sets colors for the histogram rectangles
         this.colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];
         //this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year", "popularity"]; // Edit this for more histograms
-        this.dimensions = ["popularity", "release_year", "energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "duration", "tempo"];
+        this.dimensions = ["popularity", "release_year", "energy", "danceability", "valence", "acousticness", "liveness", "instrumentalness", "speechiness", "duration", "tempo"];
         this.histWidth = parseInt(this.svgWidth);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
         this.paddingLeft = 20;
@@ -41,6 +41,7 @@ class HistogramView {
             })
             // .extent([[20, _this.HistTop], [_this.histWidth, _this.HistBottom]])
             .on("start",  function (histogram) {
+                console.log("HERE IS E")
                 _this.isBrushing = true;
 
                 // Check if this g element is different than the previous brush
@@ -58,6 +59,8 @@ class HistogramView {
                         // Get the extent or bounding box of the brush event, this is a 2x2 array
                 var e = d3.event.selection;
 
+                d3.selectAll('.selection').style("opacity", 1);
+
                 let indexes = [];
                 let ids = [];
                 let _THIS = this;
@@ -68,6 +71,7 @@ class HistogramView {
 
 
                 if(e) {
+
                     let tempArray = [];
                     // Select all .bin-rect, and add the "fade" class if the data for that circle
                     // lies outside of the brush-filter applied for this rectangle x and y attributes
@@ -100,7 +104,6 @@ class HistogramView {
                             let collectionId = _this.data[artistIndex].id;
 
                             let idsToDelete= d.data["ids" + artistIndex];
-                            console.log(_this.idsInBinBrush)
 
                             _this.idsInBinBrush = _this.idsInBinBrush.filter(function(id) {
                                 if(idsToDelete.includes(id)) {
@@ -119,6 +122,7 @@ class HistogramView {
             .on("end", function() {
                 // If there is no longer an extent or bounding box then the brush has been removed
                 console.log("HERE WE ARE")
+                console.log(d3.event.selection)
                 if(!d3.event.selection) {
                     _this.isBrushing = false;
                     _this.idsInBinBrush = [];
@@ -128,6 +132,12 @@ class HistogramView {
                     // Return the state of the active brushHist to be undefined
                     this.brushHist = undefined;
                 }
+            });
+
+                d3.select("body").on("click", () => {
+                 _this.brush.move(d3.select(_this.brushHist), null);
+                this.isBrushing = false;
+
             });
 
     }
@@ -233,7 +243,7 @@ class HistogramView {
     .attr('class', 'y_axis')
     .attr('transform', 'translate(' + this.paddingLeft + ',0)')
     .call(d3.axisLeft(y)
-        .ticks(2));
+        .tickValues(domain));
 
     // 1. Add histogram to SVG
 
@@ -244,10 +254,13 @@ class HistogramView {
 
     // enter
     let histogramGEnter = histogramG.enter()
-        .append("g")
-        .attr("id", "hist" + i)
+        .append("g");
+
+        histogramGEnter.attr("id", "hist" + i)
         .attr('class', 'brush')
         .call(this.brush);
+
+
 
     let xAxisGEnter = xAxisG.enter().append("g").attr("id", "hist" + i + "X").call(xAxis);
     let yAxisGEnter = yAxisG.enter().append("g").attr("id", "hist" + i + "Y").call(yAxis);
@@ -286,6 +299,7 @@ class HistogramView {
                                         .attr("id", (d,index) => "hist" + i + "artist" + index);
           // .style('stroke', function(d, i) { return colors[i]; })
 
+
     // 3. Draw the rectangles for the currently selected collection / artist
 
     // enter
@@ -298,6 +312,7 @@ class HistogramView {
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
           .on("mouseover", function(d) {
+            console.log('MOUSEOVER')
             if (!_this.isBrushing) {
                 /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
                 and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
@@ -310,7 +325,18 @@ class HistogramView {
              _this.dispatch.call('highlight', this, (k) => idsInBin.includes(k.id));
 
             }
-          }).on("mouseout", (d) => {
+          })
+          .on("mousedown", function(d) {
+            console.log('mousedown')
+            let brush_elm = _this.svg.select(".brush").node();
+            let new_click_event = new Event('mousedown');
+            new_click_event.pageX = d3.event.pageX;
+            new_click_event.clientX = d3.event.clientX;
+            new_click_event.pageY = d3.event.pageY;
+            new_click_event.clientY = d3.event.clientY;
+            brush_elm.dispatchEvent(new_click_event);
+          })
+          .on("mouseout", (d) => {
             if (!_this.isBrushing) {
                 _this.dispatch.call('highlight', this, k => true);
             }
@@ -376,9 +402,18 @@ class HistogramView {
               .range([this.paddingLeft, this.histWidth]);
             } else if(realDimensions[i] === "release_year") {
               _this.x = d3.scaleLinear()
-              .domain(d3.extent(flatData, (d) => d.release_year))
+              .domain(d3.extent(flatData, (d) => d.release_year + 1))
               .range([this.paddingLeft, this.histWidth]);
-            } else {
+            } else if (realDimensions[i] === "popularity") {
+              _this.x = d3.scaleLinear()
+              .domain([0, 100])
+              .range([this.paddingLeft, this.histWidth]);
+            } else if (realDimensions[i] === "duration") {
+              _this.x = d3.scaleLinear()
+              .domain(d3.extent(flatData, (d) => d.release_year + 1))
+              .range([this.paddingLeft, this.histWidth]);
+            }
+            else {
               _this.x = d3.scaleLinear()
               .domain([0, 1])
               .range([this.paddingLeft, this.histWidth]);
@@ -423,8 +458,6 @@ class HistogramView {
           this.end = this.x.domain()[1];
           this.step = (this.x.domain()[1] - this.x.domain()[0])/this.numTicks;
 
-
-
           this.xAxis = (g) => g
           .attr('class', 'x_axis')
           .attr("transform", 'translate(0,' + (this.range[0]+1) + ')')
@@ -433,7 +466,9 @@ class HistogramView {
           this.yAxis = (g) => g
           .attr('class', 'y_axis')
           .call(d3.axisLeft(this.y)
-              .ticks(2));
+            .ticks(2));
+
+           // console.log("RRRR", [0, this.yMax]);
 
               this.temp = [1];
               this.xAxisG = this.svg.selectAll("#hist" + i + "X").data(this.temp);
@@ -483,13 +518,18 @@ class HistogramView {
     }
 
     onHighlight(filterFunction) {
-
+        let _this = this;
+        console.log("IMPORTANT")
+        console.log(_this.brush)
         this.highlight = filterFunction;
         //console.log(filterFunction);
-        // if ( this.highlight({k: -1}) === true {
-        //     console.log("REMOVE SELECTION");
-        // }
-        let _this = this;
+        if ( this.highlight({k: -1}) === true) {
+            console.log("REMOVE SELECTION", this.highlight);
+        //d3.selectAll(".selection").call(_this.brush.move, null);
+        //d3.selectAll(".brush").call(_this.brush.clear());
+          // d3.select('.selection').remove();
+        }
+
 
         d3.selectAll('.bin-rect')
             .classed('fade', function(d) {

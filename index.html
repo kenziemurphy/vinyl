@@ -17,6 +17,14 @@
     </head>
     <body>
 		<!-- TODO remove inline CSS -->
+		<div id="tutorial-landing" class="overlay-popup full-page">
+			<!-- <img src="/img/tutorial_landing.png"> -->
+			<img src="https://scontent-atl3-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/80390348_490592528224424_8473217897953492992_n.png?_nc_cat=110&_nc_ohc=xWzPYdcKQqYAQne0bTeAJ9zs2kNUdwnqg9X8k34MrqBqSPXdF67BrMyQA&_nc_ht=scontent-atl3-1.xx&oh=0a3cc4ff94ec1e57a742c41a55b4715b&oe=5E67FB33">
+		</div>
+		<div id="tutorial-popup" class="overlay-popup full-page hide">
+			<!-- <img src="/img/tutorial_landing.png"> -->
+			<img src="https://scontent-atl3-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/80390348_490592528224424_8473217897953492992_n.png?_nc_cat=110&_nc_ohc=xWzPYdcKQqYAQne0bTeAJ9zs2kNUdwnqg9X8k34MrqBqSPXdF67BrMyQA&_nc_ht=scontent-atl3-1.xx&oh=0a3cc4ff94ec1e57a742c41a55b4715b&oe=5E67FB33">
+		</div>
         <div class="container-main container-row">
 			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
 				<h1>MusicOctoRobot</h1>
@@ -36,64 +44,7 @@
 					<h2 id="select-more-options">More Options</h2>
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel" id="options-panel">
-							<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
-								<div>
-									<small class="nowrap">Position data points by</small>
-								</div>
-								<div class="container-row">
-									<div class="radio grow">
-										<input type="radio" id="radio-pca-on" name="radio-pca" value="mode-pca">
-										<label for="radio-pca-on" class="btn btn-block text-center add-help nowrap" data-help-key="mode-pca">Similarity </label>
-									</div>
-									<div class="grow radio">
-										<input type="radio" id="radio-pca-off" name="radio-pca" value="mode-value" checked>
-										<label for="radio-pca-off" class="btn btn-block text-center add-help nowrap" data-help-key="mode-value">Value </label>
-									</div>
-								</div>
-							</div>
-							<div class="cell mb-xs">
-								<div class="margin-gutter">
-									<small>X / Angular Axis</small>
-									<br>
-									<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
-										<option data-scale-type="linear" value="key_signature" data-radial="true">KEY</option>
-										<option data-scale-type="linear" value="tempo">TEMPO</option>
-										<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
-										<option data-scale-type="linear" value="release_year">YEAR</option>
-										<option data-scale-type="linear" value="duration">DURATION</option>
-										<option data-scale-type="linear" value="pca1">PCA1</option>
-									</select>
-								</div>
-							</div>
-							<div class="cell mb-xs">
-								<div class="margin-gutter">
-									<small>Y / Radial Axis</small>
-									<br>
-									<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
-										<option data-scale-type="linear" value="tempo">TEMPO</option>
-										<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
-										<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
-										<option data-scale-type="linear" value="release_year">YEAR</option>
-										<option data-scale-type="linear" value="duration">DURATION</option>
-										<option data-scale-type="linear" value="pca2">PCA2</option>
-									</select>
-								</div>
-							</div> -->
+
 							<div class="mb-xs">
 								<div class="margin-gutter">
 									<div class="mb-xxs">
@@ -154,7 +105,7 @@
 								</label>
 							</div>
 							<div class="container-row mb-xs">
-								<button class="btn btn-block clickable" onclick="alert('TODO: show tutorial page again')">How to read this vis?</button>
+								<button class="btn btn-block clickable" id="toggle-tutorial-overlay">How to read this vis?</button>
 							</div>
 						</div>
 					</div>
@@ -197,7 +148,7 @@
 									<option data-scale-type="linear" value="release_year">YEAR</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVENESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
@@ -215,18 +166,18 @@
 									<small class="nowrap">Y / Radial Axis</small>
 								</div>
 								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
-									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
-									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">VALENCE</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="acousticness">ACOUSTICNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
+									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
 									<option data-scale-type="linear" value="duration">DURATION</option>
-									<option data-scale-type="linear" value="tempo" selected="selected">TEMPO</option>
+									<option data-scale-type="linear" value="tempo" selected="">TEMPO</option>
 									<!-- <option data-scale-type="linear" value="pca2">PCA2</option>	 -->
 								</select>
 							</div>
@@ -328,7 +279,6 @@
 
 			var dispatch = d3.dispatch('filter', 'highlight');
 
-			callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
 
 			var rv;
 			components.push(rv = new RadialView(d3.select('svg#radial-view'), [], dispatch));
@@ -347,6 +297,18 @@
 
             window.addEventListener("resize", function() {
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
+			});
+
+			d3.select('#tutorial-landing').on('click', function () {
+				callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
+			});
+
+			d3.selectAll('.overlay-popup').on('click', function () {
+				d3.select(this).classed('hide', true);
+			});
+
+			d3.select('#toggle-tutorial-overlay').on('click', function () {
+				d3.select('#tutorial-popup').classed('hide', false);
 			});
 
 			// UI initialization from vis's config
@@ -605,7 +567,12 @@
 			// Loads an array of song data for the given artistID and append that to our dataset
 			function loadArtistData(artistID, artistName) {
 
-				// FIXME limit number of collections
+				// draw loading button <i class="fas fa-circle-notch fa-spin"></i>
+				d3.select("#artist-buttons").insert("div",":first-child")
+					.attr("id", "loading-artist-button")
+					.attr("class", "artist-btn")
+					.html("<i class='fas fa-circle-notch fa-spin'></i> Loading...");
+
 				//console.log('loading artist', artistID)
 
 				if (artistID.indexOf('spotify:artist:') >= 0)
@@ -619,6 +586,10 @@
 			}
 
 			function appendArtistData (loadedData) {
+
+				// remove loading button
+				d3.select("#loading-artist-button").remove();
+
 				return new Promise(function (resolve, reject) {
 					preprocessData(loadedData.songs);
 					console.log('preprocessed', loadedData);
@@ -636,9 +607,7 @@
 
 					updateSplitViewToggle();
 
-					if (ENABLE_TUTORIAL && data.length <= 1) {
-						callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
-					} else if (ENABLE_TUTORIAL && data.length == 2) {
+					if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
 						callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
 					}
@@ -659,7 +628,7 @@
 				d3.select("#search-artist").attr("disabled", null);
 
 				// remove data from array
-				data.splice(i, 1);
+				data.splice(data.length - i - 1, 1);
 
 				// redraw artist buttons
 				drawArtistButtons();
@@ -684,10 +653,6 @@
 			}
 
 			function drawArtistButtons() {
-				// TODO @Ben, can we draw the artist button
-				// immediately after the artist is selected and have like a spinner to show loading instead?
-				// the current behavior that the feedback for artist loading is not immediate can make it a little confusing
-
 				let colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'].slice(0, data.length); // color scheme
 
 				let drawData = data.slice(0);

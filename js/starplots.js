@@ -1,5 +1,5 @@
 //var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "loudness", "tempo", "popularity"]; // Edit this for more histograms
-var dimensions = ["energy", "danceability", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "popularity"]; // Edit this for more histograms
+var dimensions = ["popularity", "energy", "danceability", "valence", "acousticness",  "liveness", "instrumentalness", "speechiness"]; // Edit this for more histograms
 // var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 var categories = [
     {
@@ -9,9 +9,14 @@ var categories = [
         needHelpTooltip: false
     },
     {
-        key: "tempo",
-        label: "Tempo",
-        unit: "BPM"
+        key: "key_signature_full",
+        label: "Key",
+        unit: ""
+    },
+    {
+        key: "time_signature",
+        label: "Time Signature",
+        unit: ""
     },
     {
         key: "loudness",
@@ -25,14 +30,9 @@ var categories = [
         needHelpTooltip: false
     },
     {
-        key: "key_signature_full",
-        label: "Key",
-        unit: ""
-    },
-    {
-        key: "time_signature",
-        label: "Time Signature",
-        unit: ""
+        key: "tempo",
+        label: "Tempo",
+        unit: "BPM"
     },
 ];
 
@@ -274,7 +274,7 @@ class StarView {
                 //console.log(d);
                 return "img_" + i;
             })
-            .attr("x", 0)
+            .attr("x", -starCircleRadius)
             .attr("y", -starCircleRadius)
             .attr("width", 2 * starCircleRadius)
             .attr("height", 2 * starCircleRadius)
@@ -291,15 +291,22 @@ class StarView {
             .data(dataArray)
             .enter();
 
-        var circle_image = circles.append("circle")
-            .attr("cx", function(d, i){ 
+        var circlesInner = selectAllOrCreateIfNotExist(circles, 'g.circles-inner-star')
+            .attr('transform', function (d, i) {
                 var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
-                return center_x; 
-            })
-            .attr("cy", function(d, i){ 
                 var center_y = margin.top + starRadius + starCircleRadius;
-                return center_y; 
-            })
+                return `translate(${center_x}, ${center_y})`;
+            });
+
+        var circle_image = circlesInner.append("circle")
+            // .attr("cx", function(d, i){ 
+            //     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
+            //     return center_x; 
+            // })
+            // .attr("cy", function(d, i){ 
+            //     var center_y = margin.top + starRadius + starCircleRadius;
+            //     return center_y; 
+            // })
             .attr("r", starCircleRadius)
             //.style("fill", d => `url(#image${d.id})`)
             //.style('fill', d => 'url(#img_' + d.album.images[2].url )
