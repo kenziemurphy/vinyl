@@ -1,14 +1,29 @@
 // facts
 const MAX_SPLITS = 4;
-const ALL_KEYS = [
-    'Cm', 'C♯m/D♭m', 'Dm', 'D♯m/E♭m', 'Em', 'Fm', 'F♯m/G♭m', 'Gm', 'G♯m/A♭m', 'Am', 'A♯m/B♭m', 'Bm',
-    'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
-];
+const ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH = true;
+const ALL_KEYS = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
+    [
+        'Am', 'Em', 'Bm', 'F♯/G♭m', 'C♯/D♭m', 'G♯/A♭m', 'D♯/E♭m', 'A♯/B♭m', 'Fm', 'Cm', 'Gm', 'Dm', 
+        'C', 'G', 'D', 'A', 'E', 'B', 'F♯/G♭', 'C♯/D♭', 'G♯/A♭', 'D♯/E♭', 'A♯/B♭', 'F',
+    ]:
+    [
+        'Cm', 'C♯/D♭m', 'Dm', 'D♯/E♭m', 'Em', 'Fm', 'F♯/G♭m', 'Gm', 'G♯/A♭m', 'Am', 'A♯/B♭m', 'Bm',
+        'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
+    ];
+// const ALL_KEYS = [
+//     'Cm', 'C♯/D♭m', 'Dm', 'D♯/E♭m', 'Em', 'Fm', 'F♯/G♭m', 'Gm', 'G♯/A♭m', 'Am', 'A♯/B♭m', 'Bm',
+//     'C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B',
+// ];
 
-const ALL_KEYS_FULL = [
-    'C minor', 'C♯/D♭ minor', 'D minor', 'D♯/E♭ minor', 'E minor', 'F minor', 'F♯/G♭ minor', 'G minor', 'G♯/A♭ minor', 'A minor', 'A♯/B♭ minor', 'B minor',
-    'C major', 'C♯/D♭ major', 'D major', 'D♯/E♭ major', 'E major', 'F major', 'F♯/G♭ major', 'G major', 'G♯/A♭ major', 'A major', 'A♯/B♭ major', 'B major',
-];
+const ALL_KEYS_FULL = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
+    [
+        'A minor', 'E minor', 'B minor', 'F♯/G♭ minor', 'C♯/D♭ minor', 'G♯/A♭ minor', 'D♯/E♭ minor', 'A♯/B♭ minor', 'F minor', 'C minor', 'G minor', 'D minor', 
+        'C major', 'G major', 'D major', 'A major', 'E major', 'B major', 'F♯/G♭ major', 'C♯/D♭ major', 'G♯/A♭ major', 'D♯/E♭ major', 'A♯/B♭ major', 'F major',
+    ]:
+    [
+        'C minor', 'C♯/D♭ minor', 'D minor', 'D♯/E♭ minor', 'E minor', 'F minor', 'F♯/G♭ minor', 'G minor', 'G♯/A♭ minor', 'A minor', 'A♯/B♭ minor', 'B minor',
+        'C major', 'C♯/D♭ major', 'D major', 'D♯/E♭ major', 'E major', 'F major', 'F♯/G♭ major', 'G major', 'G♯/A♭ major', 'A major', 'A♯/B♭ major', 'B major',
+    ];
 
 // computed consts
 const ANGLE_TILT = Math.PI * 2 / ALL_KEYS.length / 2;    // can't draw the "0" upright, we want the major/minor line to be completely horizontal
@@ -61,7 +76,7 @@ class RadialView {
 
         this.PADDING = {
             x: 40,
-            y: 40
+            y: 50
         };
         // this.COLOR_SCHEME = ['#81D0EF', '#F36293', '#6988F2', '#FCA981'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
         this.COLOR_SCHEME = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];//['#f36293', '#81d0ef', '#fca981', '#6988f2'];
@@ -480,7 +495,7 @@ class RadialView {
             Math.min(this.W, this.H) / 24;
         this.MAX_RADIAL_DIST = this.SPLITS == 1 ?
             Math.min(this.W, this.H) / 2 - Math.max(this.PADDING.x, this.PADDING.y):
-            Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y) * 1.5;
+            Math.min(this.W, this.H) / 4 - Math.max(this.PADDING.x, this.PADDING.y);
 
         if (this.useRadialScale())
             this.SCALE_X = SCALE_ANGLE;
@@ -802,6 +817,7 @@ class RadialView {
                 } else {
                     _this.songToolTip.hide({}, this.parentNode);
                     _this.dispatch.call('highlight', this, function (k) {
+                        
                         let isTheSelectedSong = k.id == _this.selectedSong.id;
                         let isInFilter = false;
                         let searchBox = d3.select('input#search-highlight');
@@ -994,10 +1010,15 @@ class RadialView {
     getKeyFromKeyId (key, mode = false, full = false) {
         if (mode === false) {
             mode = Math.ceil(key / 12);
-            key = key % 12;
+            key = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? ((key * 7 - (mode == 1 ? 0 : 3)) % 12 ): key % 12;
+            return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
         }
 
-        return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
+        let keyIndex = ARRANGE_KEYS_BY_CIRCLE_OF_FIFTH ? 
+            (key * 7 - (mode == 1 ? 0 : 3)) % 12 + mode * 12:
+            key + mode * 12;
+        return full ? ALL_KEYS_FULL[keyIndex] : ALL_KEYS[keyIndex];
+        // return full ? ALL_KEYS_FULL[key + mode * 12] : ALL_KEYS[key + mode * 12];
         // return ALL_KEYS[key * 2 + mode];
     }
 

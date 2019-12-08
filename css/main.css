@@ -525,3 +525,12 @@ a:hover {
 .text-muted {
     opacity: 0.5;
 }
+
+#pca-axes-notes {
+    transition: opacity 0.2s;
+    height: 0;
+}
+
+#pca-axes-notes.hide {
+    opacity: 0;
+}

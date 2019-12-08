@@ -185,7 +185,7 @@
 								</div>
 							</div>
 						</div> -->
-						<div class="cell mb-xs grow">
+						<div class="cell grow">
 							<div class="margin-gutter">
 								<div>
 									<small class="nowrap">X / Angular Axis</small>
@@ -208,7 +208,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="cell mb-xs grow">
+						<div class="cell grow">
 							<div class="margin-gutter">
 								<div>
 									<small class="nowrap">Y / Radial Axis</small>
@@ -231,6 +231,11 @@
 							</div>
 						</div>
 					</div>
+					<div class="container-row">
+						<div class="cell hide" id="pca-axes-notes">
+							<small><i>Turn off "Just cluster similar songs" to enable axes selection</i></small>
+						</div>
+					</div>
 
 					<div class="grow container-col" style="padding-bottom: 10px;">
 							<!-- <div class="grow container-col" style="padding-bottom: 30px;"> -->
@@ -240,7 +245,7 @@
 						Other songs similar to your selection:
 					</div> -->
 				</div>
-				<div class="text-center drawer-tab transparent">
+				<div class="text-center drawer-tab transparent" style="font-size: 10pt;">
 					[placeholder]
 				</div>
             </div>
@@ -255,6 +260,12 @@
 						<li>Image</li>
 					</ul>
 				</div> -->
+				<p class="text-muted" style="margin-bottom: 0;">
+					<small>
+						<b>Made by</b>
+						<i><a href="https://taepras.com">Tae Prasongpongchai</a>, <a href="https://www.xichen.design/">Xi Chen</a>, <a href="http://www.benjamindupreez.com/">Benjamin Du Preez</a>, <a href="http://fmckenziemurphy.com/">McKenzie Murphy</a></i>
+					</small>
+				</p>
             </div>
 		</div>
 
@@ -390,6 +401,7 @@
 						});
 						d3.select('#select-x-axis').attr('disabled', 'disabled');
 						d3.select('#select-y-axis').attr('disabled', 'disabled');
+						d3.select('#pca-axes-notes').classed('hide', false);
 					} else {
 						let xSelect = d3.select('#select-x-axis').node();
 						let ySelect = d3.select('#select-y-axis').node();
@@ -414,6 +426,7 @@
 						});
 						d3.select('#select-x-axis').attr('disabled', null);
 						d3.select('#select-y-axis').attr('disabled', null);
+						d3.select('#pca-axes-notes').classed('hide', true);
 					}
 				});
 
@@ -626,10 +639,10 @@
 						callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
 					} else if (ENABLE_TUTORIAL && data.length == 2) {
 						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
-						callTutorial('#select-x-axis', 'You can also select other attributes to plot here.')
+						callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
 					}
 					else if(ENABLE_TUTORIAL && data.length == 3) {
-						callTutorial('#select-more-options', 'You can also try more options here.')
+						callTutorial('#options-panel', 'You can also try adjusting<br>more options here.', 'n')
 					}
 
 					if (data.length >= 4) {

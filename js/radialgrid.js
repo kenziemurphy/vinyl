@@ -124,8 +124,13 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
         
         angleLabel.merge(angleLabelEnter)
             .text(d => d)
-            .attr('x', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[0])
-            .attr('y', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[1])
+            .attr('transform', function (d) {
+                let angle = scaleAngle(d) * 180 / Math.PI;
+                let dist = maxRadialDist + 12
+                return `rotate(${angle}) translate(${dist}) rotate(${angle > 180? 90 : -90})`
+            })
+            // .attr('x', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[0])
+            // .attr('y', d => angleDistanceToXy(scaleAngle(d), maxRadialDist + 12)[1])
             .attr('fill', '#ffffff')
         angleLabel.exit().remove();
         

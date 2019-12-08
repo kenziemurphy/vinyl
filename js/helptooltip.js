@@ -9,15 +9,15 @@ var HELP_PRESETS = {
     },
     'key': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.` 
+        body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
     },
     'key_signature': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.`
+        body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
     },
     'key_signature_full': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.` 
+        body: `The key of a song indicates its "root" note and its "mode". Keys in <i>major mode</i> usually sound brighter while <i>minor keys</i> (denoted with an 'm' at the end) usually sound darker.` 
     },
     'time_signature': {
         title: 'Time Signature',
@@ -69,7 +69,7 @@ var HELP_PRESETS = {
     },
     'mode-pca': {
         title: 'Group by Similarity',
-        body: 'When on, this mode will try to move songs that are similar to each other closer together. The x and y axes would not have a particular meaning.<br>This cluster view was created using "Principle Component Analysis" (PCA) projection technique.'
+        body: 'When on, this mode will try to move songs that are <i>generally</i> similar to each other closer together. The x and y axes would not have a particular meaning. This cluster view was created using "Principle Component Analysis" (PCA) projection technique.'
     },
     'mode-value': {
         title: 'Plot by Attribute Values',
