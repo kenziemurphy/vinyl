@@ -300,6 +300,11 @@ class StarView {
                 return `translate(${center_x}, ${center_y})`;
             });
 
+        var circle_bg = circlesInner.append('circle')
+            .attr('r', 3*starCircleRadius)
+            .style('fill', '#111111');
+
+
         var circle_image = circlesInner.append("circle")
             // .attr("cx", function(d, i){ 
             //     var center_x = margin.left + (starCircleRadius + starRadius) * (2*i + 1) + spacing * i;
@@ -328,6 +333,10 @@ class StarView {
                 
             //})
             .on("mouseout", this.playClip('mouseout'));
+
+        var circle_inner = circlesInner.append('circle')
+            .attr('r', starCircleRadius / 10)
+            .style('fill', '#37364D');
 
 
         for(var num = 0; num < 5; num ++){
@@ -469,9 +478,6 @@ class StarView {
 
 
 
-    /*
-    TODO: Fix the tooltip bug
-    */
     drawLabel() {
         var r = 0;
         var radians = 2 * Math.PI / dimensions.length;

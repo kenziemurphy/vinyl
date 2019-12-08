@@ -563,7 +563,7 @@ a:hover {
 .overlay-popup {
     background-size: contain;
     background-repeat: no-repeat;
-    background-color: rgba(0, 0, 0, 0.65);
+    background-color: rgba(0, 0, 0, 0.8);
     transition: opacity 0.5s;
     position: fixed;
     left: 0;
