@@ -312,11 +312,11 @@ class RadialView {
                 if(!this.config.isSplitting){
                     let vinylCenter = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center')
                         .attr('r', r)
-                        .style('fill', '#4D4D61')
+                        .style('fill', '#37364D')
                         // .style('fill', '#212039')
                         // .style('fill', '000000')
                         // .style('fill', 'f4f4f4')
-                        .style('fill-opacity', '.9');
+                        .style('fill-opacity', '1');
 
                     let vinylCenterImage = selectAllOrCreateIfNotExist(vinylGInner, 'circle.vinyl-center-image')
                         .attr('r', r)
@@ -331,7 +331,7 @@ class RadialView {
                 }
 
                 let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
-                    .attr('r', this.SCALE_Y.range()[0] / 10)
+                    .attr('r', this.SCALE_Y.range()[0] / 15)
                     .style('fill', '#212039');
             } else {
                 console.log('rectangular grid')
@@ -650,6 +650,10 @@ class RadialView {
                     d.isDragging = false;
                     d.fx = null;
                     d.fy = null;
+                    document.getElementById('expand-icon').style.opacity = 1;
+                    document.getElementById('expand-icon').classList.remove('fa-angle-up');
+                    document.getElementById('expand-icon').classList.add('fa-angle-down');
+
                     let dropTargetEl = document.elementFromPoint(d3.event.sourceEvent.clientX, d3.event.sourceEvent.clientY);
                     let dropTargetId = 'drop-area';
                     while (dropTargetEl && dropTargetEl.id != dropTargetId) {
