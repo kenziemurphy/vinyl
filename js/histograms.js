@@ -439,7 +439,19 @@ class HistogramView {
                 this.x = d3.scaleLinear()
                 .domain([-60, 0])
                 .range([0, this.histWidth]);
-              } else {
+              } else if(this.dimensions[i] === "release_year") {
+              _this.x = d3.scaleLinear()
+              .domain([1995, 2020])
+              .range([0, this.histWidth]);
+            } else if (this.dimensions[i] === "popularity") {
+              _this.x = d3.scaleLinear()
+              .domain([0, 100])
+              .range([0, this.histWidth]);
+            } else if (this.dimensions[i] === "duration") {
+              _this.x = d3.scaleLinear()
+              .domain([0, 420])
+              .range([0, this.histWidth]);
+            }else {
                 this.x = d3.scaleLinear()
                 .domain([0, 1])
                 .range([0, this.histWidth]);
