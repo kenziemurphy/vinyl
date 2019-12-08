@@ -70,3 +70,9 @@ text.label.highlight {
     transition: 0.2s all;
     pointer-events: none;
 }
+
+.arrow-head {
+    fill: #ffffff;
+    fill-opacity: 0.6;
+    
+}

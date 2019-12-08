@@ -129,47 +129,82 @@ function axisRadial (scaleAngle, scaleRadial, center, angleMappingLabel, radialM
             .attr('fill', '#ffffff')
         angleLabel.exit().remove();
         
-    
+        // angle axes label
+        var angleLabelsG = selectAllOrCreateIfNotExist(gridG, 'g#labels-angle');
+        var angleLabelLeft = selectAllOrCreateIfNotExist(angleLabelsG, 'text.label.grid-axis-label.label-axis-angle#label-axis-angle-left')
+            .attr('x', 0)
+            .attr('y', -maxRadialDist - AXIS_LABELS_OFFSET)
+        var angleLabelRight= selectAllOrCreateIfNotExist(angleLabelsG, 'text.label.grid-axis-label.label-axis-angle#label-axis-angle-right')
+            .attr('x', 0)
+            .attr('y', -maxRadialDist - AXIS_LABELS_OFFSET)
+            .attr('transform', 'rotate(180)');
+        var angleArcLeft= selectAllOrCreateIfNotExist(angleLabelsG, 'path.grid-line.grid-line-clear#line-axis-left')
+            .attr('d', d3.arc()
+                .innerRadius(maxRadialDist + AXIS_LABELS_OFFSET)
+                .outerRadius(maxRadialDist + AXIS_LABELS_OFFSET)
+                .startAngle(Math.PI + Math.PI / 36)
+                .endAngle(Math.PI + Math.PI / 10));
+        var angleArcRight= selectAllOrCreateIfNotExist(angleLabelsG, 'path.grid-line.grid-line-clear#line-axis-right')
+            .attr('d', d3.arc()
+                .innerRadius(maxRadialDist + AXIS_LABELS_OFFSET)
+                .outerRadius(maxRadialDist + AXIS_LABELS_OFFSET)
+                .startAngle(Math.PI / 36)
+                .endAngle(Math.PI / 10));
+        var angleArrowHeadLeft = selectAllOrCreateIfNotExist(angleLabelsG, 'path.grid-line.grid-line-clear.arrow-head#arrow-head-axis-left')
+            .attr('d', d3.symbol()
+                .type(d3.symbolTriangle)
+                .size(10))
+            .attr('transform', `rotate(-72) translate(${-maxRadialDist - AXIS_LABELS_OFFSET})`);
+        var angleArrowHeadRight = selectAllOrCreateIfNotExist(angleLabelsG, 'path.grid-line.grid-line-clear.arrow-head#arrow-head-axis-right')
+            .attr('d', d3.symbol()
+                .type(d3.symbolTriangle)
+                .size(10))
+            .attr('transform', `rotate(108) translate(${-maxRadialDist - AXIS_LABELS_OFFSET})`);    
+        angleLabelsG.attr('transform', 'rotate(90)');
+        angleLabelsG.selectAll('text.label.grid-axis-label.label-axis-angle')
+            .text(Utils.formatKeyLabel(angleMappingLabel))
+            .call(addHelpTooltip(angleMappingLabel.toLowerCase()));
+        
         // major/minor line        
         var majorMinorLineRight = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-right.grid-line-clear.grid-axis-label')
             .attr('x1', -minRadialDist)
             .attr('y1', 0)
-            .attr('x2', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x2', -maxRadialDist)
             .attr('y2', 0)
     
         var majorMinorLineLeft = selectAllOrCreateIfNotExist(gridG, 'line#mid-line-left.grid-line-clear.grid-axis-label')
             .attr('x1', minRadialDist)
             .attr('y1', 0)
-            .attr('x2', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x2', maxRadialDist)
             .attr('y2', 0)
     
-        var majorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-left.grid-axis-label')
+        var majorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-left.grid-axis-label.hide-on-mini')
             .text('Major')
-            .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x', -maxRadialDist)
             .attr('y', -MID_LABEL_VERTICAL_OFFSET)
             .style('aligment-baseline', 'baseline')
             .style('text-anchor', 'start')
             .call(addHelpTooltip('major'))
         
-        var minorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-left.grid-axis-label')
+        var minorLabelLeft = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-left.grid-axis-label.hide-on-mini')
             .text('Minor')
-            .attr('x', -maxRadialDist - MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x', -maxRadialDist)
             .attr('y', MID_LABEL_VERTICAL_OFFSET)
             .style('alignment-baseline', 'hanging')
             .style('text-anchor', 'start')
             .call(addHelpTooltip('minor'))
         
-        var majorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-right.grid-axis-label')
+        var majorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-top-right.grid-axis-label.hide-on-mini')
             .text('Major')
-            .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x', maxRadialDist)
             .attr('y', -MID_LABEL_VERTICAL_OFFSET)
             .style('aligment-baseline', 'baseline')
             .style('text-anchor', 'end')
             .call(addHelpTooltip('major'));
         
-        var minorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-right.grid-axis-label')
+        var minorLabelRight = selectAllOrCreateIfNotExist(gridG, 'text.label#mid-label-bottom-right.grid-axis-label.hide-on-mini')
             .text('Minor')
-            .attr('x', maxRadialDist + MID_LABEL_HORIZONTAL_OFFSET)
+            .attr('x', maxRadialDist)
             .attr('y', MID_LABEL_VERTICAL_OFFSET)
             .style('alignment-baseline', 'hanging')
             .style('text-anchor', 'end')

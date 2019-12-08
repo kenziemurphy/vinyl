@@ -9,15 +9,15 @@ var HELP_PRESETS = {
     },
     'key': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note.` 
+        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.` 
     },
     'key_signature': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note.` 
+        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.`
     },
     'key_signature_full': {
         title: 'Key',
-        body: `The key of a song indicates its "root" note.` 
+        body: `The key of a song indicates its "root" note and its "mode". Keys in major mode usually sound brighter while minor keys (denoted with an 'm') usually sound darker.` 
     },
     'time_signature': {
         title: 'Time Signature',

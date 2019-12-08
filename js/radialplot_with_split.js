@@ -320,7 +320,7 @@ class RadialView {
                 }
 
                 let vinylHole = selectAllOrCreateIfNotExist(vinylG, 'circle.vinyl-hole')
-                    .attr('r', 10)
+                    .attr('r', this.SCALE_Y.range()[0] / 10)
                     .style('fill', '#212039');
             }
         }
@@ -697,7 +697,7 @@ class RadialView {
             .style('stroke', d => this.SCALE_DOT_COLOR(d[this.config.splitKey]))
             .style('fill', d => this.config.showAlbumArt ? `url(#image${d.id})` : this.SCALE_DOT_COLOR(d[this.config.splitKey]))
             .transition()
-            .style('fill-opacity', d => this.config.enableForce ? 1 : 0.2)
+            .style('fill-opacity', d => this.config.enableForce ? 1 : 0.4)
             .style('stroke-opacity', d => this.config.enableForce ? 1 : 0.8)
 
         songG.merge(songGEnter)
