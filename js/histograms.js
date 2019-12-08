@@ -37,7 +37,7 @@ class HistogramView {
 
         this.brush = d3.brushX()
             .extent(function() {
-                return [[20, _this.HistTop], [_this.histWidth, _this.HistBottom]];
+                return [[20, _this.HistTop], [_this.histWidth + 2, _this.HistBottom]];
             })
             // .extent([[20, _this.HistTop], [_this.histWidth, _this.HistBottom]])
             .on("start",  function (histogram) {
@@ -307,7 +307,7 @@ class HistogramView {
     let rectanglesEnter = rectangles.enter().append("rect");
 
     rectanglesEnter.attr('class', "bin-rect")
-          .attr("x", (d, i) => _this.x(d.data.bin))
+          .attr("x", (d, i) => _this.x(d.data.bin) + 2)
           .attr("width", (this.histWidth / 20) - 2)
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
@@ -332,7 +332,7 @@ class HistogramView {
 
     // update
     rectangles.transition(d3.transition().duration(750))
-          .attr("x", (d, i) => _this.x(d.data.bin))
+          .attr("x", (d, i) => _this.x(d.data.bin) + 2)
           .attr("y", d => y(d[1]))
           .attr("height", d => y(d[0]) - y(d[1]))
           .attr("width", (this.histWidth / 20) - 2);
@@ -464,7 +464,6 @@ class HistogramView {
         .attr('alignment-baseline', 'baseline')
         .text(Utils.formatKeyLabel(_this.dimensions[i]))
         .call(addHelpTooltip(_this.dimensions[i].toLowerCase()))
-        .transition(d3.transition().duration(750))
         .attr('transform', 'translate(' + centerPx + ',' + parseInt(range[0]+15) + ')');
 
           }
@@ -475,6 +474,7 @@ class HistogramView {
     onDataChanged (newData) {
         this.data = newData;
         this.redraw();
+        this.createAxes();
         console.log('onDataChanged: ' + this.data);
     }
 
@@ -484,6 +484,7 @@ class HistogramView {
         this.svgWidth = parseInt(this.svg.style("width"), 10);
         this.svgHeight = parseInt(this.svg.style("height"), 10);
         // redraw
+        this.createAxes();
         this.redraw();
     }
 
