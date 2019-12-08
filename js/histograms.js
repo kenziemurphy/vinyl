@@ -410,7 +410,7 @@ class HistogramView {
               .range([this.paddingLeft, this.histWidth]);
             } else if (realDimensions[i] === "duration") {
               _this.x = d3.scaleLinear()
-              .domain(d3.extent(flatData, (d) => d.release_year + 1))
+              .domain(d3.extent(flatData, (d) => d.duration + 1))
               .range([this.paddingLeft, this.histWidth]);
             }
             else {
