@@ -204,7 +204,7 @@ class HistogramView {
   */
   drawHistogram(stackedData, i) {
 
-    console.log("STACKED", stackedData);
+    // console.log("STACKED", stackedData);
 
     var _this = this;
 
@@ -533,16 +533,16 @@ class HistogramView {
 
     onHighlight(filterFunction) {
         let _this = this;
-        console.log("IMPORTANT")
-        console.log(_this.brush)
+        // console.log("IMPORTANT")
+        // console.log(_this.brush)
         this.highlight = filterFunction;
         //console.log(filterFunction);
-        if ( this.highlight({k: -1}) === true) {
-            console.log("REMOVE SELECTION", this.highlight);
-        //d3.selectAll(".selection").call(_this.brush.move, null);
-        //d3.selectAll(".brush").call(_this.brush.clear());
-          // d3.select('.selection').remove();
-        }
+        // if ( this.highlight({k: -1}) === true) {
+        //     console.log("REMOVE SELECTION", this.highlight);
+        // //d3.selectAll(".selection").call(_this.brush.move, null);
+        // //d3.selectAll(".brush").call(_this.brush.clear());
+        //   // d3.select('.selection').remove();
+        // }
 
 
         d3.selectAll('.bin-rect')
@@ -583,6 +583,6 @@ class HistogramView {
                 return true;
             });
 
-        console.log('onHighlight');
+        // console.log('onHighlight');
     }
 }
