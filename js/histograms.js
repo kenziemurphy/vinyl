@@ -19,7 +19,7 @@ class HistogramView {
         // sets colors for the histogram rectangles
         this.colors = ['#F36293', '#81D0EF','#FCA981', '#6988F2'];
         //this.dimensions = ["energy", "danceability", "tempo", "loudness", "acousticness", "liveness", "valence", "speechiness", "instrumentalness", "release_year", "popularity"]; // Edit this for more histograms
-        this.dimensions = ["popularity", "release_year", "energy", "danceability", "valence", "acousticness", "liveness", "instrumentalness", "speechiness", "duration", "tempo"];
+        this.dimensions = ["popularity", "release_year", "duration", "tempo", "energy", "danceability", "valence", "acousticness", "liveness", "instrumentalness", "speechiness"];
         this.histWidth = parseInt(this.svgWidth);
         this.histHeight = parseInt((this.svgHeight) / this.dimensions.length);
         this.paddingLeft = 20;
@@ -323,7 +323,7 @@ class HistogramView {
 
             // send a filtering function out to the other components to highlight the id's in this bin everywhere
              _this.dispatch.call('highlight', this, (k) => idsInBin.includes(k.id));
-
+              callTutorial('#hist0', 'You can also filter songs by attributes<br>by brushing over these histograms.', 'w')
             }
           })
           .on("mousedown", function(d) {

@@ -3,6 +3,18 @@ var dimensions = ["popularity", "energy", "danceability", "valence", "acousticne
 // var categories = ["tempo", "loudness", "duration","key_signature", "time_signature"];
 var categories = [
     {
+        key: "artist",
+        label: "Artist",
+        unit: "",
+        needHelpTooltip: false
+    },
+    {
+        key: "album_name",
+        label: "Album",
+        unit: "",
+        needHelpTooltip: false
+    },
+    {
         key: "release_date",
         label: "Release Date",
         unit: "",
@@ -42,11 +54,11 @@ var categories = [
 //const labelMargin = 20;
 
 var margin = {
-    top: 80,
+    top: 90,
     left: 100,
     right: 100
 };
-const labelMargin = 15;
+const labelMargin = 5;
 
 //var center_x = margin.left + starCircleRadius + starRadius;
 //var center_y = margin.top + starCircleRadius + starRadius;
@@ -138,7 +150,7 @@ class StarView {
             document.getElementById("starClear").innerHTML = "";
         } 
         else if(dataArray.length >= 1 && dataArray.length < 4){
-            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Songs in Comparison: Drag more songs here for more details.";
+            document.getElementById("starTitleLabel").innerHTML = dataArray.length + " Song(s) in Comparison: Drag more songs here for more details.";
             document.getElementById("starClear").innerHTML = "Clear All";
         }
             
@@ -482,7 +494,7 @@ class StarView {
         var r = 0;
         var radians = 2 * Math.PI / dimensions.length;
 
-        for(var num =0; num < dimensions.length; num ++){
+        for(var num = 0; num < dimensions.length; num ++){
             var l, x, y;
 
             l = starCircleRadius + starRadius;
@@ -499,8 +511,8 @@ class StarView {
                     return 'translate(' + center_x + ',' + (2*i+1) * center_y + ')';
                 })*/
                 .attr('transform', function(d, i){
-                    let angle = num / dimensions.length * 360 - 100;
-                    if(angle > 90 && angle < 270) {
+                    let angle = num / dimensions.length * 360 - 90;
+                    if(angle >= 90 && angle <= 270) {
                         angle += 180;
                     }
                     console.log("angle", angle);
@@ -512,10 +524,17 @@ class StarView {
                 .attr('id', function(d, i){
                     return "label_" + i + "_" + num;
                 })
-                .attr('fill-opacity', 0.3)
-                .text(dimensions[num])
-                .style('text-anchor', 'middle')
-                .attr('alignment-baseline', 'baseline')
+                .attr('fill-opacity', 0.5)
+                .text(Utils.formatKeyLabel(dimensions[num]))
+                .style('text-anchor', function () {
+                    let angle = num / dimensions.length * 360 - 90;
+                    return angle >= 90 && angle <= 270 ? 'start' : 'end';
+                })
+                .style('alignment-baseline', function () {
+                    let angle = num / dimensions.length * 360 - 90;
+                    return angle >= 90 && angle <= 270 ? 'baseline' : 'hanging';
+                })
+                // .attr('alignment-baseline', 'baseline')
                 //.style('dominant-baseline', 'central')
                 .call(addHelpTooltip(dimensions[num]));
             // console.log("something", `text.label.grid-axis-label.${dimensions[num]}#axis-label-${num}`);

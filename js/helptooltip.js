@@ -25,7 +25,7 @@ var HELP_PRESETS = {
     },
     'time_signature': {
         title: 'Time Signature',
-        body: 'The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure)'
+        body: 'A time signature tells you how the music is to be counted. For example, a time signature of 4 means that the song is counted as 1, 2, 3, 4, 1, 2, 3, 4, and so on.'
     },
     'tempo': {
         title: 'Tempo',

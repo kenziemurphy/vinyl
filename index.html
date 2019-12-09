@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>MusicOctoRobot</title>
+		<title>VINYL - Music Info Visualization</title>
 		<link rel="stylesheet" href="https://use.typekit.net/zry1rcu.css">
 		<link rel="stylesheet" href="https://nico-amsterdam.github.io/awesomplete-util/css/awesomplete.css">
         <link rel="stylesheet" href="css/grids.css" />
@@ -18,18 +18,17 @@
     <body>
 		<!-- TODO remove inline CSS -->
 		<div id="tutorial-landing" class="overlay-popup full-page">
-			<!-- <img src="/img/tutorial_landing.png"> -->
-			<img src="https://scontent-atl3-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/80390348_490592528224424_8473217897953492992_n.png?_nc_cat=110&_nc_ohc=xWzPYdcKQqYAQne0bTeAJ9zs2kNUdwnqg9X8k34MrqBqSPXdF67BrMyQA&_nc_ht=scontent-atl3-1.xx&oh=0a3cc4ff94ec1e57a742c41a55b4715b&oe=5E67FB33">
+			<img src="/img/tutorial_landing.png" style="width: 60%; max-width: 800px;">
 		</div>
 		<div id="tutorial-popup" class="overlay-popup full-page hide">
-			<!-- <img src="/img/tutorial_landing.png"> -->
-			<img src="https://scontent-atl3-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/80390348_490592528224424_8473217897953492992_n.png?_nc_cat=110&_nc_ohc=xWzPYdcKQqYAQne0bTeAJ9zs2kNUdwnqg9X8k34MrqBqSPXdF67BrMyQA&_nc_ht=scontent-atl3-1.xx&oh=0a3cc4ff94ec1e57a742c41a55b4715b&oe=5E67FB33">
+			<img src="/img/tutorial_popup.png" style="width: 100%; max-width: 100%;">
 		</div>
         <div class="container-main container-row">
-			<div style="width: 25%; padding-right: 5%;" class="cell container-col">
-				<h1>MusicOctoRobot</h1>
+			<div style="width: 25%;" class="cell container-col">
+				<h1 style="margin-bottom: 0;">VINYL</h1>
+				<p class="subtitle"><small>Comparing Music Artists through Visualization</small></p>
 				<div class="grow">
-					<h2>I'm interested in...</h2>
+					<!-- <h2>I'm interested in...</h2> -->
 					<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search for an artist..." />
 					<div id="artist-buttons">
 						<!--<div class="artist-btn">Muse<button>&times;</button></div>
@@ -146,6 +145,9 @@
 									<option data-scale-type="linear" value="key_signature_by_fifths" data-radial="true">KEY (Ordered by Circle of Fifths)</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>
+									<option data-scale-type="linear" value="tempo">TEMPO</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVENESS</option>
@@ -153,9 +155,6 @@
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-									<option data-scale-type="linear" value="duration">DURATION</option>
-									<option data-scale-type="linear" value="tempo">TEMPO</option>
 									<!-- <option data-scale-type="linear" value="pca1">PCA1</option>	 -->
 								</select>
 							</div>
@@ -168,6 +167,9 @@
 								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
+									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
+									<option data-scale-type="linear" value="duration">DURATION</option>
+									<option data-scale-type="linear" value="tempo" selected="selected">TEMPO</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="energy">ENERGY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="danceability">DANCEABILITY</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="valence">POSITIVENESS</option>
@@ -175,9 +177,6 @@
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="liveness">LIVENESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="instrumentalness">INSTRUMENTALNESS</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="1" value="speechiness">SPEECHINESS</option>
-									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
-									<option data-scale-type="linear" value="duration">DURATION</option>
-									<option data-scale-type="linear" value="tempo" selected="">TEMPO</option>
 									<!-- <option data-scale-type="linear" value="pca2">PCA2</option>	 -->
 								</select>
 							</div>
@@ -189,7 +188,7 @@
 						</div>
 					</div>
 
-					<div class="grow container-col" style="padding-bottom: 10px;">
+					<div class="grow container-col">
 							<!-- <div class="grow container-col" style="padding-bottom: 30px;"> -->
 						<svg id="radial-view" class="grow" overflow="visible"></svg>
 					</div>
@@ -197,12 +196,24 @@
 						Other songs similar to your selection:
 					</div> -->
 				</div>
-				<div class="text-center drawer-tab transparent" style="font-size: 10pt;">
-					[placeholder]
+				<div class="drawer-tab vis-control transparent" style="font-size: 10pt;">
+					<!-- <h2>Detailed Analysis</h2> -->
+					<div class="text-center">
+						<i class="fa fa-angle-up" style="opacity: 0;"></i>
+					</div>
+					<div class="flex-container">
+						<div class="text-center grow">
+							Drag a song here for more details
+						</div>
+						<div></div>
+					</div>
+					<!--<div>
+						2 Songs in Comparison [TODO: show number of songs in comparison]
+					</div>-->
 				</div>
             </div>
 			<div style="width: 25%;" class="cell container-col">
-				<h2>Song features</h2>
+				<h2>Song Features</h2>
 				<svg id="histogram-view" class="grow" overflow="visible"></svg>
 				<!-- <h2>Legend</h2>
 				<div class="panel">
@@ -264,6 +275,7 @@
 		  <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
 		  <script src="https://unpkg.com/d3-simple-slider"></script>
 		<script src="js/lib/pca.min.js"></script>
+		<script src="js/popular_artists.js"></script>
 		<script src="js/utils.js"></script>
 		<script src="js/audiohelpers.js"></script>
 		<script src="js/helptooltip.js"></script>
@@ -306,8 +318,15 @@
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
-			d3.select('#tutorial-landing').on('click', function () {
-				callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!')
+			d3.select('#tutorial-landing').on('click.tutorial', function () {
+				if (ENABLE_TUTORIAL) {
+					callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!');
+					if (urlParams.getAll('q').length <= 0) {
+						// pull random comparison
+						callTutorial('#search-artist', 'Here are some random artists to help get<br>you started. Now try adding your own<br>favorite artists to the comparison here!');
+					}
+				}
+				d3.select('#search-artist').node().focus();
 			});
 
 			d3.selectAll('.overlay-popup').on('click', function () {
@@ -424,6 +443,8 @@
 							isRadial: selectedOption.getAttribute('data-radial') || false
 						}
 					});
+					if (ENABLE_TUTORIAL)
+						callTutorial('#options-panel', 'You can also try adjusting<br>more options here.', 'n')
 				});
 			d3.selectAll('#select-y-axis')
 				.on('change', function () {
@@ -437,6 +458,8 @@
 							isRadial: selectedOption.getAttribute('data-radial') || false
 						}
 					});
+					if (ENABLE_TUTORIAL)
+						callTutorial('#options-panel', 'You can also try adjusting<br>more options here.', 'n')
 				});
 			d3.selectAll('#search-highlight')
 				.on('keyup', function () {
@@ -562,6 +585,32 @@
 					return Promise.all(e.map(appendArtistData))
 				});
 
+			if (urlParams.getAll('q').length <= 0) {
+				// pull random comparison
+				randomComparison();
+			}
+
+			function randomComparison (k = 2) {
+				return new Promise(function (resolve, reject) {
+					let pickedIds = [];
+					let ids = Object.values(POPULAR_ARTISTS_IDS);
+					while (k > 0) {
+						if (ids.length < k) 
+							break;
+						let index = Math.floor(Math.random() * ids.length);
+						if (pickedIds.indexOf(ids[index]) < 0) {
+							pickedIds.push(ids[index]);
+							k--;
+						}
+					}
+
+					applyPromise(pickedIds, loadArtistData)
+						.then(function (e) {
+							return Promise.all(e.map(appendArtistData)).then(resolve);
+						});
+				});
+			}
+
 			// Listen to searchbar selection
 			document.getElementById('search-artist').addEventListener("awesomplete-selectcomplete", function(event) {
 
@@ -576,8 +625,10 @@
 				loadArtistData(artistID, artistName)
 					.then(appendArtistData)
 					.then(function () {
-						document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
-						history.pushState({}, 'MusicOctoRobot - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
+						document.title = 'VINYL - ' + data.map(d => d.name).join(' v ');
+						history.pushState({}, 'VINYL - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
+						if (ENABLE_TUTORIAL)
+							callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
 					});
 			});
 
@@ -639,13 +690,10 @@
 
 					updateSplitViewToggle();
 
-					if (ENABLE_TUTORIAL && data.length == 2) {
-						// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
-						callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
-					}
-					else if(ENABLE_TUTORIAL && data.length == 3) {
-						callTutorial('#options-panel', 'You can also try adjusting<br>more options here.', 'n')
-					}
+					// if (ENABLE_TUTORIAL && data.length == 2) {
+					// 	// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
+					// 	callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
+					// }
 
 					if (data.length >= 4) {
 						d3.select("#search-artist")
@@ -691,7 +739,10 @@
 				drawData.reverse();
 				colors.reverse();
 
-				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(drawData, (d) => d.id);
+				let selection = d3.select("#artist-buttons").selectAll(".artist-btn").data(drawData, (d) => {
+					if (d)
+						return d.id
+				});
 
 				// enter
 				let selectionEnter = selection.enter()

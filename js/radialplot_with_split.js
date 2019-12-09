@@ -661,6 +661,7 @@ class RadialView {
                     }
                     let dropTarget = d3.select(dropTargetEl);
                     if (dropTarget.size() > 0 && dropTarget.attr("id") == dropTargetId) {
+                        clearTutorial();
                         let starViewDrawer = d3.select(dropTarget.node().parentNode);
                         starViewDrawer.classed('hide', false);
                         d3.select('#veil').classed('hide', false);
@@ -701,6 +702,9 @@ class RadialView {
             // .attr('r', d => this.SCALE_DOT_RADIUS(d[this.config.dotRadiusMapping]))
 
         dotHoverArea.on("mouseover", this.mouseActions('mouseover'))
+            .on("mousedown", function () {
+                callTutorial('#drop-area', 'Drag and drop it here to see more details', 'n');
+            })
             .on("click", this.mouseActions('click'))
             .on("mouseout", this.mouseActions('mouseout'));
 
@@ -817,8 +821,6 @@ class RadialView {
                     d3.select(m[i].closest('.song')).classed('active', true)
                     _this.selectedSong = songParentData;
                 }
-
-                callTutorial('#drop-area', 'Drag and drop it here to see more details', 'n');
             }
         } else if (action == 'mouseout') {
             return function (d, i, m) {
@@ -903,7 +905,6 @@ class RadialView {
             .filter(d => similarSongs.filter(x => x.song.id == d.id).length > 0)
             .classed('similar-highlight', true);
 
-        console.log('!@#', d3.select('#image_center_0'))
         d3.select(`.vinyl-center-image`)
             .classed('hide', false);
         d3.select('#image_center_0 image')
