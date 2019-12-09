@@ -737,8 +737,8 @@
 
 				// trigger a data change for the histograms
 				components.forEach(function (c) { c.onDataChanged(data); });
-				document.title = 'MusicOctoRobot - ' + data.map(d => d.name).join(' v ');
-				history.pushState({}, 'MusicOctoRobot - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
+				document.title = 'VINYL - ' + data.map(d => d.name).join(' v ');
+				history.pushState({}, 'VINYL - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
 			}
 
 			// Removes the data for the artist from the dataset by artist id
