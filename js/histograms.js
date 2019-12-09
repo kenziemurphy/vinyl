@@ -58,6 +58,7 @@ class HistogramView {
             .on("brush", function (histogram) {
                         // Get the extent or bounding box of the brush event, this is a 2x2 array
                 var e = d3.event.selection;
+                clearTutorial();
 
                 d3.selectAll('.selection').style("opacity", 1);
 
