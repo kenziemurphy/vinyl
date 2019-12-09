@@ -121,7 +121,7 @@
             </div>
 			<div class="cell grow container-col" style="margin-bottom: -30px;">
 				<div id="vis-area" class="cell grow container-col">
-					<div class="container-row">
+					<div class="container-row" id="select-axes">
 						<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
 							<div>
 								<small class="nowrap">Position data points by</small>
@@ -274,9 +274,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
         <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete.min.js"></script>
-		  <script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
-		  <script src="https://unpkg.com/d3-simple-slider"></script>
+		<script src="https://nico-amsterdam.github.io/awesomplete-util/js/awesomplete-util.min.js"></script>
+		<script src="https://unpkg.com/d3-simple-slider"></script>
 		<script src="js/lib/pca.min.js"></script>
+
 		<script src="js/popular_artists.js"></script>
 		<script src="js/utils.js"></script>
 		<script src="js/audiohelpers.js"></script>
@@ -630,7 +631,7 @@
 						document.title = 'VINYL - ' + data.map(d => d.name).join(' v ');
 						history.pushState({}, 'VINYL - ' + data.map(d => d.name).join(' v '), '?' + data.map(d => 'q=' + d.id).join('&'));
 						if (ENABLE_TUTORIAL)
-							callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
+							callTutorial('#select-axes', 'Try changing the axes here to see other attributes.')
 					});
 			});
 
