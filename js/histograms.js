@@ -273,11 +273,10 @@ class HistogramView {
     // enter
     let histogramGEnter = histogramG.enter()
         .append("g")
-        .attr("id", "hist" + i);
+        .attr("id", "hist" + i)
+        .attr('class', 'brush');
 
-    // histogramGEnter.attr("id", "hist" + i)
-    //     .attr('class', 'brush')
-    //     .call(this.brush);
+    histogramGEnter.call(this.brush);
 
 
 
@@ -373,14 +372,50 @@ class HistogramView {
     // exit
     rectangles.exit().remove();
 
+    // histogramGEnter
+    //     .call(this.brush)
+    //     .select('.overlay')
+    //     .on('mouseover.passThru', function (d) {
+    //         // console.log('asdsd')
+    //         // console.log(e);
+    //         var e = d3.event;
 
-    histogramG
-        .attr('class', 'brush')
-        .call(this.brush)
-        .on('mouseover.passThru', function (e) {
-          console.log('asdsd')
-          console.log(e);
-        });
+    //         var prev = this.style.pointerEvents;
+    //         this.style.pointerEvents = 'none';
+
+    //         var el = document.elementsFromPoint(d3.event.x, d3.event.y);
+    //         let elBinRect = el.filter(d => d.classList.contains('bin-rect'));
+    //         console.log(this, elBinRect);
+    //         if (elBinRect.length > 0) {
+    //           var e2 = document.createEvent('MouseEvent');
+    //           e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
+
+    //           elBinRect[0].dispatchEvent(e2);
+    //         }
+
+    //         this.style.pointerEvents = prev;
+    //     })
+    //     .on('mousemove.passThru', function (d) {
+    //       // console.log('asdsd')
+    //       // console.log(e);
+    //       var e = d3.event;
+
+    //       var prev = this.style.pointerEvents;
+    //       this.style.pointerEvents = 'none';
+
+    //       var el = document.elementsFromPoint(d3.event.x, d3.event.y);
+    //       let elBinRect = el.filter(d => d.classList.contains('bin-rect'));
+          
+    //       if (elBinRect.length > 0) {
+    //         var e2 = document.createEvent('MouseEvent');
+    //         // console.log(e.type);
+    //         e2.initMouseEvent('mouseover',e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
+
+    //         elBinRect[0].dispatchEvent(e2);
+    //       }
+
+    //       this.style.pointerEvents = prev;
+    //   });
 
 
 
