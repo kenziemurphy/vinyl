@@ -9,7 +9,6 @@ class HistogramView {
         this.isBrushing = false;
 
         //var svg = d3.select('svg');
-        // NOTE: I fixed this svgWidth/Height, it should work now -- Tae
         this.svgWidth = parseInt(this.svg.style("width"), 10);
         this.svgHeight = parseInt(this.svg.style("height"), 10);
 
@@ -76,48 +75,66 @@ class HistogramView {
                     let tempArray = [];
                     // Select all .bin-rect, and add the "fade" class if the data for that circle
                     // lies outside of the brush-filter applied for this rectangle x and y attributes
-                    d3.selectAll('#' + histID + ' .bin-rect')
-                     .classed("", function(d){
-                        if (+d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]) {
-                            indexes.push(this);
+                    // d3.selectAll('#' + histID + ' .bin-rect')
+                    //  .classed("", function(d){
+                    //     if (+d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]) {
+                    //         indexes.push(this);
 
 
-                            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
-                            and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
-                            let artistIndex = this.parentNode.id.slice(-1);
+                    //         /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                    //         and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                    //         let artistIndex = this.parentNode.id.slice(-1);
 
-                            // get the Spotify id of the collection (artist)
-                            let collectionId = _this.data[artistIndex].id;
+                    //         // get the Spotify id of the collection (artist)
+                    //         let collectionId = _this.data[artistIndex].id;
 
-                            // get a list of the id's in this bin
-                            _this.idsInBinBrush = _this.idsInBinBrush.concat(d.data["ids" + artistIndex]); //_this.getAllIdsInBin(d);
+                    //         // get a list of the id's in this bin
+                    //         _this.idsInBinBrush = _this.idsInBinBrush.concat(d.data["ids" + artistIndex]); //_this.getAllIdsInBin(d);
 
-                            // send a filtering function out to the other components to highlight the id's in this bin everywhere
-                            _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
-                            console.log(_this.idsInBinBrush)
-                        } else {
+                    //         // send a filtering function out to the other components to highlight the id's in this bin everywhere
+                    //         _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
+                    //         // console.log(_this.idsInBinBrush)
+                    //     } else {
 
-                            /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
-                            and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
-                            let artistIndex = this.parentNode.id.slice(-1);
+                    //         /* we gave each artist g an id in drawHistogram, use this to determine what artist this rectangle belongs to
+                    //         and therefore what key to look at in d.data (i.e. ids0 or ids1 or ids2 etc) to find the songs in this bin */
+                    //         let artistIndex = this.parentNode.id.slice(-1);
 
-                            // get the Spotify id of the collection (artist)
-                            let collectionId = _this.data[artistIndex].id;
+                    //         // get the Spotify id of the collection (artist)
+                    //         let collectionId = _this.data[artistIndex].id;
 
-                            let idsToDelete= d.data["ids" + artistIndex];
+                    //         let idsToDelete= d.data["ids" + artistIndex];
 
-                            _this.idsInBinBrush = _this.idsInBinBrush.filter(function(id) {
-                                if(idsToDelete.includes(id)) {
-                                    return false;
-                                }
-                                return true;
-                            });
+                    //         _this.idsInBinBrush = _this.idsInBinBrush.filter(function(id) {
+                    //             if(idsToDelete.includes(id)) {
+                    //                 return false;
+                    //             }
+                    //             return true;
+                    //         });
 
-                            _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
+                    //         _this.dispatch.call('highlight', this, (k) => _this.idsInBinBrush.includes(k.id));
 
+                    //     }
+                    //     // console.log("INDEXES");
+                    // })
+
+                    let binsToHighlight = d3.selectAll('#' + histID + ' .bin-rect').filter(function (d) {
+                        return +d3.select(this).attr("x") > e[0] && +d3.select(this).attr("x") + +d3.select(this).attr("width") < e[1]
+                    }).data();
+
+                    let songsToHighlight = binsToHighlight.map(function (d) {
+                        let numArtists =  Object.keys(d['data']).reduce(function(count, el){
+                            return el.indexOf("ids") == 0 ? count + 1 : count;
+                        }, 0);
+                        let allSongsInBin = [];
+                        for (let i = 0; i < numArtists; i++) {
+                            allSongsInBin = allSongsInBin.concat(d['data']['ids' + i]);
                         }
-                        console.log("INDEXES");
-                    })
+                        return allSongsInBin;
+                    }).flat();
+                    
+                    _this.dispatch.call('highlight', this, (k) => songsToHighlight.includes(k.id));
+                    // console.log(songsToHighlight);
                 }
             })
             .on("end", function() {
@@ -255,11 +272,12 @@ class HistogramView {
 
     // enter
     let histogramGEnter = histogramG.enter()
-        .append("g");
+        .append("g")
+        .attr("id", "hist" + i);
 
-        histogramGEnter.attr("id", "hist" + i)
-        .attr('class', 'brush')
-        .call(this.brush);
+    // histogramGEnter.attr("id", "hist" + i)
+    //     .attr('class', 'brush')
+    //     .call(this.brush);
 
 
 
@@ -288,18 +306,18 @@ class HistogramView {
 
     // 2. On the histogram draw a g for each collection / artist
 
+    let histogramArtistsG = selectAllOrCreateIfNotExist(histogramG, 'g#hist' + i + 'artists-all')
     // enter
-    let artistG = histogramG.selectAll("g").data(stackedData);
+    let artistG = histogramArtistsG.selectAll("g").data(stackedData);
     let artistGEnter = artistG.enter().append("g")
-
-    // exit
-    artistG.exit().remove();
 
     // update
     artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
-                                        .attr("id", (d,index) => "hist" + i + "artist" + index);
-          // .style('stroke', function(d, i) { return colors[i]; })
-
+                                          .attr("id", (d,index) => "hist" + i + "artist" + index);
+    // .style('stroke', function(d, i) { return colors[i]; })
+    
+    // exit
+    artistG.exit().remove();
 
     // 3. Draw the rectangles for the currently selected collection / artist
 
@@ -354,6 +372,17 @@ class HistogramView {
 
     // exit
     rectangles.exit().remove();
+
+
+    histogramG
+        .attr('class', 'brush')
+        .call(this.brush)
+        .on('mouseover.passThru', function (e) {
+          console.log('asdsd')
+          console.log(e);
+        });
+
+
 
       // .style("opacity", .2)
 

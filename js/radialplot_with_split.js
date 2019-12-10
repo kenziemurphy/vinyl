@@ -614,7 +614,9 @@ class RadialView {
             .strength(0.2);
 
         this.force.alphaTarget(0.7).restart()
-
+        setTimeout(function () {
+            _this.force.velocityDecay(0.95);
+        }, 7000);
     }
 
     /**
