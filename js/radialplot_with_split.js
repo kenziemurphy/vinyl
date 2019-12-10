@@ -117,7 +117,7 @@ class RadialView {
             }
 
             var outsideDot = d3.selectAll('.song.active *').filter(equalToEventTarget).empty();
-            var outsideButton = d3.selectAll('.vis-control, .vis-control *').filter(equalToEventTarget).empty();
+            var outsideButton = d3.selectAll('.vis-control, .vis-control *, .dont-reset-selection, .dont-reset-selection *').filter(equalToEventTarget).empty();
 
             if (outsideDot && outsideButton) {
                 d3.select('input#search-highlight').classed('active', false);
