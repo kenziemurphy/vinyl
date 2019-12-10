@@ -345,14 +345,27 @@ class HistogramView {
             }
           })
           .on("mousedown", function(d) {
-            console.log('mousedown')
-            let brush_elm = _this.svg.select(".brush").node();
-            let new_click_event = new Event('mousedown');
-            new_click_event.pageX = d3.event.pageX;
-            new_click_event.clientX = d3.event.clientX;
-            new_click_event.pageY = d3.event.pageY;
-            new_click_event.clientY = d3.event.clientY;
-            brush_elm.dispatchEvent(new_click_event);
+            // console.log('mousedown')
+            // let brush_elm = _this.svg.select(".brush").node();
+            // let new_click_event = new Event('mousedown');
+            // new_click_event.pageX = d3.event.pageX;
+            // new_click_event.clientX = d3.event.clientX;
+            // new_click_event.pageY = d3.event.pageY;
+            // new_click_event.clientY = d3.event.clientY;
+            // brush_elm.dispatchEvent(new_click_event);
+
+            var e = _this.brush.extent(),
+                m = d3.mouse(_this.svg.node()),
+                p = [_this.xAxis.invert(m[0]), _this.y.invert(m[1])];
+            
+            if ( _this.brush.empty() || 
+                (e[0][0] > d[0] || d[0] > e[1][0]
+                || e[0][1] > d[1] || d[1] > e[1][1] )   
+            ) {
+              _this.brush.extent([p,p]);
+            } else {
+              d3.select(this).classed('extent', true);
+            }
           })
           .on("mouseout", (d) => {
             if (!_this.isBrushing) {
