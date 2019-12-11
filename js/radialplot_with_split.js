@@ -598,7 +598,7 @@ class RadialView {
         if (this.config.enableForce)
             this.force.force('collision')
                 .radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5)
-                .iterations(3);
+                .iterations(7);
         else
             this.force.force('collision').radius(0);
 
