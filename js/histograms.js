@@ -310,13 +310,13 @@ class HistogramView {
     let artistG = histogramArtistsG.selectAll("g").data(stackedData);
     let artistGEnter = artistG.enter().append("g")
 
+    // exit
+    artistG.exit().remove();
+
     // update
     artistG = artistG.merge(artistGEnter).attr("fill", function(d, index) { return _this.colors[index]; })
                                           .attr("id", (d,index) => "hist" + i + "artist" + index);
     // .style('stroke', function(d, i) { return colors[i]; })
-    
-    // exit
-    artistG.exit().remove();
 
     // 3. Draw the rectangles for the currently selected collection / artist
 
