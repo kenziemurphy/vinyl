@@ -279,7 +279,6 @@ class RadialView {
         let vinylsLayer = selectAllOrCreateIfNotExist(this.svg, 'g#vinyls')
         d3.selectAll('g.vinyl').remove();
 
-        console.log('drawing with', this.SPLITS, 'splits')
         for (let i in this.CENTER_BY_NUM_SPLITS[this.SPLITS]) {
             let vinylG = selectAllOrCreateIfNotExist(vinylsLayer, `g.vinyl#vinyl-${i}`)
                 .attr('transform', `translate(${this.CENTER_BY_NUM_SPLITS[this.SPLITS][i].join(',')})`)
@@ -495,7 +494,7 @@ class RadialView {
             .key(d => d[this.config.splitKey])
             .entries(this.filteredData)
             .length
-        this.SPLITS = this.config.isSplitting ? Math.max(Math.min(nGroups, MAX_SPLITS), 1) : 1;
+        this.SPLITS = this.config.isSplitting ? Math.min(nGroups, MAX_SPLITS) : 1;
 
         this.MIN_RADIAL_DIST = this.SPLITS == 1 ?
             Math.min(this.W, this.H) / 8 :
@@ -592,10 +591,13 @@ class RadialView {
                 });
         }
 
-        this.force.velocityDecay(0.5);
+        // this.force.velocityDecay(0.5);
+        // this.force.alphaDecay(1);
         this.force.nodes(this.filteredData);
         if (this.config.enableForce)
-            this.force.force('collision').radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 2);
+            this.force.force('collision')
+                .radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5)
+                .iterations(7);
         else
             this.force.force('collision').radius(0);
 
@@ -615,6 +617,7 @@ class RadialView {
             .strength(0.2);
 
         this.force.alphaTarget(0.7).restart()
+        // _this.force.transition().velocityDecay(0.95);
         // setTimeout(function () {
         //     _this.force.velocityDecay(0.95);
         // }, 7000);
@@ -688,7 +691,7 @@ class RadialView {
             .attr("patternUnits", "userSpaceOnUse")
             .append("svg:image")
             // FIXME get album art once the api has been fixed
-            .attr("xlink:href", d => d.images.length > 0 ? d.images[2].url : '')
+            .attr("xlink:href", d => d.images.length >= 2 ? d.images[2].url : '')
 
         var polygonPoints = songGEnterInner
             .filter(d => this.TIME_SIG_AS_POLYGON ? d.time_signature > 2 : false)
