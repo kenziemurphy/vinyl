@@ -550,10 +550,11 @@ class RadialView {
             let maxSumAreaSpoke = d3.max(dataByKey, d => d.value.sumArea);
             let maxCount = d3.max(dataByKey, d => d.value.count);
             let drawingArea = Math.pow(Math.min(this.W, this.H), 2);
+            let sizeDivisor = 800;
             this.SCALE_DOT_RADIUS = d3.scalePow()
                 .exponent(0.5)
                 .domain(d3.extent(this.data, d => d[this.config.dotRadiusMapping]))
-                .range([2, drawingArea / (this.SPLITS == 1 ? 700 : 1400) * Math.sqrt(1 / maxSumAreaSpoke)]);
+                .range([2, drawingArea / (this.SPLITS == 1 ? sizeDivisor : sizeDivisor * 2) * Math.sqrt(1 / maxSumAreaSpoke)]);
         }
 
         this.SCALE_DOT_COLOR = d3.scaleOrdinal(this.COLOR_SCHEME)
@@ -597,7 +598,7 @@ class RadialView {
         if (this.config.enableForce)
             this.force.force('collision')
                 .radius(d => _this.SCALE_DOT_RADIUS(d[_this.config.dotRadiusMapping]) + 1.5)
-                .iterations(7);
+                .iterations(3);
         else
             this.force.force('collision').radius(0);
 
