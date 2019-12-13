@@ -26,6 +26,16 @@ window.Utils = {
     },
     formatKeyLabel: function (key) {
         return this.KEY_LABEL[key] || this.snakeToCap(key)
+    },
+
+    euclidianDistance: function(a, b) {
+        return Math.sqrt(Math.pow(a["energy"] - b["energy"], 2)
+            + Math.pow(a["instrumentalness"] - b["instrumentalness"], 2)
+            + Math.pow(a["acousticness"] - b["acousticness"], 2)
+            + Math.pow(a["valence"] - b["valence"], 2)
+            + Math.pow(a["danceability"] - b["danceability"], 2)
+            + Math.pow(a["liveness"] - b["liveness"], 2)
+            + Math.pow(a["speechiness"] - b["speechiness"], 2));
     }
 }
 

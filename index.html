@@ -654,6 +654,34 @@
 			// helpers
 			function preprocessData (data) {
 				// TODO: try to remove duplicate data
+
+				console.log(data.length)
+				// remove duplicates
+				let duplicateGroups = [];
+				data.forEach(function (d) {
+					let duplicates = data.filter(x => x != d)
+						.map(x => ({
+							dist: Utils.euclidianDistance(x, d),
+							data: x
+						}))
+						.filter(x => x.dist == 0)
+						.map(x => x.data);
+					if (duplicates.length > 0) {
+						duplicateGroups.push([d].concat(duplicates))
+					}
+				});
+
+				duplicateGroups.forEach(function (dup) {
+					dup.sort((a, b) => b.popularity - a.popularity);
+					for (let i = 1; i < dup.length; i++) {
+						let index = data.map(d => d.id).indexOf(dup[i].id);
+						if (index >= 0)
+							data.splice(index, 1);
+					}
+				})
+
+				console.log(data.length)
+
 				data.forEach(function (d) {
 					if (d.duration_ms)
 						d.duration = d.duration_ms / 1000;
