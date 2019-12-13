@@ -664,7 +664,7 @@
 							dist: Utils.euclidianDistance(x, d),
 							data: x
 						}))
-						.filter(x => x.dist == 0 && x.data.name == d.name)
+						.filter(x => x.dist < 0.1 && x.data.name == d.name)
 						.map(x => x.data);
 					if (duplicates.length > 0) {
 						duplicateGroups.push([d].concat(duplicates))
