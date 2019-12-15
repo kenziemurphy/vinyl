@@ -41,10 +41,15 @@
 		<div id="tutorial-popup" class="overlay-popup full-page hide">
 			<img src="img/tutorial_popup.png" style="width: 100%; max-width: 100%;">
 		</div>
-        <div class="container-main container-row">
-			<div style="width: 25%;" class="cell container-col">
-				<h1 style="margin-bottom: 0;">VINYL</h1>
-				<p class="subtitle"><small>Comparing Music Artists through Visualization</small></p>
+        <div class="container-main container-row container-col-sm">
+			<div class="cell container-col sidebar-lg">
+				<div class="hidden-sm">
+					<h1 class="logo">VINYL</h1>
+					<p class="subtitle"><small>Comparing Music Artists through Visualization</small></p>
+				</div>
+				<div class="hidden-lg" style="margin-bottom: 10px;">
+					<i><b>VINYL</b></i> - Comparing Music Artists through Vis
+				</div>
 				<div class="grow">
 					<!-- <h2>I'm interested in...</h2> -->
 					<input class="form-control" id="search-artist" name="search[artist]" type="text" placeholder="Search for an artist..." />
@@ -57,8 +62,9 @@
 						<i><small>Up to 4 artists can be added to the comparison.</small></i>
 					</div>
 				</div>
-				<div>
+				<div class="collapse-sm">
 					<h2 id="select-more-options">More Options</h2>
+				
 					<div class="container-column" style="margin:auto;">
 						<div class="cell panel dont-reset-selection" id="options-panel">
 
@@ -135,8 +141,8 @@
 					</p>
 				</div>
             </div>
-			<div class="cell grow container-col" style="margin-bottom: -30px;">
-				<div id="vis-area" class="cell grow container-col">
+			<div class="cell grow container-col central-column">
+				<div id="vis-area" class="cell grow container-col container-col-rev-sm anti-cell-sm">
 					<div class="container-row" id="select-axes">
 						<!-- <div class="cell grow mb-xs" style="margin-bottom: 10px;">
 							<div>
@@ -158,7 +164,7 @@
 								<div>
 									<small class="nowrap">X / Angular Axis</small>
 								</div>
-								<select name="" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
+								<select name="select-x-axis" class="btn active vis-control" id="select-x-axis" style="width: 100%;">
 									<option data-scale-type="linear" value="key_signature" data-radial="true" selected="selected">KEY</option>
 									<option data-scale-type="linear" value="key_signature_by_fifths" data-radial="true">KEY (Ordered by Circle of Fifths)</option>
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
@@ -182,7 +188,7 @@
 								<div>
 									<small class="nowrap">Y / Radial Axis</small>
 								</div>
-								<select name="" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
+								<select name="select-y-axis" class="btn active vis-control" id="select-y-axis" style="width: 100%;">
 									<option data-scale-type="linear" data-scale-min="0" data-scale-max="100" value="popularity">POPULARITY</option>
 									<option data-scale-type="linear" value="release_year">YEAR</option>
 									<option data-scale-type="linear" value="loudness">LOUDNESS</option>
@@ -214,7 +220,14 @@
 						Other songs similar to your selection:
 					</div> -->
 				</div>
-				<div class="drawer-tab vis-control transparent" style="font-size: 10pt;">
+				<div class="hidden-lg" style="margin-top: 30px">
+					<small>
+						<i>
+							<b>Try this on a desktop/laptop</b> for full functionality, e.g., song preview, more controls, song-by-song comparisons, song distributions, & way better overall experience.
+						</i>
+					</small>
+				</div>
+				<div class="drawer-tab vis-control transparent hidden-sm" style="font-size: 10pt; margin-top: 10px;">
 					<!-- <h2>Detailed Analysis</h2> -->
 					<div class="text-center">
 						<i class="fa fa-angle-up" style="opacity: 0;"></i>
@@ -230,7 +243,7 @@
 					</div>-->
 				</div>
             </div>
-			<div style="width: 25%;" class="cell container-col">
+			<div class="cell container-col collapse-sm sidebar-lg">
 				<h2>Song Feature Distributions</h2>
 				<svg id="histogram-view" class="grow" overflow="visible"></svg>
 				<!-- <h2>Legend</h2>
@@ -253,7 +266,7 @@
 		<div id="veil" class="veil hide vis-control"></div>
 
 		<div id="star-view-drawer" class="container-col hide dont-reset-selection">
-			<div id="drop-area" class="cell drawer-tab vis-control clickable">
+			<div id="drop-area" class="cell drawer-tab vis-control clickable hidden-sm">
 				<!-- <h2>Detailed Analysis</h2> -->
 				<div class="text-center">
 					<i class="fa fa-angle-up" id="expand-icon" style="opacity: 0;"></i>
@@ -337,6 +350,35 @@
 				components.forEach(function (c) { c.onScreenSizeChanged(); });
 			});
 
+			d3.select('.bookmark-page').on('click.bookmark', function (e) {
+				d3.event.preventDefault();
+				if (window.sidebar && window.sidebar.addPanel) { // Firefox <23
+		
+					window.sidebar.addPanel(document.title,window.location.href,'');
+
+				} else if(window.external && ('AddFavorite' in window.external)) { // Internet Explorer
+
+					window.external.AddFavorite(location.href,document.title); 
+
+				} else if(window.opera && window.print || window.sidebar && ! (window.sidebar instanceof Node)) { // Opera <15 and Firefox >23
+					/**
+					 * For Firefox <23 and Opera <15, no need for JS to add to bookmarks
+					 * The only thing needed is a `title` and a `rel="sidebar"`
+					 * To ensure that the bookmarked URL doesn't have a complementary `#` from our trigger's href
+					 * we force the current URL
+					 */
+					triggerBookmark.attr('rel', 'sidebar').attr('title', document.title).attr('href', window.location.href);
+					return true;
+				
+				} else { // For the other browsers (mainly WebKit) we use a simple alert to inform users that they can add to bookmarks with ctrl+D/cmd+D
+					
+					alert('You can add this page to your bookmarks by pressing ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D on your keyboard.');
+				
+				}
+				// If you have something in the `href` of your trigger
+				return false;
+			});
+			
 			d3.select('#tutorial-landing').on('click.tutorial', function () {
 				if (ENABLE_TUTORIAL) {
 					callTutorial('#search-artist', 'Try adding your favorite artist<br>to the comparison here!');
@@ -358,8 +400,8 @@
 
 			// UI initialization from vis's config
 			let rvConfig = rv.getConfig();
-			d3.select('#select-x-axis').property("value", rvConfig.xMapping.key);
-			d3.select('#select-y-axis').property("value", rvConfig.yMapping.key);
+			d3.select('[name=select-x-axis]').property("value", rvConfig.xMapping.key);
+			d3.select('[name=select-y-axis]').property("value", rvConfig.yMapping.key);
 			d3.select('#toggle-split-view').property("checked", rvConfig.isSplitting);
 			d3.select('#toggle-album-art').property("checked", rvConfig.showAlbumArt);
 			d3.select('#toggle-force').property("checked", rvConfig.enableForce);
@@ -407,12 +449,12 @@
 							},
 							showAxes: false
 						});
-						d3.select('#select-x-axis').attr('disabled', 'disabled');
-						d3.select('#select-y-axis').attr('disabled', 'disabled');
+						d3.select('[name=select-x-axis]').attr('disabled', 'disabled');
+						d3.select('[name=select-y-axis]').attr('disabled', 'disabled');
 						d3.select('#pca-axes-notes').classed('hide', false);
 					} else {
-						let xSelect = d3.select('#select-x-axis').node();
-						let ySelect = d3.select('#select-y-axis').node();
+						let xSelect = d3.select('[name=select-x-axis]').node();
+						let ySelect = d3.select('[name=select-y-axis]').node();
 						let xSelectedOption = xSelect.options[xSelect.selectedIndex];
 						let ySelectedOption = ySelect.options[ySelect.selectedIndex];
 						rv.setConfig({
@@ -432,8 +474,8 @@
 							},
 							showAxes: true
 						});
-						d3.select('#select-x-axis').attr('disabled', null);
-						d3.select('#select-y-axis').attr('disabled', null);
+						d3.select('[name=select-x-axis]').attr('disabled', null);
+						d3.select('[name=select-y-axis]').attr('disabled', null);
 						d3.select('#pca-axes-notes').classed('hide', true);
 					}
 				});
@@ -450,7 +492,7 @@
 				rv.setConfig({enableForce: this.checked});
 			});
 
-			d3.selectAll('#select-x-axis')
+			d3.selectAll('[name=select-x-axis]')
 				.on('change', function () {
 					let selectedOption = this.options[this.selectedIndex];
 					rv.setConfig({
@@ -465,7 +507,7 @@
 					if (ENABLE_TUTORIAL)
 						callTutorial('#options-panel', 'You can also try adjusting<br>more options here.', 'n')
 				});
-			d3.selectAll('#select-y-axis')
+			d3.selectAll('[name=select-y-axis]')
 				.on('change', function () {
 					let selectedOption = this.options[this.selectedIndex];
 					rv.setConfig({
@@ -739,7 +781,7 @@
 
 					// if (ENABLE_TUTORIAL && data.length == 2) {
 					// 	// callTutorial('#options-panel', 'Now try adjusting the visualization here!')
-					// 	callTutorial('#select-x-axis', 'Now try changing the axes here to see other attributes.')
+					// 	callTutorial('[name=select-x-axis]', 'Now try changing the axes here to see other attributes.')
 					// }
 
 					if (data.length >= 4) {

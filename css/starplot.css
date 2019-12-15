@@ -21,6 +21,7 @@
   /*background-color: #151515;*/
   background-color: #37364D;
   transition: all 0.2s;
+  width: calc(50% - 30px);
 }
 
 .drawer-tab.ready {
@@ -33,7 +34,7 @@
   /*transform: translate(-50%, -100%) translateY(-29px);*/
   transform: translate(-50%, calc(-100% - 10px));
   transition: width 0.5s;
-  min-width: calc(50% - 30px);
+  /* min-width: calc(50% - 30px); */
 }
 
 #star-view {

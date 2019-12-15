@@ -612,3 +612,81 @@ a:hover {
     margin-bottom: 15px;
     font-style: italic;
 }
+
+
+@media (min-width: 769px) {
+    .sidebar-lg {
+        width: 25%;
+    }
+
+    .hidden-lg {
+        display: none !important;
+    }
+
+    .central-column {
+        padding-bottom: -30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-row-sm {
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: row;
+    }
+
+    .container-row-rev-sm {
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: row-reverse;
+    }
+
+    .container-col-sm {
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: column;
+    }
+
+    .container-col-rev-sm {
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: column-reverse;
+    }
+
+    .collapse-sm {
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .hidden-sm {
+        display: none !important;
+    }
+
+    .artist-btn {
+        width: calc(50% - 5px);
+        display: inline-block;
+        margin-bottom: 5px;
+        margin-right: 10px;
+    }
+    
+    .artist-btn:nth-child(2n) {
+        margin-right: 0;
+    }
+
+    .cell {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .anti-cell-sm {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+}
+
+
+
+h1.logo {
+    margin-bottom: 0;
+}
